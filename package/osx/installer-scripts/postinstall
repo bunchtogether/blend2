@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sudo chown root /Library/LaunchDaemons/com.bunchenterprise.blend.plist
+sudo launchctl load /Library/LaunchDaemons/com.bunchenterprise.blend.plist
+sudo launchctl start com.bunchenterprise.blend

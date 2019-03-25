@@ -1,0 +1,15 @@
+[ignore]
+
+.*/node_modules/documentation/*
+.*/dist/.*.flow
+.*/node_modules/.*/test/*
+.*/node_modules/.*/tests/*
+
+[include]
+
+[libs]
+flow/
+
+[options]
+traces=3
+module.name_mapper='^expose-loader?.*' -> 'expose-loader'

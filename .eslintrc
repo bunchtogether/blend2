@@ -1,0 +1,12 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["bunchtogether"],
+  "plugins": ["jest"],
+  "env": {
+    "webextensions": true,
+    "jest": true
+  },
+  "globals": {
+    "Hls": true
+  }
+}

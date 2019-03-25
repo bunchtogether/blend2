@@ -1,0 +1,14 @@
+{
+  "name": "blend",
+  "version": "1.0.0",
+  "main": "dist/server/index.js",
+  "bin": "dist/server/index.js",
+  "pkg": {
+    "scripts": "dist/**/*.js",
+    "assets": [
+      "node_modules/@bunchtogether/ffmpeg-static/bin/win32/x86/ffmpeg.exe",
+      "node_modules/@bunchtogether/ffmpeg-static/bin/win32/x86/ffprobe.exe",
+      "dist/static/**/*"
+    ]
+  }
+}
