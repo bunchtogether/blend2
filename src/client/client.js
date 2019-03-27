@@ -96,9 +96,14 @@ export default class BlendClient extends EventEmitter {
           if (audioQueue.length > 0 || audioBuffer.updating) {
             audioQueue.push(data);
           } else {
-            audioBuffer.appendBuffer(data);
+            try {
+              audioBuffer.appendBuffer(data);
+            } catch(error) {
+              this.audioBufferLogger(`${error.message}, code: ${error.code}`)
+            }
           }
         } else {
+          console.log("QUEUE AUDIO");
           audioQueue.push(data);
         }
       } else if(messageType === 1) {
@@ -108,9 +113,14 @@ export default class BlendClient extends EventEmitter {
           if (videoQueue.length > 0 || videoBuffer.updating) {
             videoQueue.push(data);
           } else {
-            videoBuffer.appendBuffer(data);
+            try {
+              videoBuffer.appendBuffer(data);
+            } catch(error) {
+              this.videoBufferLogger(`${error.message}, code: ${error.code}`)
+            }
           }
         } else {
+          console.log("QUEUE VIDEO");
           videoQueue.push(data);
         }
       }
@@ -164,7 +174,11 @@ export default class BlendClient extends EventEmitter {
     this.setupVideoBufferLogging(videoBuffer);
     videoBuffer.addEventListener('updateend', async () => {
       if (this.videoQueue.length > 0 && !videoBuffer.updating) {
-        videoBuffer.appendBuffer(this.videoQueue.shift());
+        try {
+          videoBuffer.appendBuffer(this.videoQueue.shift());
+        } catch(error) {
+          console.log(`${error.message}, code: ${error.code}`)
+        }
       }
     });
     const audioBuffer = mediaSource.addSourceBuffer('audio/aac');
@@ -172,14 +186,26 @@ export default class BlendClient extends EventEmitter {
     this.setupAudioBufferLogging(audioBuffer);
     audioBuffer.addEventListener('updateend', async () => {
       if (this.audioQueue.length > 0 && !audioBuffer.updating) {
-        audioBuffer.appendBuffer(this.audioQueue.shift());
+        try {
+          audioBuffer.appendBuffer(this.audioQueue.shift());
+        } catch(error) {
+          console.log(`${error.message}, code: ${error.code}`)
+        }
       }
     });
     if (this.videoQueue.length > 0 && !videoBuffer.updating) {
-      videoBuffer.appendBuffer(this.videoQueue.shift());
+        try {
+          videoBuffer.appendBuffer(this.videoQueue.shift());
+        } catch(error) {
+          this.videoBufferLogger(`${error.message}, code: ${error.code}`)
+        }
     }
     if (this.audioQueue.length > 0 && !audioBuffer.updating) {
-      audioBuffer.appendBuffer(this.audioQueue.shift());
+        try {
+          audioBuffer.appendBuffer(this.audioQueue.shift());
+        } catch(error) {
+          this.audioBufferLogger(`${error.message}, code: ${error.code}`)
+        }
     }
     let nextBufferedSegmentInterval;
     const skipToNextBufferedSegment = () => {
@@ -252,6 +278,8 @@ export default class BlendClient extends EventEmitter {
     });
     videoBuffer.addEventListener('error', (event:Event) => {
       videoBufferLogger.info('error');
+      console.log(event);
+      console.log(videoBuffer);
     });
     videoBuffer.addEventListener('abort', (event:Event) => {
       videoBufferLogger.info('abort');
@@ -277,6 +305,8 @@ export default class BlendClient extends EventEmitter {
     });
     audioBuffer.addEventListener('error', (event:Event) => {
       audioBufferLogger.info('error');
+      console.log(event);
+      console.log(audioBuffer);
     });
     audioBuffer.addEventListener('abort', (event:Event) => {
       audioBufferLogger.info('abort');
