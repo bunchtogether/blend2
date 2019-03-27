@@ -4,10 +4,9 @@
 
 
 import Route from 'route-parser';
-import Client from '../../client';
-import makeLogger from '../../client/logger';
+import { BlendClient, blendServerDetectedPromise, makeBlendLogger } from '../../client';
 
-const windowLogger = makeLogger('Window');
+const windowLogger = makeBlendLogger('Window');
 
 window.addEventListener('unhandledrejection', (event:Event) => {
   if (event && event.error) {
@@ -37,13 +36,30 @@ window.addEventListener('error', (event:Event) => {
   }
 });
 
+const urlRegex = /\/api\/1\.0\/stream\/([^\/]+)\//;
+
 async function initialize() {
+
+  const urlMatch = window.location.href.match(urlRegex);
+  if(!urlMatch || !urlMatch[1]) {
+    throw new Error(`Invalid address ${address}`);
+  }
+  const streamUrl = decodeURIComponent(urlMatch[1]);
+
+  const blendServerDetected = await blendServerDetectedPromise;
+
+  if(blendServerDetected) {
+    windowLogger.info(`Blend server detected`);
+  } else {
+    windowLogger.error(`Unable to open web socket connection to ${address}, Blend Server not detected`);
+    return;    
+  }
+
   const element = document.querySelector('video');
   if (!element) {
     throw new Error('Video element does not exist');
   }
-  const address = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}:${window.location.port}${window.location.pathname}`;
-  const client = new Client(element, address);
+  const client = new BlendClient(element, streamUrl);
 }
 
 initialize();

@@ -300,6 +300,11 @@ module.exports.getStreamRouter = () => {
 
   const router = Router({ mergeParams: true });
 
+
+  router.get('/api/1.0/stream', async (req: express$Request, res: express$Response) => {
+    res.status(200).json({ success: true });
+  });
+
   router.ws('/api/1.0/stream/:url/', async (ws:Object, req: express$Request) => {
     
     const url = req.params.url;
