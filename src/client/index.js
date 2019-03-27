@@ -61,19 +61,46 @@ class Client extends EventEmitter {
       delete this.ws;
       this.emit('close', code, reason);
     };
-
-    let started;
+    let packetPerSecondInterval;
+    let flushInterval;
+    let packets = 0;
+    let longPacketPerSecondAverage = 0;
+    let shortPacketPerSecondAverage = 0;
+    let started = false;
     ws.onmessage = (event) => {
       const typedArray = new Uint8Array(event.data);
       this.transmuxer.push(typedArray);
+      packets += 1;
+      if (!started) {
+        started = true;
+        flushInterval = setInterval(() => {
+          this.transmuxer.flush();
+        }, 5000);
+        packetPerSecondInterval = setInterval(() => {
+          if(longPacketPerSecondAverage === 0 && shortPacketPerSecondAverage) {
+            longPacketPerSecondAverage = packets;
+            shortPacketPerSecondAverage = packets;
+            packets = 0;
+            return;
+          }
+          longPacketPerSecondAverage = longPacketPerSecondAverage * .9 + packets / 10;
+          shortPacketPerSecondAverage = shortPacketPerSecondAverage * .666 + packets / 3;
+          console.log("Shift:", longPacketPerSecondAverage - shortPacketPerSecondAverage);
+          packets = 0;
+        }, 1000);
+      }
+ 
+      /*
       if (!started) {
         started = true;
         setTimeout(() => {
           setInterval(() => {
+            console.log("FLUSH");
             this.transmuxer.flush();
-          }, 1000);
-        }, 1000);
+          }, 3000);
+        }, 5000);
       }
+      */
     };
 
     ws.onerror = (event) => {

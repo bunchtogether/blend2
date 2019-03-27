@@ -110,7 +110,7 @@ const startTestStream = async () => {
     }
     testStreamProcessPid = null;
   });
-  logger.info(`Started Test stream process ${mainProcess.pid} with args ${JSON.stringify(combinedArgs)}`);
+  logger.info(`Started Test stream process ${mainProcess.pid} with args ${combinedArgs.join(" ")}`);
   testStreamProcessPid = mainProcess.pid;
   mainProcess.stderr.on('data', (data) => {
     data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
@@ -123,12 +123,14 @@ const startStream = async (socketId:number, url:string) => {
   }
   logger.info(`Sending ${url} to ${socketId}`);
   const args = [
-    '-noaccurate_seek',
+//    '-noaccurate_seek',
+//    '-fflags', '+discardcorrupt',
+//    '-max_interleave_delta', '0',
     '-err_detect', '+ignore_err',
     '-i', url,
-    '-loglevel', 'debug',
     '-c:a', 'copy',
     '-c:v', 'copy',
+//    '-skip_estimate_duration_from_pts', '1',
     '-f', 'mpegts',
   ];
   const combinedArgs = ['-v', 'error', '-nostats'].concat(args, ['-metadata', 'blend=1', '-']);
@@ -183,7 +185,7 @@ const startStream = async (socketId:number, url:string) => {
       ws.close(1000, 'Shutting down');
     }
   });
-  logger.info(`Started FFmpeg process ${mainProcess.pid} with args ${JSON.stringify(combinedArgs)}`);
+  logger.info(`Started FFmpeg process ${mainProcess.pid} with args ${combinedArgs.join(" ")}`);
   mainProcess.stderr.on('data', (data) => {
     data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
   });
@@ -230,6 +232,9 @@ module.exports.shutdownStreamRouter = async () => {
 };
 
 module.exports.getStreamRouter = () => {
+
+  logger.warn("SHOULD KILL ORPHAN FFMPEG HERE");
+
   logger.info('Attaching /api/1.0/stream');
 
   const router = Router({ mergeParams: true });
@@ -279,7 +284,7 @@ module.exports.getStreamRouter = () => {
               streamPidMap.delete(streamId);
             }
           }
-        }, 10000);
+        }, 24 * 60 * 60 * 1000);
         streamStopTimeoutMap.get(streamId, streamTimeout);
       } catch (error) {
         if (error.stack) {

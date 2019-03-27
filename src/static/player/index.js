@@ -185,7 +185,6 @@ async function initialize() {
   const queue = [];
   const buffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.64001f, mp4a.40.5"');
   buffer.addEventListener('updateend', async () => {
-    console.log(`updateend: ${mediaSource.readyState}, queue: ${queue.length}`);
     if (queue.length > 0 && !buffer.updating) {
       buffer.appendBuffer(queue.shift());
     }
@@ -228,8 +227,35 @@ async function initialize() {
   client.on('caption', (text) => {
     console.log('caption', text);
   });
+  let nextBufferedSegmentInterval;
+  const skipToNextBufferedSegment = () => {
+    for(let i = 0; i < buffer.buffered.length; i += 1) {
+      const segmentStart = buffer.buffered.start(i);
+      if(segmentStart > element.currentTime) {
+        element.currentTime = segmentStart;
+        console.log(`JUMP TO ${segmentStart}`);
+        return;
+      }
+    }
+  }
+  element.addEventListener('waiting', (event) => {
+    console.log(element.currentTime);
+    for(let i = 0; i < buffer.buffered.length; i += 1) {
+      console.log(buffer.buffered.start(i), buffer.buffered.end(i));
+    }
+    clearInterval(nextBufferedSegmentInterval);
+    nextBufferedSegmentInterval = setInterval(() => {
+      skipToNextBufferedSegment();
+    }, 100);
+    skipToNextBufferedSegment();
+  });
+  element.addEventListener('canplay', (event) => {
+    clearInterval(nextBufferedSegmentInterval);
+    element.play();
+  });
   client.on('data', (data) => {
     if (queue.length > 0 || buffer.updating) {
+      console.log("queuing");
       queue.push(data);
     } else {
       buffer.appendBuffer(data);
