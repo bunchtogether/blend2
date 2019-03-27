@@ -3,22 +3,6 @@
 const { EventEmitter } = require('events');
 const WebSocket = require('isomorphic-ws');
 
-/*
-const mergeUint8Arrays = (arrays) => {
-  let length = 0;
-  arrays.forEach((item) => {
-    length += item.length;
-  });
-  const merged = new Uint8Array(length);
-  let offset = 0;
-  arrays.forEach((item) => {
-    merged.set(item, offset);
-    offset += item.length;
-  });
-  return merged;
-};
-*/
-
 
 /**
  * Class representing a Blend Client
