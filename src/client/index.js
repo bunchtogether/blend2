@@ -4,6 +4,21 @@ const { EventEmitter } = require('events');
 const WebSocket = require('isomorphic-ws');
 const muxjs = require('mux.js');
 
+const mergeUint8Arrays = (arrays) => {
+  let length = 0;
+  arrays.forEach(item => {
+    length += item.length;
+  });
+  let merged = new Uint8Array(length);
+  let offset = 0;
+  arrays.forEach(item => {
+    merged.set(item, offset);
+    offset += item.length;
+  });
+  return merged;
+}
+
+
 /**
  * Class representing a Blend Client
  */
@@ -61,14 +76,27 @@ class Client extends EventEmitter {
       delete this.ws;
       this.emit('close', code, reason);
     };
-    let packetPerSecondInterval;
-    let flushInterval;
-    let packets = 0;
-    let longPacketPerSecondAverage = 0;
-    let shortPacketPerSecondAverage = 0;
+   // let packetPerSecondInterval;
+    //let flushInterval;
+    //let packets = 0;
+    //let longPacketPerSecondAverage = 0;
+    //let shortPacketPerSecondAverage = 0;
     let started = false;
+    let queue = [];
     ws.onmessage = (event) => {
       const typedArray = new Uint8Array(event.data);
+      this.emit('data', typedArray);
+       /*
+      queue.push(typedArray);
+      if(!started) {
+        setInterval(() => {
+          this.emit('data', mergeUint8Arrays(queue));
+          queue = [];
+        }, 1000);
+      }
+      
+
+     
       this.transmuxer.push(typedArray);
       packets += 1;
       if (!started) {
@@ -90,7 +118,7 @@ class Client extends EventEmitter {
         }, 1000);
       }
  
-      /*
+    
       if (!started) {
         started = true;
         setTimeout(() => {

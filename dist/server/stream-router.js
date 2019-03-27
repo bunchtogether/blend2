@@ -123,15 +123,16 @@ const startStream = async (socketId       , url       ) => {
   }
   logger.info(`Sending ${url} to ${socketId}`);
   const args = [
-//    '-noaccurate_seek',
-//    '-fflags', '+discardcorrupt',
-//    '-max_interleave_delta', '0',
+    '-noaccurate_seek',
+    '-fflags', '+discardcorrupt',
+    '-max_interleave_delta', '0',
     '-err_detect', '+ignore_err',
     '-i', url,
-    '-c:a', 'copy',
+    '-an',
     '-c:v', 'copy',
 //    '-skip_estimate_duration_from_pts', '1',
-    '-f', 'mpegts',
+    '-f', 'mp4',
+    '-movflags', '+frag_keyframe+empty_moov+omit_tfhd_offset'
   ];
   const combinedArgs = ['-v', 'error', '-nostats'].concat(args, ['-metadata', 'blend=1', '-']);
   const streamId = hash64(combinedArgs);

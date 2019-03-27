@@ -183,7 +183,8 @@ async function initialize() {
     mediaSource.addEventListener('sourceopen', handle);
   });
   const queue = [];
-  const buffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.64001f, mp4a.40.5"');
+  //const audioBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="mp4a.40.5"');
+  const buffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.64001f"');
   buffer.addEventListener('updateend', async () => {
     if (queue.length > 0 && !buffer.updating) {
       buffer.appendBuffer(queue.shift());
