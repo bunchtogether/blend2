@@ -39,20 +39,19 @@ window.addEventListener('error', (event:Event) => {
 const urlRegex = /\/api\/1\.0\/stream\/([^\/]+)\//;
 
 async function initialize() {
-
   const urlMatch = window.location.href.match(urlRegex);
-  if(!urlMatch || !urlMatch[1]) {
+  if (!urlMatch || !urlMatch[1]) {
     throw new Error(`Invalid address ${address}`);
   }
   const streamUrl = decodeURIComponent(urlMatch[1]);
 
   const blendServerDetected = await blendServerDetectedPromise;
 
-  if(blendServerDetected) {
-    windowLogger.info(`Blend server detected`);
+  if (blendServerDetected) {
+    windowLogger.info('Blend server detected');
   } else {
     windowLogger.error(`Unable to open web socket connection to ${address}, Blend Server not detected`);
-    return;    
+    return;
   }
 
   const element = document.querySelector('video');

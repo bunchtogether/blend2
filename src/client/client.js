@@ -1,33 +1,35 @@
 // @flow
 
 import { EventEmitter } from 'events';
-import WebSocket  from 'isomorphic-ws';
+import WebSocket from 'isomorphic-ws';
 import superagent from 'superagent';
 import blendServerDetectedPromise from './server-detection';
 import makeBlendLogger from './logger';
 
 const mergeUint8Arrays = (arrays) => {
   let length = 0;
-  arrays.forEach(item => {
+  arrays.forEach((item) => {
     length += item.length;
   });
-  let merged = new Uint8Array(length);
+  const merged = new Uint8Array(length);
   let offset = 0;
-  arrays.forEach(item => {
+  arrays.forEach((item) => {
     merged.set(item, offset);
     offset += item.length;
   });
   return merged;
-}
+};
 
 /**
  * Class representing a Blend Client
  */
 export default class BlendClient extends EventEmitter {
-
   constructor(element: HTMLVideoElement, streamUrl:string) {
     super();
     this.element = element;
+    this.streamUrl = streamUrl;
+    this.videoQueue = [];
+    this.audioQueue = [];
     this.videoLogger = makeBlendLogger(`${streamUrl} Video Element`);
     this.mediaSourceLogger = makeBlendLogger(`${streamUrl} Media Source`);
     this.videoBufferLogger = makeBlendLogger(`${streamUrl} Video Source Buffer`);
@@ -36,14 +38,13 @@ export default class BlendClient extends EventEmitter {
     this.setupElementLogging(element);
     this.openWebSocket(streamUrl);
     this.setupMediaSource(element);
-    this.videoQueue = [];
-    this.audioQueue = [];
     element.addEventListener('error', (event:Event) => {
       if (event.type !== 'error') {
         return;
       }
       const mediaError = element.error;
       if (mediaError && mediaError.code === mediaError.MEDIA_ERR_DECODE) {
+        //this.emit('error', mediaError);
         this.reset();
       }
     });
@@ -51,12 +52,18 @@ export default class BlendClient extends EventEmitter {
 
   async close() {
     await this.closeWebSocket();
-    this.element.removeAttribute("src");
+    this.element.removeAttribute('src');
     this.element.load();
+    delete this.audioBuffer;
+    delete this.videoBuffer;
+    this.videoQueue = [];
+    this.audioQueue = [];
   }
 
   async reset() {
     await this.close();
+    this.openWebSocket(this.streamUrl);
+    this.setupMediaSource(this.element);
   }
 
   /**
@@ -65,12 +72,11 @@ export default class BlendClient extends EventEmitter {
    * @return {Promise<void>}
    */
   async openWebSocket(streamUrl:string) {
-
     const address = `ws://127.0.0.1:61340/api/1.0/stream/${encodeURIComponent(streamUrl)}/`;
-    
+
     const blendServerDetected = await blendServerDetectedPromise;
 
-    if(!blendServerDetected) {
+    if (!blendServerDetected) {
       this.webSocketLogger.error(`Unable to open web socket connection to ${address}, Blend Server not detected`);
       return;
     }
@@ -99,64 +105,42 @@ export default class BlendClient extends EventEmitter {
       this.emit('close', code, reason);
     };
 
-    let websocketAudioQueue = [];
-    setInterval(() => {
-      if(websocketAudioQueue.length === 0) {
-        return;
-      }
-      const data = mergeUint8Arrays(websocketAudioQueue);
-      websocketAudioQueue = [];
-      const audioBuffer = this.audioBuffer;
-      const audioQueue = this.audioQueue;
-      if(audioBuffer) {
-        if (audioQueue.length > 0 || audioBuffer.updating) {
-          audioQueue.push(data);
-        } else {
-          try {
-            audioBuffer.appendBuffer(data);
-          } catch(error) {
-            this.audioBufferLogger.error(`${error.message}, code: ${error.code}`)
+    ws.onmessage = (event) => {
+      const typedArray = new Uint8Array(event.data);
+      const data = typedArray.slice(1);
+      const messageType = typedArray[0];
+      if (messageType === 0) {
+        const audioBuffer = this.audioBuffer;
+        const audioQueue = this.audioQueue;
+        if (audioBuffer) {
+          if (audioQueue.length > 0 || audioBuffer.updating) {
+            audioQueue.push(data);
+          } else {
+            try {
+              audioBuffer.appendBuffer(data);
+            } catch (error) {
+              this.audioBufferLogger.error(`${error.message}, code: ${error.code}`);
+            }
           }
+        } else {
+          audioQueue.push(data);
         }
-      } else {
-        audioQueue.push(data);
-      }
-    }, 500);
-
-    let websocketVideoQueue = [];
-    setInterval(() => {
-      if(websocketVideoQueue.length === 0) {
-        return;
-      }
-      const data = mergeUint8Arrays(websocketVideoQueue);
-      websocketVideoQueue = [];
-      const videoBuffer = this.videoBuffer;
+      } else if (messageType === 1) {
+        const videoBuffer = this.videoBuffer;
         const videoQueue = this.videoQueue;
-        if(videoBuffer) {
+        if (videoBuffer) {
           if (videoQueue.length > 0 || videoBuffer.updating) {
             videoQueue.push(data);
           } else {
             try {
               videoBuffer.appendBuffer(data);
-            } catch(error) {
-              this.videoBufferLogger.error(`${error.message}, code: ${error.code}`)
+            } catch (error) {
+              this.videoBufferLogger.error(`${error.message}, code: ${error.code}`);
             }
           }
         } else {
-          console.log("QUEUE VIDEO");
           videoQueue.push(data);
         }
-    }, 500);
-
-
-    ws.onmessage = (event) => {
-      const typedArray = new Uint8Array(event.data);
-      const data = typedArray.slice(1);
-      const messageType = typedArray[0];
-      if(messageType === 0) {
-        websocketAudioQueue.push(data);
-      } else if(messageType === 1) {
-        websocketVideoQueue.push(data);
       }
     };
 
@@ -164,7 +148,6 @@ export default class BlendClient extends EventEmitter {
       console.log(event);
       this.emit('error', event);
     };
-
   }
 
   /**
@@ -203,18 +186,6 @@ export default class BlendClient extends EventEmitter {
       };
       mediaSource.addEventListener('sourceopen', handle);
     });
-    const audioBuffer = mediaSource.addSourceBuffer('audio/aac');
-    this.audioBuffer = audioBuffer;
-    this.setupAudioBufferLogging(audioBuffer);
-    audioBuffer.addEventListener('updateend', async () => {
-      if (this.audioQueue.length > 0 && !audioBuffer.updating) {
-        try {
-          audioBuffer.appendBuffer(this.audioQueue.shift());
-        } catch(error) {
-          this.audioBufferLogger.error(`${error.message}, code: ${error.code}`)
-        }
-      }
-    });
     const videoBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.64001f"');
     this.videoBuffer = videoBuffer;
     this.setupVideoBufferLogging(videoBuffer);
@@ -222,25 +193,40 @@ export default class BlendClient extends EventEmitter {
       if (this.videoQueue.length > 0 && !videoBuffer.updating) {
         try {
           videoBuffer.appendBuffer(this.videoQueue.shift());
-        } catch(error) {
-          this.videoBufferLogger.error(`${error.message}, code: ${error.code}`)
+        } catch (error) {
+          this.videoBufferLogger.error(`${error.message}, code: ${error.code}`);
         }
       }
     });
-    /*
-    if (this.videoQueue.length > 0 && !videoBuffer.updating) {
-        try {
-          videoBuffer.appendBuffer(this.videoQueue.shift());
-        } catch(error) {
-          this.videoBufferLogger.error(`${error.message}, code: ${error.code}`)
+    const audioBuffer = mediaSource.addSourceBuffer('audio/aac');
+    this.audioBuffer = audioBuffer;
+    this.setupAudioBufferLogging(audioBuffer);
+    audioBuffer.addEventListener('updateend', async () => {
+      if (this.audioQueue.length > 0 && !audioBuffer.updating) {
+        try {   
+          const data = mergeUint8Arrays(this.audioQueue);
+          this.audioQueue = [];
+          audioBuffer.appendBuffer(data);
+        } catch (error) {
+          this.audioBufferLogger.error(`${error.message}, code: ${error.code}`);
         }
+      }
+    });
+    if (this.videoQueue.length > 0 && !videoBuffer.updating) {
+      try {
+        const data = mergeUint8Arrays(this.videoQueue);
+        this.videoQueue = [];
+        videoBuffer.appendBuffer(data);
+      } catch (error) {
+        this.videoBufferLogger.error(`${error.message}, code: ${error.code}`);
+      }
     }
     if (this.audioQueue.length > 0 && !audioBuffer.updating) {
-        try {
-          audioBuffer.appendBuffer(this.audioQueue.shift());
-        } catch(error) {
-          this.audioBufferLogger.error(`${error.message}, code: ${error.code}`)
-        }
+      try {
+        audioBuffer.appendBuffer(this.audioQueue.shift());
+      } catch (error) {
+        this.audioBufferLogger.error(`${error.message}, code: ${error.code}`);
+      }
     }
     let nextBufferedSegmentInterval;
     const skipToNextBufferedSegment = () => {
@@ -264,7 +250,6 @@ export default class BlendClient extends EventEmitter {
       clearInterval(nextBufferedSegmentInterval);
       element.play();
     });
-    */
   }
 
   setupMediaSourceLogging(mediaSource: MediaSource) {
@@ -441,7 +426,7 @@ export default class BlendClient extends EventEmitter {
   }
 
   id:string;
-  address:string;
+  streamUrl:string;
   ws: WebSocket;
   ready: Promise<void>;
   videoLogger: Object;

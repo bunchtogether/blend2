@@ -241,26 +241,26 @@ async function initialize() {
     audioBufferLogger.info('removesourcebuffer');
   });
   let nextBufferedSegmentInterval;
-//  const skipToNextBufferedSegment = () => {
-//    for (let i = 0; i < videoBuffer.videoBuffered.length; i += 1) {
-//      const segmentStart = videoBuffer.videoBuffered.start(i);
-//      if (segmentStart > element.currentTime) {
-//        element.currentTime = segmentStart;
-//        console.log(`JUMP TO ${segmentStart}`);
-//        return;
-//      }
-//    }
-//  };
+  //  const skipToNextBufferedSegment = () => {
+  //    for (let i = 0; i < videoBuffer.videoBuffered.length; i += 1) {
+  //      const segmentStart = videoBuffer.videoBuffered.start(i);
+  //      if (segmentStart > element.currentTime) {
+  //        element.currentTime = segmentStart;
+  //        console.log(`JUMP TO ${segmentStart}`);
+  //        return;
+  //      }
+  //    }
+  //  };
   element.addEventListener('waiting', (event:Event) => {
     console.log(element.currentTime);
     for (let i = 0; i < videoBuffer.buffered.length; i += 1) {
       console.log(videoBuffer.buffered.start(i), videoBuffer.buffered.end(i));
     }
-//    clearInterval(nextBufferedSegmentInterval);
-//    nextBufferedSegmentInterval = setInterval(() => {
-//      skipToNextBufferedSegment();
-//    }, 100);
-//    skipToNextBufferedSegment();
+    //    clearInterval(nextBufferedSegmentInterval);
+    //    nextBufferedSegmentInterval = setInterval(() => {
+    //      skipToNextBufferedSegment();
+    //    }, 100);
+    //    skipToNextBufferedSegment();
   });
   element.addEventListener('canplay', (event:Event) => {
     clearInterval(nextBufferedSegmentInterval);

@@ -38,11 +38,11 @@ let testStreamProcessPid = null;
 
 const getPort = () => {
   const port = Math.round(30000 + Math.random() * 10000);
-  if(activeStreamPorts.has(port)) {
+  if (activeStreamPorts.has(port)) {
     return getPort();
   }
   return port;
-}
+};
 
 const getAudioArrayBuffer = (b        ) => {
   const base = new Uint8Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
@@ -50,7 +50,7 @@ const getAudioArrayBuffer = (b        ) => {
   uint8.set(base, 1);
   uint8[0] = 0;
   return uint8;
-}
+};
 
 const getVideoArrayBuffer = (b        ) => {
   const base = new Uint8Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
@@ -58,7 +58,7 @@ const getVideoArrayBuffer = (b        ) => {
   uint8.set(base, 1);
   uint8[0] = 1;
   return uint8;
-}
+};
 
 function randomInteger() {
   return crypto.randomBytes(4).readUInt32BE(0, true);
@@ -143,43 +143,6 @@ const startStream = async (socketId       , url       ) => {
     await startTestStream();
   }
   logger.info(`Sending ${url} to ${socketId}`);
-  const videoSocketPort = getPort();
-  activeStreamPorts.add(videoSocketPort);
-  const videoSocket = dgram.createSocket('udp4');
-  videoSocket.once('error', (error) => {
-    if (error.stack) {
-      logger.error(`Video socket ${videoSocketPort} error:`);
-      error.stack.split('\n').forEach((line) => logger.error(`\t${line}`));
-    } else {
-      logger.error(`Video socket ${videoSocketPort} error: ${error.message}`);
-    }
-    videoSocket.close();
-  });
-  videoSocket.once('close', () => {
-    activeStreamPorts.delete(videoSocketPort);
-  });
-  videoSocket.on('message', (buffer) => {
-    const ws = sockets.get(socketId);
-    if (!ws) {
-      processLogger.error(`Cannot send video to socket ID ${socketId}, socket does not exist`);
-      return;
-    }
-    if (ws.readyState !== 1) {
-      processLogger.error(`Cannot send video to socket ID ${socketId}, ready state is ${ws.readyState}`);
-      if(pid && ws.readyState === 3) {
-        killProcess(pid);
-      }
-      return;
-    }
-    const message = getVideoArrayBuffer(buffer);
-    ws.send(message, {compress: false, binary: true});
-  });
-  const videoSocketListeningPromise = new Promise((resolve) => {
-    videoSocket.once('listening', () => {
-      resolve();
-    });
-    videoSocket.bind(videoSocketPort);
-  });
   const audioSocketPort = getPort();
   activeStreamPorts.add(audioSocketPort);
   const audioSocket = dgram.createSocket('udp4');
@@ -203,13 +166,13 @@ const startStream = async (socketId       , url       ) => {
     }
     if (ws.readyState !== 1) {
       processLogger.error(`Cannot send audio to socket ID ${socketId}, ready state is ${ws.readyState}`);
-      if(pid && ws.readyState === 3) {
+      if (pid && ws.readyState === 3) {
         killProcess(pid);
       }
       return;
     }
     const message = getAudioArrayBuffer(buffer);
-    ws.send(message, {compress: false, binary: true});
+    ws.send(message, { compress: false, binary: true });
   });
   const audioSocketListeningPromise = new Promise((resolve) => {
     audioSocket.once('listening', () => {
@@ -217,14 +180,13 @@ const startStream = async (socketId       , url       ) => {
     });
     audioSocket.bind(audioSocketPort);
   });
-  console.log({videoSocketPort, audioSocketPort})
   await audioSocketListeningPromise;
-  await videoSocketListeningPromise;
   const args = [
     '-v', 'error',
     '-nostats',
     '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
+    '-async', '44000',
     '-i', url,
     '-vn',
     '-c:a', 'copy',
@@ -234,7 +196,7 @@ const startStream = async (socketId       , url       ) => {
     '-c:v', 'copy',
     '-f', 'mp4',
     '-movflags', '+frag_keyframe+empty_moov+omit_tfhd_offset',
-    `udp://127.0.0.1:${videoSocketPort}`,
+    'pipe:1',
     '-metadata', 'blend=1',
   ];
   const ffmpegPathCalculated = await ffmpegPathPromise;
@@ -254,7 +216,6 @@ const startStream = async (socketId       , url       ) => {
     }
   });
   mainProcess.once('close', async (code) => {
-    videoSocket.close();
     audioSocket.close();
     if (code && code !== 255) {
       logger.error(`FFmpeg process ${pid} exited with error code ${code}`);
@@ -275,6 +236,22 @@ const startStream = async (socketId       , url       ) => {
   logger.info(`Started FFmpeg process ${pid} with args ${args.join(' ')}`);
   mainProcess.stderr.on('data', (data) => {
     data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
+  });
+  mainProcess.stdout.on('data', (data) => {
+    const ws = sockets.get(socketId);
+    if (!ws) {
+      processLogger.error(`Cannot send video to socket ID ${socketId}, socket does not exist`);
+      return;
+    }
+    if (ws.readyState !== 1) {
+      processLogger.error(`Cannot send video to socket ID ${socketId}, ready state is ${ws.readyState}`);
+      if (pid && ws.readyState === 3) {
+        killProcess(pid);
+      }
+      return;
+    }
+    const message = getVideoArrayBuffer(data);
+    ws.send(message, { compress: false, binary: true });
   });
 };
 
@@ -312,17 +289,16 @@ module.exports.getStreamRouter = () => {
   });
 
   router.ws('/api/1.0/stream/:url/', async (ws       , req                 ) => {
-    
     const url = req.params.url;
 
-    for(let i = 0; i < 100; i += 1) {
-      if(!activeStreamUrls.get(url)) {
+    for (let i = 0; i < 100; i += 1) {
+      if (!activeStreamUrls.get(url)) {
         break;
       }
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
-    if(activeStreamUrls.get(url)) {
+    if (activeStreamUrls.get(url)) {
       ws.close(1000, 'FFmpeg unavailable');
       return;
     }

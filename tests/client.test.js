@@ -19,7 +19,7 @@ describe('Should launch a Chrome Browser with the extension loaded', () => {
 
   test('Should connect and disconnect to the websocket server', async () => {
     const blendServerDetected = await blendServerDetectedPromise;
-    console.log({blendServerDetected})
+    console.log({ blendServerDetected });
     const url = 'rtp://127.0.0.1:13337';
     const client = new BlendClient();
     await client.open(`ws://127.0.0.1:${port}/api/1.0/stream/${encodeURIComponent(url)}`);
