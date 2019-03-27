@@ -6,6 +6,20 @@ import superagent from 'superagent';
 import blendServerDetectedPromise from './server-detection';
 import makeBlendLogger from './logger';
 
+const mergeUint8Arrays = (arrays) => {
+  let length = 0;
+  arrays.forEach(item => {
+    length += item.length;
+  });
+  let merged = new Uint8Array(length);
+  let offset = 0;
+  arrays.forEach(item => {
+    merged.set(item, offset);
+    offset += item.length;
+  });
+  return merged;
+}
+
 /**
  * Class representing a Blend Client
  */
@@ -85,29 +99,38 @@ export default class BlendClient extends EventEmitter {
       this.emit('close', code, reason);
     };
 
-    ws.onmessage = (event) => {
-      const typedArray = new Uint8Array(event.data);
-      const data = typedArray.slice(1);
-      const messageType = typedArray[0];
-      if(messageType === 0) {
-        const audioBuffer = this.audioBuffer;
-        const audioQueue = this.audioQueue;
-        if(audioBuffer) {
-          if (audioQueue.length > 0 || audioBuffer.updating) {
-            audioQueue.push(data);
-          } else {
-            try {
-              audioBuffer.appendBuffer(data);
-            } catch(error) {
-              this.audioBufferLogger(`${error.message}, code: ${error.code}`)
-            }
-          }
-        } else {
-          console.log("QUEUE AUDIO");
+    let websocketAudioQueue = [];
+    setInterval(() => {
+      if(websocketAudioQueue.length === 0) {
+        return;
+      }
+      const data = mergeUint8Arrays(websocketAudioQueue);
+      websocketAudioQueue = [];
+      const audioBuffer = this.audioBuffer;
+      const audioQueue = this.audioQueue;
+      if(audioBuffer) {
+        if (audioQueue.length > 0 || audioBuffer.updating) {
           audioQueue.push(data);
+        } else {
+          try {
+            audioBuffer.appendBuffer(data);
+          } catch(error) {
+            this.audioBufferLogger.error(`${error.message}, code: ${error.code}`)
+          }
         }
-      } else if(messageType === 1) {
-        const videoBuffer = this.videoBuffer;
+      } else {
+        audioQueue.push(data);
+      }
+    }, 500);
+
+    let websocketVideoQueue = [];
+    setInterval(() => {
+      if(websocketVideoQueue.length === 0) {
+        return;
+      }
+      const data = mergeUint8Arrays(websocketVideoQueue);
+      websocketVideoQueue = [];
+      const videoBuffer = this.videoBuffer;
         const videoQueue = this.videoQueue;
         if(videoBuffer) {
           if (videoQueue.length > 0 || videoBuffer.updating) {
@@ -116,13 +139,24 @@ export default class BlendClient extends EventEmitter {
             try {
               videoBuffer.appendBuffer(data);
             } catch(error) {
-              this.videoBufferLogger(`${error.message}, code: ${error.code}`)
+              this.videoBufferLogger.error(`${error.message}, code: ${error.code}`)
             }
           }
         } else {
           console.log("QUEUE VIDEO");
           videoQueue.push(data);
         }
+    }, 500);
+
+
+    ws.onmessage = (event) => {
+      const typedArray = new Uint8Array(event.data);
+      const data = typedArray.slice(1);
+      const messageType = typedArray[0];
+      if(messageType === 0) {
+        websocketAudioQueue.push(data);
+      } else if(messageType === 1) {
+        websocketVideoQueue.push(data);
       }
     };
 
@@ -177,7 +211,7 @@ export default class BlendClient extends EventEmitter {
         try {
           videoBuffer.appendBuffer(this.videoQueue.shift());
         } catch(error) {
-          console.log(`${error.message}, code: ${error.code}`)
+          this.videoBufferLogger.error(`${error.message}, code: ${error.code}`)
         }
       }
     });
@@ -189,7 +223,7 @@ export default class BlendClient extends EventEmitter {
         try {
           audioBuffer.appendBuffer(this.audioQueue.shift());
         } catch(error) {
-          console.log(`${error.message}, code: ${error.code}`)
+          this.audioBufferLogger.error(`${error.message}, code: ${error.code}`)
         }
       }
     });
@@ -197,14 +231,14 @@ export default class BlendClient extends EventEmitter {
         try {
           videoBuffer.appendBuffer(this.videoQueue.shift());
         } catch(error) {
-          this.videoBufferLogger(`${error.message}, code: ${error.code}`)
+          this.videoBufferLogger.error(`${error.message}, code: ${error.code}`)
         }
     }
     if (this.audioQueue.length > 0 && !audioBuffer.updating) {
         try {
           audioBuffer.appendBuffer(this.audioQueue.shift());
         } catch(error) {
-          this.audioBufferLogger(`${error.message}, code: ${error.code}`)
+          this.audioBufferLogger.error(`${error.message}, code: ${error.code}`)
         }
     }
     let nextBufferedSegmentInterval;
