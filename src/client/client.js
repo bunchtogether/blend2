@@ -203,18 +203,6 @@ export default class BlendClient extends EventEmitter {
       };
       mediaSource.addEventListener('sourceopen', handle);
     });
-    const videoBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.64001f"');
-    this.videoBuffer = videoBuffer;
-    this.setupVideoBufferLogging(videoBuffer);
-    videoBuffer.addEventListener('updateend', async () => {
-      if (this.videoQueue.length > 0 && !videoBuffer.updating) {
-        try {
-          videoBuffer.appendBuffer(this.videoQueue.shift());
-        } catch(error) {
-          this.videoBufferLogger.error(`${error.message}, code: ${error.code}`)
-        }
-      }
-    });
     const audioBuffer = mediaSource.addSourceBuffer('audio/aac');
     this.audioBuffer = audioBuffer;
     this.setupAudioBufferLogging(audioBuffer);
@@ -227,6 +215,19 @@ export default class BlendClient extends EventEmitter {
         }
       }
     });
+    const videoBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.64001f"');
+    this.videoBuffer = videoBuffer;
+    this.setupVideoBufferLogging(videoBuffer);
+    videoBuffer.addEventListener('updateend', async () => {
+      if (this.videoQueue.length > 0 && !videoBuffer.updating) {
+        try {
+          videoBuffer.appendBuffer(this.videoQueue.shift());
+        } catch(error) {
+          this.videoBufferLogger.error(`${error.message}, code: ${error.code}`)
+        }
+      }
+    });
+    /*
     if (this.videoQueue.length > 0 && !videoBuffer.updating) {
         try {
           videoBuffer.appendBuffer(this.videoQueue.shift());
@@ -263,6 +264,7 @@ export default class BlendClient extends EventEmitter {
       clearInterval(nextBufferedSegmentInterval);
       element.play();
     });
+    */
   }
 
   setupMediaSourceLogging(mediaSource: MediaSource) {

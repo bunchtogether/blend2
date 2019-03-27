@@ -166,6 +166,9 @@ const startStream = async (socketId       , url       ) => {
     }
     if (ws.readyState !== 1) {
       processLogger.error(`Cannot send video to socket ID ${socketId}, ready state is ${ws.readyState}`);
+      if(pid && ws.readyState === 3) {
+        killProcess(pid);
+      }
       return;
     }
     const message = getVideoArrayBuffer(buffer);
@@ -200,6 +203,9 @@ const startStream = async (socketId       , url       ) => {
     }
     if (ws.readyState !== 1) {
       processLogger.error(`Cannot send audio to socket ID ${socketId}, ready state is ${ws.readyState}`);
+      if(pid && ws.readyState === 3) {
+        killProcess(pid);
+      }
       return;
     }
     const message = getAudioArrayBuffer(buffer);
