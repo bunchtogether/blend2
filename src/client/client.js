@@ -30,6 +30,8 @@ export default class BlendClient extends EventEmitter {
     this.streamUrl = streamUrl;
     this.videoQueue = [];
     this.audioQueue = [];
+    this.resetInProgress = false;
+    const clientLogger = makeBlendLogger(`${streamUrl} Client`);
     this.videoLogger = makeBlendLogger(`${streamUrl} Video Element`);
     this.mediaSourceLogger = makeBlendLogger(`${streamUrl} Media Source`);
     this.videoBufferLogger = makeBlendLogger(`${streamUrl} Video Source Buffer`);
@@ -44,10 +46,82 @@ export default class BlendClient extends EventEmitter {
       }
       const mediaError = element.error;
       if (mediaError && mediaError.code === mediaError.MEDIA_ERR_DECODE) {
-        //this.emit('error', mediaError);
+        // this.emit('error', mediaError);
         this.reset();
       }
     });
+    let nextBufferedSegmentInterval;
+    const skipToNextBufferedSegment = () => {
+      const videoBuffer = this.videoBuffer;
+      if (!videoBuffer) {
+        return;
+      }
+      for (let i = 0; i < videoBuffer.buffered.length; i += 1) {
+        const segmentStart = videoBuffer.buffered.start(i);
+        if (segmentStart > element.currentTime) {
+          this.videoLogger.warn(`Skipping ${segmentStart - element.currentTime} ms`);
+          element.currentTime = segmentStart;
+          return;
+        }
+      }
+    };
+    element.addEventListener('waiting', (event:Event) => {
+      ensureRecovery();
+      if (!this.videoBuffer) {
+        return;
+      }
+      clearInterval(nextBufferedSegmentInterval);
+      nextBufferedSegmentInterval = setInterval(() => {
+        skipToNextBufferedSegment();
+      }, 100);
+      skipToNextBufferedSegment();
+    });
+    element.addEventListener('canplay', (event:Event) => {
+      clearInterval(nextBufferedSegmentInterval);
+      element.play();
+    });
+    const elementIsPlaying = () => {
+      if (!element) {
+        return false;
+      }
+      return !!(element.currentTime > 0 && !element.paused && !element.ended && element.readyState > 2);
+    };
+    let recoveryTimeout = null;
+    const ensureRecovery = () => {
+      if (elementIsPlaying()) {
+        clientLogger.info('Element is playing, skipping recovery detection');
+        return;
+      }
+      if (recoveryTimeout || this.resetInProgress) {
+        clientLogger.info('Recovery detection already in progress, skipping');
+        return;
+      }
+      clientLogger.info('Ensuring recovery after error detected');
+      const recoveryStart = Date.now();
+      const handlePlay = () => {
+        clientLogger.info(`Recovered after ${Math.round((Date.now() - recoveryStart) / 100) / 10} seconds`);
+        if (recoveryTimeout) {
+          clearTimeout(recoveryTimeout);
+        }
+        recoveryTimeout = null;
+        element.removeEventListener('play', handlePlay);
+        element.removeEventListener('playing', handlePlay);
+      };
+      recoveryTimeout = setTimeout(() => {
+        if (elementIsPlaying()) {
+          clientLogger.info('Detected playing element after recovery timeout');
+          handlePlay();
+          return;
+        }
+        recoveryTimeout = null;
+        clientLogger.error('Timeout after attempted recovery');
+        this.reset();
+        element.removeEventListener('play', handlePlay);
+        element.removeEventListener('playing', handlePlay);
+      }, 10000);
+      element.addEventListener('play', handlePlay);
+      element.addEventListener('playing', handlePlay);
+    };
   }
 
   async close() {
@@ -61,7 +135,12 @@ export default class BlendClient extends EventEmitter {
   }
 
   async reset() {
+    if (this.resetInProgress) {
+      return;
+    }
+    this.resetInProgress = true;
     await this.close();
+    this.resetInProgress = false;
     this.openWebSocket(this.streamUrl);
     this.setupMediaSource(this.element);
   }
@@ -203,7 +282,7 @@ export default class BlendClient extends EventEmitter {
     this.setupAudioBufferLogging(audioBuffer);
     audioBuffer.addEventListener('updateend', async () => {
       if (this.audioQueue.length > 0 && !audioBuffer.updating) {
-        try {   
+        try {
           const data = mergeUint8Arrays(this.audioQueue);
           this.audioQueue = [];
           audioBuffer.appendBuffer(data);
@@ -228,28 +307,6 @@ export default class BlendClient extends EventEmitter {
         this.audioBufferLogger.error(`${error.message}, code: ${error.code}`);
       }
     }
-    let nextBufferedSegmentInterval;
-    const skipToNextBufferedSegment = () => {
-      for (let i = 0; i < videoBuffer.buffered.length; i += 1) {
-        const segmentStart = videoBuffer.buffered.start(i);
-        if (segmentStart > element.currentTime) {
-          this.videoLogger.warn(`Skipping ${segmentStart - element.currentTime} ms`);
-          element.currentTime = segmentStart;
-          return;
-        }
-      }
-    };
-    element.addEventListener('waiting', (event:Event) => {
-      clearInterval(nextBufferedSegmentInterval);
-      nextBufferedSegmentInterval = setInterval(() => {
-        skipToNextBufferedSegment();
-      }, 100);
-      skipToNextBufferedSegment();
-    });
-    element.addEventListener('canplay', (event:Event) => {
-      clearInterval(nextBufferedSegmentInterval);
-      element.play();
-    });
   }
 
   setupMediaSourceLogging(mediaSource: MediaSource) {

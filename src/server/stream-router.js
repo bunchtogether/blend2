@@ -158,19 +158,22 @@ const startStream = async (socketId:number, url:string) => {
   audioSocket.once('close', () => {
     activeStreamPorts.delete(audioSocketPort);
   });
-  audioSocket.on('message', (buffer) => {
+  const audioSocketMessageHandler = (buffer) => {
     const ws = sockets.get(socketId);
     if (!ws) {
+      audioSocket.removeListener('message', audioSocketMessageHandler);
       processLogger.error(`Cannot send audio to socket ID ${socketId}, socket does not exist`);
       return;
     }
     if (ws.readyState !== 1) {
+      audioSocket.removeListener('message', audioSocketMessageHandler);
       processLogger.error(`Cannot send audio to socket ID ${socketId}, ready state is ${ws.readyState}`);
       return;
     }
     const message = getAudioArrayBuffer(buffer);
     ws.send(message, { compress: false, binary: true });
-  });
+  };
+  audioSocket.on('message', audioSocketMessageHandler);
   const audioSocketListeningPromise = new Promise((resolve) => {
     audioSocket.once('listening', () => {
       resolve();
@@ -181,7 +184,7 @@ const startStream = async (socketId:number, url:string) => {
   const args = [
     '-v', 'error',
     '-nostats',
-    //'-fflags', '+discardcorrupt',
+    '-fflags', '+discardcorrupt+genpts+sortdts',
     '-err_detect', '+ignore_err',
     '-i', url,
     '-vn',
@@ -233,19 +236,22 @@ const startStream = async (socketId:number, url:string) => {
   mainProcess.stderr.on('data', (data) => {
     data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
   });
-  mainProcess.stdout.on('data', (data) => {
+  const videoStdOutDataHandler = (data) => {
     const ws = sockets.get(socketId);
     if (!ws) {
+      mainProcess.stdout.removeListener('data', videoStdOutDataHandler);
       processLogger.error(`Cannot send video to socket ID ${socketId}, socket does not exist`);
       return;
     }
     if (ws.readyState !== 1) {
+      mainProcess.stdout.removeListener('data', videoStdOutDataHandler);
       processLogger.error(`Cannot send video to socket ID ${socketId}, ready state is ${ws.readyState}`);
       return;
     }
     const message = getVideoArrayBuffer(data);
     ws.send(message, { compress: false, binary: true });
-  });
+  };
+  mainProcess.stdout.on('data', videoStdOutDataHandler);
 };
 
 module.exports.shutdownStreamRouter = async () => {
