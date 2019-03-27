@@ -13,6 +13,7 @@ export default class BlendClient extends EventEmitter {
 
   constructor(element: HTMLVideoElement, streamUrl:string) {
     super();
+    this.element = element;
     this.videoLogger = makeBlendLogger(`${streamUrl} Video Element`);
     this.mediaSourceLogger = makeBlendLogger(`${streamUrl} Media Source`);
     this.videoBufferLogger = makeBlendLogger(`${streamUrl} Video Source Buffer`);
@@ -23,6 +24,25 @@ export default class BlendClient extends EventEmitter {
     this.setupMediaSource(element);
     this.videoQueue = [];
     this.audioQueue = [];
+    element.addEventListener('error', (event:Event) => {
+      if (event.type !== 'error') {
+        return;
+      }
+      const mediaError = element.error;
+      if (mediaError && mediaError.code === mediaError.MEDIA_ERR_DECODE) {
+        this.reset();
+      }
+    });
+  }
+
+  async close() {
+    await this.closeWebSocket();
+    this.element.removeAttribute("src");
+    this.element.load();
+  }
+
+  async reset() {
+    await this.close();
   }
 
   /**
