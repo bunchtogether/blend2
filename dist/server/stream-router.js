@@ -1,9 +1,10 @@
 //      
 
-const { parse } = require('url');
 const { Router } = require('express');
+const uuid = require('uuid');
+const dgram = require('dgram');
 const { ffmpegPath } = require('@bunchtogether/ffmpeg-static');
-const { hash64 } = require('@bunchtogether/hash-object');
+// const { hash64 } = require('@bunchtogether/hash-object');
 const { spawn } = require('child_process');
 const fs = require('fs-extra');
 const os = require('os');
@@ -21,27 +22,43 @@ const sockets = new Map();
 
 // Socket / FFmpeg PID mapping
 //   Key: Socket ID
-//   Value: Stream ID
-const socketStreamMap = new Map();
+//   Value: Stream PID
+const socketPidMap = new Map();
 
-// Stream ID / Socket ID mapping
-//   Key: Stream ID
-//   Value: Set of Socket ID
-const streamSocketMap = new Map();
+// Active stream URLs
+//   Key: Stream URL
+//   Value: Boolean
+const activeStreamUrls = new Map();
 
-// Stream ID / TimeoutID mapping
-//   Key: Stream ID
-//   Value: TimeoutID for stopping the stream
-const streamStopTimeoutMap = new Map();
-
-// Stream ID / FFmpeg PID mapping
-//   Key: Stream ID
-//   Value: FFmpeg PID
-const streamPidMap = new Map();
+// Active stream ports
+//   Value: port
+const activeStreamPorts = new Set();
 
 let testStreamProcessPid = null;
 
-const getArrayBuffer = (b        ) => b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength);
+const getPort = () => {
+  const port = Math.round(30000 + Math.random() * 10000);
+  if(activeStreamPorts.has(port)) {
+    return getPort();
+  }
+  return port;
+}
+
+const getAudioArrayBuffer = (b        ) => {
+  const base = new Uint8Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
+  const uint8 = new Uint8Array(base.length + 1);
+  uint8.set(base, 1);
+  uint8[0] = 0;
+  return uint8;
+}
+
+const getVideoArrayBuffer = (b        ) => {
+  const base = new Uint8Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
+  const uint8 = new Uint8Array(base.length + 1);
+  uint8.set(base, 1);
+  uint8[0] = 1;
+  return uint8;
+}
 
 function randomInteger() {
   return crypto.randomBytes(4).readUInt32BE(0, true);
@@ -81,6 +98,9 @@ const startTestStream = async () => {
   const ffmpegPathCalculated = await ffmpegPathPromise;
   const sampleFilePath = await sampleFilePathPromise;
   const args = [
+    '-v',
+    'error',
+    '-nostats',
     '-stream_loop', '-1',
     '-re',
     '-i', sampleFilePath,
@@ -89,13 +109,14 @@ const startTestStream = async () => {
     '-vcodec', 'copy',
     '-f', 'rtp_mpegts',
     'rtp://127.0.0.1:13337',
+    '-metadata', 'blend=1',
   ];
-  const combinedArgs = ['-v', 'error', '-nostats'].concat(args, ['-metadata', 'blend=1']);
-  const mainProcess = spawn(ffmpegPathCalculated, combinedArgs, {
+  const mainProcess = spawn(ffmpegPathCalculated, args, {
     windowsHide: true,
     shell: false,
     detached: true,
   });
+  testStreamProcessPid = mainProcess.pid;
   const processLogger = makeLogger(`Test stream process ${mainProcess.pid}`);
   mainProcess.on('error', (error) => {
     if (error.stack) {
@@ -110,52 +131,114 @@ const startTestStream = async () => {
     }
     testStreamProcessPid = null;
   });
-  logger.info(`Started Test stream process ${mainProcess.pid} with args ${combinedArgs.join(" ")}`);
-  testStreamProcessPid = mainProcess.pid;
+  logger.info(`Started Test stream process ${mainProcess.pid} with args ${args.join(' ')}`);
   mainProcess.stderr.on('data', (data) => {
     data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
   });
 };
 
 const startStream = async (socketId       , url       ) => {
+  activeStreamUrls.set(url, true);
   if (url === 'rtp://127.0.0.1:13337') {
     await startTestStream();
   }
   logger.info(`Sending ${url} to ${socketId}`);
+  const videoSocketPort = getPort();
+  activeStreamPorts.add(videoSocketPort);
+  const videoSocket = dgram.createSocket('udp4');
+  videoSocket.once('error', (error) => {
+    if (error.stack) {
+      logger.error(`Video socket ${videoSocketPort} error:`);
+      error.stack.split('\n').forEach((line) => logger.error(`\t${line}`));
+    } else {
+      logger.error(`Video socket ${videoSocketPort} error: ${error.message}`);
+    }
+    videoSocket.close();
+  });
+  videoSocket.once('close', () => {
+    activeStreamPorts.delete(videoSocketPort);
+  });
+  videoSocket.on('message', (buffer) => {
+    const ws = sockets.get(socketId);
+    if (!ws) {
+      processLogger.error(`Cannot send video to socket ID ${socketId}, socket does not exist`);
+      return;
+    }
+    if (ws.readyState !== 1) {
+      processLogger.error(`Cannot send video to socket ID ${socketId}, ready state is ${ws.readyState}`);
+      return;
+    }
+    const message = getVideoArrayBuffer(buffer);
+    ws.send(message, {compress: false, binary: true});
+  });
+  const videoSocketListeningPromise = new Promise((resolve) => {
+    videoSocket.once('listening', () => {
+      resolve();
+    });
+    videoSocket.bind(videoSocketPort);
+  });
+  const audioSocketPort = getPort();
+  activeStreamPorts.add(audioSocketPort);
+  const audioSocket = dgram.createSocket('udp4');
+  audioSocket.once('error', (error) => {
+    if (error.stack) {
+      logger.error(`Audio socket ${audioSocketPort} error:`);
+      error.stack.split('\n').forEach((line) => logger.error(`\t${line}`));
+    } else {
+      logger.error(`Audio socket ${audioSocketPort} error: ${error.message}`);
+    }
+    audioSocket.close();
+  });
+  audioSocket.once('close', () => {
+    activeStreamPorts.delete(audioSocketPort);
+  });
+  audioSocket.on('message', (buffer) => {
+    const ws = sockets.get(socketId);
+    if (!ws) {
+      processLogger.error(`Cannot send audio to socket ID ${socketId}, socket does not exist`);
+      return;
+    }
+    if (ws.readyState !== 1) {
+      processLogger.error(`Cannot send audio to socket ID ${socketId}, ready state is ${ws.readyState}`);
+      return;
+    }
+    const message = getAudioArrayBuffer(buffer);
+    ws.send(message, {compress: false, binary: true});
+  });
+  const audioSocketListeningPromise = new Promise((resolve) => {
+    audioSocket.once('listening', () => {
+      resolve();
+    });
+    audioSocket.bind(audioSocketPort);
+  });
+  console.log({videoSocketPort, audioSocketPort})
+  await audioSocketListeningPromise;
+  await videoSocketListeningPromise;
   const args = [
-    '-noaccurate_seek',
+    '-v', 'error',
+    '-nostats',
     '-fflags', '+discardcorrupt',
-    '-max_interleave_delta', '0',
     '-err_detect', '+ignore_err',
     '-i', url,
+    '-vn',
+    '-c:a', 'copy',
+    '-f', 'adts',
+    `udp://127.0.0.1:${audioSocketPort}`,
     '-an',
     '-c:v', 'copy',
-//    '-skip_estimate_duration_from_pts', '1',
     '-f', 'mp4',
-    '-movflags', '+frag_keyframe+empty_moov+omit_tfhd_offset'
+    '-movflags', '+frag_keyframe+empty_moov+omit_tfhd_offset',
+    `udp://127.0.0.1:${videoSocketPort}`,
+    '-metadata', 'blend=1',
   ];
-  const combinedArgs = ['-v', 'error', '-nostats'].concat(args, ['-metadata', 'blend=1', '-']);
-  const streamId = hash64(combinedArgs);
-  let streamTimeout = streamStopTimeoutMap.get(streamId);
-  if(streamTimeout) {
-    clearTimeout(streamTimeout);
-  }
-  socketStreamMap.set(socketId, streamId);
-  let streamSockets = streamSocketMap.get(streamId);
-  if (streamSockets) {
-    streamSockets.add(socketId);
-    return;
-  }
-  streamSockets = new Set([socketId]);
-  streamSocketMap.set(streamId, streamSockets);
   const ffmpegPathCalculated = await ffmpegPathPromise;
-  const mainProcess = spawn(ffmpegPathCalculated, combinedArgs, {
+  const mainProcess = spawn(ffmpegPathCalculated, args, {
     windowsHide: true,
     shell: false,
     detached: true,
   });
   const pid = mainProcess.pid;
-  streamPidMap.set(streamId, pid);
+  socketPidMap.set(socketId, pid);
   const processLogger = makeLogger(`FFmpeg Process ${pid}`);
   mainProcess.on('error', (error) => {
     if (error.stack) {
@@ -164,50 +247,28 @@ const startStream = async (socketId       , url       ) => {
       processLogger.error(error.message);
     }
   });
-  mainProcess.once('close', (code) => {
-    if (url === 'rtp://127.0.0.1:13337' && testStreamProcessPid) {
-      killProcess(testStreamProcessPid, 'Test stream');
-    }
+  mainProcess.once('close', async (code) => {
+    videoSocket.close();
+    audioSocket.close();
     if (code && code !== 255) {
       logger.error(`FFmpeg process ${pid} exited with error code ${code}`);
     } else {
       logger.warn(`FFmpeg process ${pid} exited`);
     }
-    const ss = streamSocketMap.get(streamId);
-    if (!ss) {
-      return;
+    const ws = sockets.get(socketId);
+    if (ws) {
+      ws.close(1000, 'FFmpeg process closed');
+    } else {
+      processLogger.warn(`Cannot close socket ID ${socketId} after close, socket does not exist`);
     }
-    for (const sId of ss) {
-      const ws = sockets.get(sId);
-      if (!ws) {
-        processLogger.warn(`Cannot close socket ID ${sId} after close, socket does not exist`);
-        continue;
-      }
-      ws.close(1000, 'Shutting down');
+    if (url === 'rtp://127.0.0.1:13337' && testStreamProcessPid) {
+      await killProcess(testStreamProcessPid, 'Test stream');
     }
+    activeStreamUrls.delete(url);
   });
-  logger.info(`Started FFmpeg process ${mainProcess.pid} with args ${combinedArgs.join(" ")}`);
+  logger.info(`Started FFmpeg process ${pid} with args ${args.join(' ')}`);
   mainProcess.stderr.on('data', (data) => {
     data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
-  });
-  mainProcess.stdout.on('data', (data) => {
-    const ss = streamSocketMap.get(streamId);
-    if (!ss) {
-      return;
-    }
-    const message = getArrayBuffer(data);
-    for (const sId of ss) {
-      const ws = sockets.get(sId);
-      if (!ws) {
-        processLogger.warn(`Cannot send data to socket ID ${sId}, socket does not exist`);
-        continue;
-      }
-      if(ws.readyState !== 1) {
-        processLogger.warn(`Cannot send data to socket ID ${sId}, ready state is ${ws.readyState}`);
-        continue;        
-      }
-      ws.send(message, {compress: false, binary: true});
-    }
   });
 };
 
@@ -216,7 +277,7 @@ module.exports.shutdownStreamRouter = async () => {
   for (const socket of sockets.values()) {
     socket.close(1000, 'Shutting down');
   }
-  const killProcessPromises = [...streamPidMap.values()].map((pid) => killProcess(pid, 'FFmpeg'));
+  const killProcessPromises = [...socketPidMap.values()].map((pid) => killProcess(pid, 'FFmpeg'));
   if (testStreamProcessPid) {
     killProcessPromises.push(killProcess(testStreamProcessPid, 'Test stream'));
   }
@@ -233,60 +294,42 @@ module.exports.shutdownStreamRouter = async () => {
 };
 
 module.exports.getStreamRouter = () => {
-
-  logger.warn("SHOULD KILL ORPHAN FFMPEG HERE");
+  logger.warn('SHOULD KILL ORPHAN FFMPEG HERE');
 
   logger.info('Attaching /api/1.0/stream');
 
   const router = Router({ mergeParams: true });
 
-  router.ws('/api/1.0/stream/:url/stream', async (ws       , req                 ) => {
-    let url;
-    // let protocol;
+  router.ws('/api/1.0/stream/:url/', async (ws       , req                 ) => {
+    
+    const url = req.params.url;
 
-    try {
-      url = req.params.url;
-      // protocol = parse(url).protocol;
-    } catch (error) {
-      logger.error(`Expected a URI-encoded URI string, but got: "${req.params.url}"`);
+    for(let i = 0; i < 100; i += 1) {
+      if(!activeStreamUrls.get(url)) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    if(activeStreamUrls.get(url)) {
+      ws.close(1000, 'FFmpeg unavailable');
       return;
     }
+
     const socketId = randomInteger();
     sockets.set(socketId, ws);
     startStream(socketId, url);
-
     logger.info(`Opened socket (${socketId}) at path ${req.url}`);
 
     ws.on('close', () => {
       try {
         logger.info(`Closed socket ${socketId}`);
         sockets.delete(socketId);
-        const streamId = socketStreamMap.get(socketId);
-        if (!streamId) {
-          return;
+        const pid = socketPidMap.get(socketId);
+        if (pid) {
+          killProcess(pid, 'FFmpeg');
+          socketPidMap.delete(pid);
         }
-        socketStreamMap.delete(socketId);
-        const streamSockets = streamSocketMap.get(streamId);
-        if (!streamSockets) {
-          return;
-        }
-        streamSockets.delete(socketId);
-        let streamTimeout = streamStopTimeoutMap.get(streamId);
-        if(streamTimeout) {
-          clearTimeout(streamTimeout);
-        }
-        streamTimeout = setTimeout(() => {
-          streamStopTimeoutMap.delete(streamId);
-          if (streamSockets.size === 0) {
-            streamSocketMap.delete(streamId);
-            const pid = streamPidMap.get(streamId);
-            if (pid) {
-              killProcess(pid, 'FFmpeg');
-              streamPidMap.delete(streamId);
-            }
-          }
-        }, 24 * 60 * 60 * 1000);
-        streamStopTimeoutMap.get(streamId, streamTimeout);
       } catch (error) {
         if (error.stack) {
           logger.error('Error closing websocket:');

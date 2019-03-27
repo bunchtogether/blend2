@@ -1,7 +1,6 @@
 // @flow
 
 const path = require('path');
-const fs = require('fs-extra');
 const express = require('express');
 const { addShutdownHandler } = require('@bunchtogether/exit-handler');
 const getExpressApp = require('./express-app');

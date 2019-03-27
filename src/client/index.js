@@ -2,51 +2,28 @@
 
 const { EventEmitter } = require('events');
 const WebSocket = require('isomorphic-ws');
-const muxjs = require('mux.js');
 
+/*
 const mergeUint8Arrays = (arrays) => {
   let length = 0;
-  arrays.forEach(item => {
+  arrays.forEach((item) => {
     length += item.length;
   });
-  let merged = new Uint8Array(length);
+  const merged = new Uint8Array(length);
   let offset = 0;
-  arrays.forEach(item => {
+  arrays.forEach((item) => {
     merged.set(item, offset);
     offset += item.length;
   });
   return merged;
-}
+};
+*/
 
 
 /**
  * Class representing a Blend Client
  */
 class Client extends EventEmitter {
-//  /**
-//   * Create a Blend Client.
-//   */
-  constructor() {
-    super();
-    this.transmuxer = new muxjs.mp4.Transmuxer();
-    let initSegment;
-    this.transmuxer.on('data', (event) => {
-      if (event.initSegment && !initSegment) {
-        initSegment = new Uint8Array(event.initSegment);
-        const merged = new Uint8Array(initSegment.length + event.data.length);
-        merged.set(initSegment);
-        merged.set(event.data, initSegment.length);
-        this.emit('initSegment', initSegment);
-      }
-      if (event.data) {
-        this.emit('data', event.data);
-      }
-      event.captions.forEach((cue) => {
-        this.emit('caption', cue.text);
-      });
-    });
-  }
-
   /**
    * Connects to a server.
    * @param {string} address Websocket URL of the server
@@ -65,7 +42,9 @@ class Client extends EventEmitter {
       this.emit('open');
       this.ws = ws;
       heartbeatInterval = setInterval(() => {
-        ws.send(new Uint8Array([]));
+        if (ws.readyState === 1) {
+          ws.send(new Uint8Array([]));
+        }
       }, 5000);
     };
 
@@ -76,59 +55,15 @@ class Client extends EventEmitter {
       delete this.ws;
       this.emit('close', code, reason);
     };
-   // let packetPerSecondInterval;
-    //let flushInterval;
-    //let packets = 0;
-    //let longPacketPerSecondAverage = 0;
-    //let shortPacketPerSecondAverage = 0;
-    let started = false;
-    let queue = [];
+
     ws.onmessage = (event) => {
       const typedArray = new Uint8Array(event.data);
-      this.emit('data', typedArray);
-       /*
-      queue.push(typedArray);
-      if(!started) {
-        setInterval(() => {
-          this.emit('data', mergeUint8Arrays(queue));
-          queue = [];
-        }, 1000);
+      if(typedArray[0] === 0) {
+        this.emit('audio', typedArray.slice(1));
       }
-      
-
-     
-      this.transmuxer.push(typedArray);
-      packets += 1;
-      if (!started) {
-        started = true;
-        flushInterval = setInterval(() => {
-          this.transmuxer.flush();
-        }, 5000);
-        packetPerSecondInterval = setInterval(() => {
-          if(longPacketPerSecondAverage === 0 && shortPacketPerSecondAverage) {
-            longPacketPerSecondAverage = packets;
-            shortPacketPerSecondAverage = packets;
-            packets = 0;
-            return;
-          }
-          longPacketPerSecondAverage = longPacketPerSecondAverage * .9 + packets / 10;
-          shortPacketPerSecondAverage = shortPacketPerSecondAverage * .666 + packets / 3;
-          console.log("Shift:", longPacketPerSecondAverage - shortPacketPerSecondAverage);
-          packets = 0;
-        }, 1000);
-      }
- 
-    
-      if (!started) {
-        started = true;
-        setTimeout(() => {
-          setInterval(() => {
-            console.log("FLUSH");
-            this.transmuxer.flush();
-          }, 3000);
-        }, 5000);
-      }
-      */
+      if(typedArray[0] === 1) {
+        this.emit('video', typedArray.slice(1));
+      }   
     };
 
     ws.onerror = (event) => {
@@ -178,7 +113,6 @@ class Client extends EventEmitter {
   id:string;
   address:string;
   ws: WebSocket;
-  transmuxer: Object;
 }
 
 module.exports = Client;
