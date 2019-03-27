@@ -25,23 +25,23 @@ const log = (name:string, level:string, value:any, description?: string) => {
   }
   if (typeof value === 'string') {
     console.log(`%c${name}: %c${value}`, `color:${color}; font-weight: bold`, `color:${color}`);
-    // superagent.post('/api/1.0/log').set('Content-Type', 'application/json').send({ name, level, value, description }).end((error) => {
-    //  if (error) {
-    //    console.error('Unable to post to logging API');
-    //    console.error(error);
-    //  }
-    // });
+    superagent.post('/api/1.0/log').set('Content-Type', 'application/json').send({ name, level, value, description }).end((error) => {
+      if (error) {
+        console.error('Unable to post to logging API');
+        console.error(error);
+      }
+    });
   } else {
     const sanitizedValue = JSON.parse(stringify(value));
     JSON.stringify(sanitizedValue, null, 2).split('\n').forEach((line) => {
       console.log(`%c${name}: %c${line}`, `color:${color}; font-weight: bold`, `color:${color}`);
     });
-    // superagent.post('/api/1.0/log').set('Content-Type', 'application/json').send({ name, level, value: sanitizedValue, description }).end((error) => {
-    //  if (error) {
-    //    console.error('Unable to post to logging API');
-    //    console.error(error);
-    //  }
-    // });
+    superagent.post('/api/1.0/log').set('Content-Type', 'application/json').send({ name, level, value: sanitizedValue, description }).end((error) => {
+      if (error) {
+        console.error('Unable to post to logging API');
+        console.error(error);
+      }
+    });
   }
   if (typeof description === 'string') {
     console.log(`%c\t${description}`, 'color:gray');

@@ -1,30 +1,14 @@
 //      
 
-const startWebsocketServer = require('./uws-server');
-const StaticServer = require('./static-server');
-const Server = require('./server');
 const logger = require('./lib/logger')('CLI');
-
-const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
+const startServer = require('./server');
+const { API_PORT } = require('./constants');
+const { addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 
 let exitCode = 0;
 
 const start = async ()               => {
-  const [uwsServer, stopWebsocketServer] = await startWebsocketServer('127.0.0.1', 61340);
-  const server = new Server(uwsServer);
-  const staticServer = new StaticServer(uwsServer);
-
-  addShutdownHandler(async () => {
-    await server.close();
-    await stopWebsocketServer();
-  }, (error      ) => {
-    if (error.stack) {
-      logger.error('Error shutting down:');
-      error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
-    } else {
-      logger.error(`Error shutting down: ${error.message}`);
-    }
-  });
+  await startServer(API_PORT);
 
   process.on('uncaughtException', (error) => {
     if (error.stack) {

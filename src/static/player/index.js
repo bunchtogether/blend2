@@ -137,11 +137,11 @@ const logevent:EventListener = function (event) {
   console.log(event.type);
 };
 
-const route = new Route('/stream/:streamUrl/(:path)');
+const route = new Route('/api/1.0/stream/:streamUrl/');
 const parsedRoute = route.match(window.location.pathname);
 
 async function initialize() {
-  const address = `ws://127.0.0.1:61340/api/1.0/websocket/stream/${encodeURIComponent(parsedRoute.streamUrl)}`;
+  const address = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}:${window.location.port}${window.location.pathname}stream`;
   const client = new Client();
   const mediaSource = new MediaSource();
   mediaSource.addEventListener('sourceopen', (event) => {

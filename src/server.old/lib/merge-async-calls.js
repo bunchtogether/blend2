@@ -1,13 +1,11 @@
-//      
+// @flow
 
-const objectHasherFactory = require('node-object-hash');
+const { hash64 } = require('@bunchtogether/hash-object');
 
-const objectHasher = objectHasherFactory({ sort: false, coerce: false });
-
-module.exports = (func         ) => {
+module.exports = (func:Function) => {
   const promiseMap = {};
-  return (...args           ) => {
-    const cacheKey = objectHasher.hash(args);
+  return (...args:Array<any>) => {
+    const cacheKey = hash64(args);
     if (promiseMap[cacheKey]) {
       return promiseMap[cacheKey];
     }
