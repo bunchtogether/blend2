@@ -3,6 +3,7 @@
 const { EventEmitter } = require('events');
 const crypto = require('crypto');
 const { ffmpegPath } = require('@bunchtogether/ffmpeg-static');
+const { hash64 } = require('@bunchtogether/hash-object');
 const { spawn } = require('child_process');
 const fs = require('fs-extra');
 const os = require('os');
@@ -68,8 +69,18 @@ class Server extends EventEmitter {
 
     // Socket / FFmpeg PID mapping
     //   Key: Socket ID
-    //   Value: PID
-    this.socketPidMap = new Map();
+    //   Value: Stream ID
+    this.socketStreamMap = new Map();
+
+    // Stream ID / Socket ID mapping
+    //   Key: Stream ID
+    //   Value: Set of Socket ID
+    this.streamSocketMap = new Map();
+
+    // Stream ID / FFmpeg PID mapping
+    //   Key: Stream ID
+    //   Value: FFmpeg PID
+    this.streamPidMap = new Map();
 
     this.isClosing = false;
 
@@ -92,10 +103,23 @@ class Server extends EventEmitter {
           return;
         }
         this.sockets.delete(socketId);
-        const pid = this.socketPidMap.get(socketId);
-        if (pid) {
-          killProcess(pid, 'FFmpeg');
-          this.socketPidMap.delete(socketId);
+        const streamId = this.socketStreamMap.get(socketId);
+        if (!streamId) {
+          return;
+        }
+        this.socketStreamMap.delete(socketId);
+        const streamSockets = this.streamSocketMap.get(streamId);
+        if (!streamSockets) {
+          return;
+        }
+        streamSockets.delete(socketId);
+        if (streamSockets.size === 0) {
+          this.streamSocketMap.delete(streamId);
+          const pid = this.streamPidMap.get(streamId);
+          if (pid) {
+            killProcess(pid, 'FFmpeg');
+            this.streamPidMap.delete(streamId);
+          }
         }
         logger.info(`Closed socket (${socketId}), code ${code}`);
       },
@@ -152,16 +176,24 @@ class Server extends EventEmitter {
     }
     logger.info(`Sending ${url} to ${socketId}`);
     const args = [
-      '-max_delay', '0',
-      '-fflags', 'nobuffer',
+      '-noaccurate_seek',
       '-err_detect', '+ignore_err',
-      '-fflags', '+genpts+discardcorrupt',
       '-i', url,
+      '-loglevel', 'debug',
       '-c:a', 'copy',
       '-c:v', 'copy',
-      '-f', 'mpegts',
+      '-f', 'mpegts'
     ];
     const combinedArgs = ['-v', 'error', '-nostats'].concat(args, ['-metadata', 'blend=1', '-']);
+    const streamId = hash64(combinedArgs);
+    this.socketStreamMap.set(socketId, streamId);
+    let streamSockets = this.streamSocketMap.get(streamId);
+    if (streamSockets) {
+      streamSockets.add(socketId);
+      return;
+    }
+    streamSockets = new Set([socketId]);
+    this.streamSocketMap.set(streamId, streamSockets);
     const ffmpegPathCalculated = await ffmpegPathPromise;
     const mainProcess = spawn(ffmpegPathCalculated, combinedArgs, {
       windowsHide: true,
@@ -169,7 +201,7 @@ class Server extends EventEmitter {
       detached: true,
     });
     const pid = mainProcess.pid;
-    this.socketPidMap.set(socketId, pid);
+    this.streamPidMap.set(streamId, pid);
     const processLogger = makeLogger(`FFmpeg Process ${pid}`);
     mainProcess.on('error', (error) => {
       if (error.stack) {
@@ -183,26 +215,41 @@ class Server extends EventEmitter {
         killProcess(this.testStreamProcessPid, 'Test stream');
       }
       if (code && code !== 255) {
-        logger.error(`FFmpeg process ${mainProcess.pid} exited with error code ${code}`);
+        logger.error(`FFmpeg process ${pid} exited with error code ${code}`);
+      } else {
+        logger.warn(`FFmpeg process ${pid} exited`);
       }
-      const ws = this.sockets.get(socketId);
-      if (!ws) {
-        processLogger.warn(`Cannot close socket ID ${socketId}, socket does not exist`);
+      const ss = this.streamSocketMap.get(streamId);
+      if (!ss) {
         return;
       }
-      ws.end(1000, 'Shutting down');
+      for (const sId of ss) {
+        const ws = this.sockets.get(sId);
+        if (!ws) {
+          processLogger.warn(`Cannot close socket ID ${sId} after close, socket does not exist`);
+          continue;
+        }
+        ws.end(1000, 'Shutting down');
+      }
     });
     logger.info(`Started FFmpeg process ${mainProcess.pid} with args ${JSON.stringify(combinedArgs)}`);
     mainProcess.stderr.on('data', (data) => {
       data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
     });
     mainProcess.stdout.on('data', (data) => {
-      const ws = this.sockets.get(socketId);
-      if (!ws) {
-        processLogger.warn(`Cannot send data to socket ID ${socketId}, socket does not exist`);
+      const ss = this.streamSocketMap.get(streamId);
+      if (!ss) {
         return;
       }
-      ws.send(getArrayBuffer(data), true, false);
+      const message = getArrayBuffer(data);
+      for (const sId of ss) {
+        const ws = this.sockets.get(sId);
+        if (!ws) {
+          processLogger.warn(`Cannot send data to socket ID ${sId}, socket does not exist`);
+          continue;
+        }
+        ws.send(message, true, false);
+      }
     });
   }
 
@@ -215,7 +262,7 @@ class Server extends EventEmitter {
     for (const socket of this.sockets.values()) {
       socket.end(1000, 'Shutting down');
     }
-    const killProcessPromises = [...this.socketPidMap.values()].map((pid) => killProcess(pid, 'FFmpeg'));
+    const killProcessPromises = [...this.streamPidMap.values()].map((pid) => killProcess(pid, 'FFmpeg'));
     if (this.testStreamProcessPid) {
       killProcessPromises.push(killProcess(this.testStreamProcessPid, 'Test stream'));
     }
@@ -235,7 +282,9 @@ class Server extends EventEmitter {
   testStreamProcessPid: number;
   isClosing: boolean;
   sockets:Map<number, Object>;
-  socketPidMap:Map<number, number>;
+  socketStreamMap:Map<number, string>;
+  streamSocketMap: Map<string, Set<number>>
+  streamPidMap:Map<string, number>;
 }
 
 

@@ -44,7 +44,7 @@ class Client extends EventEmitter {
 
     let heartbeatInterval;
 
-    ws.binaryType = "arraybuffer";
+    ws.binaryType = 'arraybuffer';
 
     ws.onopen = () => {
       this.emit('open');
@@ -52,7 +52,7 @@ class Client extends EventEmitter {
       heartbeatInterval = setInterval(() => {
         ws.send(new Uint8Array([]));
       }, 5000);
-    };  
+    };
 
     ws.onclose = (event) => {
       clearInterval(heartbeatInterval);
@@ -63,15 +63,15 @@ class Client extends EventEmitter {
     };
 
     let started;
-    let packets = 0;
     ws.onmessage = (event) => {
       const typedArray = new Uint8Array(event.data);
       this.transmuxer.push(typedArray);
-      packets += 1;
-      if (!started && packets < 24) {
+      if (!started) {
         started = true;
-        setInterval(() => {
-          this.transmuxer.flush();
+        setTimeout(() => {
+          setInterval(() => {
+            this.transmuxer.flush();
+          }, 1000);
         }, 1000);
       }
     };

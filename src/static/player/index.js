@@ -7,10 +7,10 @@ import makeLogger from './logger';
 const Route = require('route-parser');
 const Client = require('../../client');
 
-let reconnectAttempt = 0;
-let totalReconnectAttempts = 0;
+const reconnectAttempt = 0;
+const totalReconnectAttempts = 0;
 let reconnectAttemptResetTimeout;
-let recoveryTimeout = null;
+const recoveryTimeout = null;
 
 const element = document.querySelector('video');
 
@@ -137,7 +137,7 @@ const logevent:EventListener = function (event) {
   console.log(event.type);
 };
 
-const route = new Route('/:streamUrl/(:path)');
+const route = new Route('/stream/:streamUrl/(:path)');
 const parsedRoute = route.match(window.location.pathname);
 
 async function initialize() {
@@ -179,7 +179,7 @@ async function initialize() {
     const handle = () => {
       mediaSource.removeEventListener('sourceopen', handle);
       resolve();
-    }
+    };
     mediaSource.addEventListener('sourceopen', handle);
   });
   const queue = [];
@@ -199,6 +199,7 @@ async function initialize() {
   buffer.addEventListener('sourceclose', (event) => {
     sourceBufferLogger.info('sourceclose');
   });
+  /*
   buffer.addEventListener('updatestart', (event) => {
     sourceBufferLogger.info('updatestart');
   });
@@ -208,6 +209,7 @@ async function initialize() {
   buffer.addEventListener('updateend', (event) => {
     sourceBufferLogger.info('updateend');
   });
+  */
   buffer.addEventListener('error', (event) => {
     sourceBufferLogger.info('error');
   });
@@ -220,20 +222,20 @@ async function initialize() {
   buffer.addEventListener('removesourcebuffer', (event) => {
     sourceBufferLogger.info('removesourcebuffer');
   });
-  client.on("initSegment", (data) => {
+  client.on('initSegment', (data) => {
     buffer.appendBuffer(data);
   });
-  client.on("caption", (text) => {
-    console.log("caption", text);
+  client.on('caption', (text) => {
+    console.log('caption', text);
   });
-  client.on("data", (data) => {
+  client.on('data', (data) => {
     if (queue.length > 0 || buffer.updating) {
       queue.push(data);
     } else {
       buffer.appendBuffer(data);
     }
   });
-  client.on("error", (error) => {
+  client.on('error', (error) => {
     websocketLogger(error);
   });
   await client.open(address);

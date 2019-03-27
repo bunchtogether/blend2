@@ -1,7 +1,7 @@
 // @flow
 
 const startWebsocketServer = require('./uws-server');
-const StaticServer = require("./static-server");
+const StaticServer = require('./static-server');
 const Server = require('./server');
 const logger = require('./lib/logger')('CLI');
 
@@ -10,11 +10,10 @@ const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = requ
 let exitCode = 0;
 
 const start = async ():Promise<void> => {
-
   const [uwsServer, stopWebsocketServer] = await startWebsocketServer('127.0.0.1', 61340);
-  const server =  new Server(uwsServer);
+  const server = new Server(uwsServer);
   const staticServer = new StaticServer(uwsServer);
-  
+
   addShutdownHandler(async () => {
     await server.close();
     await stopWebsocketServer();

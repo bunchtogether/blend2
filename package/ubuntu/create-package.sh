@@ -34,7 +34,7 @@ export BLEND_VERSION=$(cat package.json | jq '.version' -r)
 
 yarn install --ignore-engines
 yarn build
-./node_modules/.bin/pkg . --targets node8-linux-x64 --options trace-warnings
+./node_modules/.bin/pkg . --targets node10-linux-x64 --options trace-warnings
 
 cd ~/
 
@@ -53,6 +53,8 @@ mkdir -p blend/etc/blend
 
 cp ~/build/blend ~/blend/etc/blend/
 cp ~/build/dist/sample.mp4 ~/blend/etc/blend/sample.mp4
+cp ~/build/node_modules/farmhash/build/Release/farmhash.node ~/blend/etc/blend/
+cp ~/build/node_modules/uWebSockets.js/uws_linux_64.node ~/blend/etc/blend/
 cp ~/build/node_modules/@bunchtogether/ffmpeg-static/bin/linux/x64/ffmpeg ~/blend/etc/blend/ffmpeg
 
 cat <<EOF >> blend/etc/blend/blend.defaults

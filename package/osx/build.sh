@@ -97,8 +97,10 @@ cat <<EOF >> ./package/osx/distribution.xml
 </installer-gui-script>
 EOF
 
-./node_modules/.bin/pkg . --targets node8-macos-x64 --options trace-warnings
+./node_modules/.bin/pkg . --targets node10-macos-x64 --options trace-warnings
 mv ./blend ./package/osx/files/usr/local/blend/
+cp ./node_modules/farmhash/build/Release/farmhash.node ./package/osx/files/usr/local/blend/
+cp ./node_modules/uWebSockets.js/uws_darwin_64.node ./package/osx/files/usr/local/blend/
 cp ./node_modules/@bunchtogether/ffmpeg-static/bin/darwin/x64/ffmpeg ./package/osx/files/usr/local/blend/ffmpeg
 cp ./src/sample.mp4 ./package/osx/files/usr/local/blend/sample.mp4
 
