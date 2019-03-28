@@ -604,6 +604,14 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@bunchtogether/blend2-client@https://github.com/bunchtogether/blend2-client.git#master":
+  version "2.0.0"
+  resolved "https://github.com/bunchtogether/blend2-client.git#004ea246cbedfc6eb92ae08e3b28f659d8c0b07e"
+  dependencies:
+    flatted "^2.0.0"
+    isomorphic-ws "^4.0.1"
+    superagent "^4.1.0"
+
 "@bunchtogether/exit-handler@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@bunchtogether/exit-handler/-/exit-handler-1.0.0.tgz#350caef9ef93e047080d1139a22e818098eea290"
@@ -5590,11 +5598,6 @@ mute-stream@0.0.7:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
 
-mux.js@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/mux.js/-/mux.js-5.1.1.tgz#0e95f048b4ac51d413c9ddc2d78e4cefad8d06de"
-  integrity sha512-Mf/UYmh5b8jvUP+jmrTbETnyFZprMdbT0RxKm/lJ/4d2Q3xdc5GaHaRPI1zVV5D3+6uxArVPm78QEb1RsrmaQw==
-
 nan@^2.10.0:
   version "2.13.2"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.13.2.tgz#f51dc7ae66ba7d5d55e1e6d4d8092e802c9aefe7"
@@ -6900,11 +6903,6 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-route-parser@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/route-parser/-/route-parser-0.0.5.tgz#7d1d09d335e49094031ea16991a4a79b01bbe1f4"
-  integrity sha1-fR0J0zXkkJQDHqFpkaSnmwG74fQ=
-
 rsvp@^3.3.3:
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-3.6.2.tgz#2e96491599a96cde1b515d5674a8f7a91452926a"
@@ -7785,10 +7783,6 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-
-uWebSockets.js@uNetworking/uWebSockets.js#v15.8.0:
-  version "15.8.0"
-  resolved "https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/d96159d2ffc1517cdab39fe169d88dd55a2aeba7"
 
 uglify-js@^3.1.4:
   version "3.4.9"

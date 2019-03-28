@@ -2,7 +2,7 @@
 
 /* eslint-disable no-unused-vars */
 
-import { BlendClient, blendServerDetectedPromise, makeBlendLogger } from '../../client';
+import { BlendClient, blendServerDetectedPromise, makeBlendLogger } from '@bunchtogether/blend2-client';
 
 const windowLogger = makeBlendLogger('Window');
 

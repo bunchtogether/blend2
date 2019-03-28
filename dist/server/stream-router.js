@@ -10,6 +10,7 @@ const path = require('path');
 const crypto = require('crypto');
 const makeLogger = require('./lib/logger');
 const killProcess = require('./lib/kill-process');
+const pkg = require('../../package.json');
 
 const logger = makeLogger('Stream Router API');
 
@@ -282,9 +283,9 @@ module.exports.getStreamRouter = () => {
 
 
   router.get('/api/1.0/stream', async (req                 , res                  ) => {
-    res.status(200).json({ success: true });
+    res.json({ version: pkg.version });
   });
-
+  
   router.ws('/api/1.0/stream/:url/', async (ws       , req                 ) => {
     const url = req.params.url;
 

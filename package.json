@@ -74,6 +74,7 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
+    "@bunchtogether/blend2-client": "https://github.com/bunchtogether/blend2-client.git#master",
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
     "@bunchtogether/hash-object": "^1.0.2",

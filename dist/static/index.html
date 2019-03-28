@@ -23,26 +23,10 @@
     <img src="./blend.svg" alt="Blend" id="logo" />
     <form action="javascript:getEncodedUri();" id="stream">
       <input type="text" id="stream_url" name="stream_url" placeholder="Enter Stream URL..." value="">
-      <input type="submit" value="Play with Standard Settings" />
-    </form>
-    <form action="javascript:getEncodedArgs();" id="args">
-      <textarea id="ffmpegArgs" name="ffmpegArgs" placeholder="Enter Args">-max_delay 0
--err_detect +ignore_err
--fflags +genpts+discardcorrupt
--i rtp://127.0.0.1:13337
--c:a copy
--c:v copy
--hls_time 1
--hls_list_size 3
--hls_allow_cache 0
--hls_flags delete_segments+omit_endlist</textarea>
-<div id="note">
-Note: The <strong>-hls_segment_filename</strong> and output file parameters are added automatically.<br />Use <strong>rtp://127.0.0.1:13337</strong> as the input to generate a test stream.
-</div>
-      <input type="submit" value="Play with Custom Settings" />
+      <input type="submit" value="Play" />
     </form>
     <div id="test">
-      Or try a <a href="/api/1.0/stream/test/">test stream</a>
+      Or try a <a href="/api/1.0/stream/rtp%3A%2F%2F127.0.0.1%3A13337/">test stream</a>
     </div>
     <div id="version"></div>
   </div>
