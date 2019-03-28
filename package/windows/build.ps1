@@ -28,7 +28,6 @@ cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x32\ffprobe.exe .\packa
 cp .\src\sample.mp4 .\package\windows\files\sample.mp4
 
 cp .\node_modules\farmhash\build\Release\farmhash.node .\package\windows\files\farmhash.node
-cp .\node_modules\uWebSockets.js\uws_win32_64.node .\package\windows\files\uws_win32_64.node
 
 # Build installer
 & 'C:\Program Files (x86)\NSIS\Bin\makensis.exe' .\package\windows\installer.nsi

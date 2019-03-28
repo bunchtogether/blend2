@@ -9,5 +9,4 @@ export default (async () => {
   } catch (error) {
     return false;
   }
-  return false;
 })();

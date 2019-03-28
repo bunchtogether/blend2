@@ -2,8 +2,6 @@
 
 /* eslint-disable no-unused-vars */
 
-
-import Route from 'route-parser';
 import { BlendClient, blendServerDetectedPromise, makeBlendLogger } from '../../client';
 
 const windowLogger = makeBlendLogger('Window');
@@ -36,12 +34,12 @@ window.addEventListener('error', (event:Event) => {
   }
 });
 
-const urlRegex = /\/api\/1\.0\/stream\/([^\/]+)\//;
+const urlRegex = /\/api\/1\.0\/stream\/([^/]+)\//;
 
 async function initialize() {
   const urlMatch = window.location.href.match(urlRegex);
   if (!urlMatch || !urlMatch[1]) {
-    throw new Error(`Invalid address ${address}`);
+    throw new Error(`Invalid address ${window.location.href}`);
   }
   const streamUrl = decodeURIComponent(urlMatch[1]);
 
@@ -50,7 +48,7 @@ async function initialize() {
   if (blendServerDetected) {
     windowLogger.info('Blend server detected');
   } else {
-    windowLogger.error(`Unable to open web socket connection to ${address}, Blend Server not detected`);
+    windowLogger.error(`Unable to open web socket connection for ${streamUrl}, Blend Server not detected`);
     return;
   }
 
