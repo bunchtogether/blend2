@@ -27,8 +27,6 @@ cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x32\ffprobe.exe .\packa
 # Copy sample.mp4
 cp .\src\sample.mp4 .\package\windows\files\sample.mp4
 
-cp .\node_modules\farmhash\build\Release\farmhash.node .\package\windows\files\farmhash.node
-
 # Build installer
 & 'C:\Program Files (x86)\NSIS\Bin\makensis.exe' .\package\windows\installer.nsi
 move .\package\windows\blend-installer.exe .\installers\blend-installer-x64-86-$VERSION.exe

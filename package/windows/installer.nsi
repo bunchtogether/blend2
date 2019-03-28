@@ -44,9 +44,6 @@ Section "install"
   # Sample Video
   File files\sample.mp4 
 
-  # Farmhash dependency
-  File files\farmhash.node 
-
   ${If} ${RunningX64}
     # Copy 64bit files
     File /r files\x64\*

@@ -99,7 +99,6 @@ EOF
 
 ./node_modules/.bin/pkg . --targets node10-macos-x64 --options trace-warnings
 mv ./blend ./package/osx/files/usr/local/blend/
-cp ./node_modules/farmhash/build/Release/farmhash.node ./package/osx/files/usr/local/blend/
 cp ./node_modules/@bunchtogether/ffmpeg-static/bin/darwin/x64/ffmpeg ./package/osx/files/usr/local/blend/ffmpeg
 cp ./src/sample.mp4 ./package/osx/files/usr/local/blend/sample.mp4
 

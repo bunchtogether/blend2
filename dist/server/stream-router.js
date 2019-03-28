@@ -2,7 +2,6 @@
 
 const { Router } = require('express');
 const { ffmpegPath } = require('@bunchtogether/ffmpeg-static');
-const { hash32 } = require('@bunchtogether/hash-object');
 const { spawn } = require('child_process');
 const fs = require('fs-extra');
 const os = require('os');
@@ -317,7 +316,7 @@ module.exports.getStreamRouter = () => {
     const streamUrl = req.params.url;
 
     await fs.ensureDir(baseThumbnailPath);
-    const thumbnailPath = path.join(baseThumbnailPath, `thumbnail_${hash32(streamUrl)}.jpg`);
+    const thumbnailPath = path.join(baseThumbnailPath, `thumbnail_${crypto.createHash('sha256').update(streamUrl).digest().toString('hex')}.jpg`);
     try {
       await getThumbnail(streamUrl, thumbnailPath);
     } catch (error) {

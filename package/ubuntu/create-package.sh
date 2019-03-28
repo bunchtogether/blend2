@@ -53,7 +53,6 @@ mkdir -p blend/etc/blend
 
 cp ~/build/blend ~/blend/etc/blend/
 cp ~/build/dist/sample.mp4 ~/blend/etc/blend/sample.mp4
-cp ~/build/node_modules/farmhash/build/Release/farmhash.node ~/blend/etc/blend/
 cp ~/build/node_modules/@bunchtogether/ffmpeg-static/bin/linux/x64/ffmpeg ~/blend/etc/blend/ffmpeg
 
 cat <<EOF >> blend/etc/blend/blend.defaults
