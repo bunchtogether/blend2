@@ -180,26 +180,25 @@ const startStream = async (socketId       , url       ) => {
     audioSocket.bind(audioSocketPort);
   });
   await audioSocketListeningPromise;
+  
   const args = [
     '-v', 'error',
     '-nostats',
-    '-fflags', '+discardcorrupt',
+    '-noaccurate_seek',
+    '-fflags', '+discardcorrupt+nobuffer+flush_packets',
     '-err_detect', '+ignore_err',
-    '-itsoffset', '1.5',
     '-i', url,
-    '-copyts',
-    '-vn',
-    '-c:a', 'copy',
-    '-f', 'adts',
-    `udp://127.0.0.1:${audioSocketPort}`,
-    '-copyts',
-    '-an',
+    '-dts_delta_threshold', '1',
+    '-c:a', 'aac',
+    '-af', 'aresample=async=176000',
     '-c:v', 'copy',
     '-f', 'mp4',
-    '-movflags', '+frag_keyframe+empty_moov+omit_tfhd_offset+default_base_moof',
+    '-frag_duration', '10000',
+    '-movflags', '+empty_moov+omit_tfhd_offset+default_base_moof',
     'pipe:1',
     '-metadata', 'blend=1',
   ];
+
   const ffmpegPathCalculated = await ffmpegPathPromise;
   const mainProcess = spawn(ffmpegPathCalculated, args, {
     windowsHide: true,
