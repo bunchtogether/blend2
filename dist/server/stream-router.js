@@ -1,11 +1,11 @@
 //      
 
 const { Router } = require('express');
-const dgram = require('dgram');
 const { ffmpegPath } = require('@bunchtogether/ffmpeg-static');
 const { spawn } = require('child_process');
 const fs = require('fs-extra');
 const os = require('os');
+const ps = require('ps-node');
 const path = require('path');
 const crypto = require('crypto');
 const makeLogger = require('./lib/logger');
@@ -25,39 +25,12 @@ const sockets = new Map();
 const socketPidMap = new Map();
 
 // Active stream URLs
-//   Key: Stream URL
-//   Value: Boolean
-const activeStreamUrls = new Map();
-
-// Active stream ports
-//   Value: port
-const activeStreamPorts = new Set();
+//   Value: Stream URL
+const activeStreamUrls = new Set();
 
 let testStreamProcessPid = null;
 
-const getPort = () => {
-  const port = Math.round(30000 + Math.random() * 10000);
-  if (activeStreamPorts.has(port)) {
-    return getPort();
-  }
-  return port;
-};
-
-const getAudioArrayBuffer = (b        ) => {
-  const base = new Uint8Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
-  const uint8 = new Uint8Array(base.length + 1);
-  uint8.set(base, 1);
-  uint8[0] = 0;
-  return uint8;
-};
-
-const getVideoArrayBuffer = (b        ) => {
-  const base = new Uint8Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
-  const uint8 = new Uint8Array(base.length + 1);
-  uint8.set(base, 1);
-  uint8[0] = 1;
-  return uint8;
-};
+const getArrayBuffer = (b        ) => new Uint8Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
 
 function randomInteger() {
   return crypto.randomBytes(4).readUInt32BE(0, true);
@@ -137,66 +110,29 @@ const startTestStream = async () => {
 };
 
 const startStream = async (socketId       , url       ) => {
-  activeStreamUrls.set(url, true);
+  activeStreamUrls.add(url);
   if (url === 'rtp://127.0.0.1:13337') {
     await startTestStream();
   }
   logger.info(`Sending ${url} to ${socketId}`);
-  const audioSocketPort = getPort();
-  activeStreamPorts.add(audioSocketPort);
-  const audioSocket = dgram.createSocket('udp4');
-  audioSocket.once('error', (error) => {
-    if (error.stack) {
-      logger.error(`Audio socket ${audioSocketPort} error:`);
-      error.stack.split('\n').forEach((line) => logger.error(`\t${line}`));
-    } else {
-      logger.error(`Audio socket ${audioSocketPort} error: ${error.message}`);
-    }
-    audioSocket.close();
-  });
-  audioSocket.once('close', () => {
-    activeStreamPorts.delete(audioSocketPort);
-  });
-  const audioSocketMessageHandler = (buffer) => {
-    const ws = sockets.get(socketId);
-    if (!ws) {
-      audioSocket.removeListener('message', audioSocketMessageHandler);
-      processLogger.error(`Cannot send audio to socket ID ${socketId}, socket does not exist`);
-      return;
-    }
-    if (ws.readyState !== 1) {
-      audioSocket.removeListener('message', audioSocketMessageHandler);
-      processLogger.error(`Cannot send audio to socket ID ${socketId}, ready state is ${ws.readyState}`);
-      return;
-    }
-    const message = getAudioArrayBuffer(buffer);
-    ws.send(message, { compress: false, binary: true });
-  };
-  audioSocket.on('message', audioSocketMessageHandler);
-  const audioSocketListeningPromise = new Promise((resolve) => {
-    audioSocket.once('listening', () => {
-      resolve();
-    });
-    audioSocket.bind(audioSocketPort);
-  });
-  await audioSocketListeningPromise;
   const args = [
     '-v', 'error',
     '-nostats',
-    '-fflags', '+discardcorrupt+genpts+sortdts',
+    '-noaccurate_seek',
+    '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
     '-i', url,
-    '-vn',
-    '-c:a', 'copy',
-    '-f', 'adts',
-    `udp://127.0.0.1:${audioSocketPort}`,
-    '-an',
+    '-dts_delta_threshold', '1',
+    '-c:a', 'aac',
+    '-af', 'aresample=async=176000',
     '-c:v', 'copy',
     '-f', 'mp4',
-    '-movflags', '+frag_keyframe+empty_moov+omit_tfhd_offset',
+    '-frag_duration', '100000',
+    '-movflags', '+empty_moov+omit_tfhd_offset+default_base_moof',
     'pipe:1',
     '-metadata', 'blend=1',
   ];
+
   const ffmpegPathCalculated = await ffmpegPathPromise;
   const mainProcess = spawn(ffmpegPathCalculated, args, {
     windowsHide: true,
@@ -213,8 +149,9 @@ const startStream = async (socketId       , url       ) => {
       processLogger.error(error.message);
     }
   });
-  mainProcess.once('close', async (code) => {
-    audioSocket.close();
+  mainProcess.once('close', (code) => {
+    activeStreamUrls.delete(url);
+    socketPidMap.delete(socketId);
     if (code && code !== 255) {
       logger.error(`FFmpeg process ${pid} exited with error code ${code}`);
     } else {
@@ -227,30 +164,29 @@ const startStream = async (socketId       , url       ) => {
       processLogger.warn(`Cannot close socket ID ${socketId} after close, socket does not exist`);
     }
     if (url === 'rtp://127.0.0.1:13337' && testStreamProcessPid) {
-      await killProcess(testStreamProcessPid, 'Test stream');
+      killProcess(testStreamProcessPid, 'Test stream');
     }
-    activeStreamUrls.delete(url);
   });
   logger.info(`Started FFmpeg process ${pid} with args ${args.join(' ')}`);
   mainProcess.stderr.on('data', (data) => {
     data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
   });
-  const videoStdOutDataHandler = (data) => {
+  const stdOutDataHandler = (data) => {
     const ws = sockets.get(socketId);
     if (!ws) {
-      mainProcess.stdout.removeListener('data', videoStdOutDataHandler);
-      processLogger.error(`Cannot send video to socket ID ${socketId}, socket does not exist`);
+      mainProcess.stdout.removeListener('data', stdOutDataHandler);
+      processLogger.error(`Cannot send stream to socket ID ${socketId}, socket does not exist`);
       return;
     }
     if (ws.readyState !== 1) {
-      mainProcess.stdout.removeListener('data', videoStdOutDataHandler);
-      processLogger.error(`Cannot send video to socket ID ${socketId}, ready state is ${ws.readyState}`);
+      mainProcess.stdout.removeListener('data', stdOutDataHandler);
+      processLogger.error(`Cannot send stream to socket ID ${socketId}, ready state is ${ws.readyState}`);
       return;
     }
-    const message = getVideoArrayBuffer(data);
+    const message = getArrayBuffer(data);
     ws.send(message, { compress: false, binary: true });
   };
-  mainProcess.stdout.on('data', videoStdOutDataHandler);
+  mainProcess.stdout.on('data', stdOutDataHandler);
 };
 
 module.exports.shutdownStreamRouter = async () => {
@@ -274,29 +210,49 @@ module.exports.shutdownStreamRouter = async () => {
   }
 };
 
-module.exports.getStreamRouter = () => {
-  logger.warn('SHOULD KILL ORPHAN FFMPEG HERE');
+const getFFmpegProcesses = async () => new Promise((resolve, reject) => {
+  ps.lookup({ command: 'ffmpeg' }, (error, resultList) => {
+    if (error) {
+      reject(error);
+    } else {
+      const processes = new Set();
+      resultList.forEach((result) => {
+        if (result.arguments && result.arguments.indexOf('blend=1') !== -1) {
+          processes.add(parseInt(result.pid, 10));
+        }
+      });
+      resolve(processes);
+    }
+  });
+});
 
+getFFmpegProcesses().then((processes) => {
+  for (const pid of processes) {
+    logger.info(`Killing orphaned FFmpeg process ${pid}`);
+    killProcess(pid, 'FFmpeg (Orphan)');
+  }
+});
+
+module.exports.getStreamRouter = () => {
   logger.info('Attaching /api/1.0/stream');
 
   const router = Router({ mergeParams: true });
 
-
   router.get('/api/1.0/stream', async (req                 , res                  ) => {
     res.json({ version: pkg.version });
   });
-  
+
   router.ws('/api/1.0/stream/:url/', async (ws       , req                 ) => {
     const url = req.params.url;
 
     for (let i = 0; i < 100; i += 1) {
-      if (!activeStreamUrls.get(url)) {
+      if (!activeStreamUrls.has(url)) {
         break;
       }
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
-    if (activeStreamUrls.get(url)) {
+    if (activeStreamUrls.has(url)) {
       ws.close(1000, 'FFmpeg unavailable');
       return;
     }
