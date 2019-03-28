@@ -171,7 +171,7 @@ const startStream = async (socketId       , url       ) => {
     }
     const message = getAudioArrayBuffer(buffer);
     ws.send(message, { compress: false, binary: true });
-  };
+  }
   audioSocket.on('message', audioSocketMessageHandler);
   const audioSocketListeningPromise = new Promise((resolve) => {
     audioSocket.once('listening', () => {
@@ -183,20 +183,20 @@ const startStream = async (socketId       , url       ) => {
   const args = [
     '-v', 'error',
     '-nostats',
-    '-copyts',
     '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
+    '-itsoffset', '1.5',
     '-i', url,
-    '-async', '1',
+    '-copyts',
     '-vn',
     '-c:a', 'copy',
     '-f', 'adts',
     `udp://127.0.0.1:${audioSocketPort}`,
-    '-vsync', 'cfr',
+    '-copyts',
     '-an',
     '-c:v', 'copy',
     '-f', 'mp4',
-    '-movflags', '+frag_keyframe+empty_moov+omit_tfhd_offset',
+    '-movflags', '+frag_keyframe+empty_moov+omit_tfhd_offset+default_base_moof',
     'pipe:1',
     '-metadata', 'blend=1',
   ];
@@ -219,6 +219,7 @@ const startStream = async (socketId       , url       ) => {
   mainProcess.once('close', async (code) => {
     audioSocket.close();
     activeStreamUrls.delete(url);
+    socketPidMap.delete(socketId);
     if (code && code !== 255) {
       logger.error(`FFmpeg process ${pid} exited with error code ${code}`);
     } else {
