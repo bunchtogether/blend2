@@ -183,13 +183,16 @@ const startStream = async (socketId       , url       ) => {
   const args = [
     '-v', 'error',
     '-nostats',
-    '-fflags', '+discardcorrupt+genpts+sortdts',
+    '-copyts',
+    '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
     '-i', url,
+    '-async', '1',
     '-vn',
     '-c:a', 'copy',
     '-f', 'adts',
     `udp://127.0.0.1:${audioSocketPort}`,
+    '-vsync', 'cfr',
     '-an',
     '-c:v', 'copy',
     '-f', 'mp4',
@@ -215,6 +218,7 @@ const startStream = async (socketId       , url       ) => {
   });
   mainProcess.once('close', async (code) => {
     audioSocket.close();
+    activeStreamUrls.delete(url);
     if (code && code !== 255) {
       logger.error(`FFmpeg process ${pid} exited with error code ${code}`);
     } else {
@@ -229,7 +233,6 @@ const startStream = async (socketId       , url       ) => {
     if (url === 'rtp://127.0.0.1:13337' && testStreamProcessPid) {
       await killProcess(testStreamProcessPid, 'Test stream');
     }
-    activeStreamUrls.delete(url);
   });
   logger.info(`Started FFmpeg process ${pid} with args ${args.join(' ')}`);
   mainProcess.stderr.on('data', (data) => {
