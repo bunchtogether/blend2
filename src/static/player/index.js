@@ -2,7 +2,7 @@
 
 /* eslint-disable no-unused-vars */
 
-import { BlendClient, blendServerDetectedPromise, makeBlendLogger } from '@bunchtogether/blend2-client';
+import { BlendClient, blendServerDetectedPromise, makeBlendLogger, getBlendThumbnailUrl } from '@bunchtogether/blend2-client';
 
 const windowLogger = makeBlendLogger('Window');
 
@@ -51,6 +51,10 @@ async function initialize() {
     windowLogger.error(`Unable to open web socket connection for ${streamUrl}, Blend Server not detected`);
     return;
   }
+
+  const thumbnailUrl = await getBlendThumbnailUrl(streamUrl);
+
+  windowLogger.info(`Thumbnail: ${thumbnailUrl}`);
 
   const element = document.querySelector('video');
   if (!element) {

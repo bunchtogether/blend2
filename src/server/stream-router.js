@@ -2,6 +2,7 @@
 
 const { Router } = require('express');
 const { ffmpegPath } = require('@bunchtogether/ffmpeg-static');
+const { hash32 } = require('@bunchtogether/hash-object');
 const { spawn } = require('child_process');
 const fs = require('fs-extra');
 const os = require('os');
@@ -25,10 +26,13 @@ const sockets = new Map();
 const socketPidMap = new Map();
 
 // Active stream URLs
-//   Value: Stream URL
-const activeStreamUrls = new Set();
+//   Key: Stream URL
+//   Value: Stream PID
+const activeStreamUrls = new Map();
 
 let testStreamProcessPid = null;
+
+const baseThumbnailPath = path.join(os.tmpdir(), 'blend-thumbnails');
 
 const getArrayBuffer = (b: Buffer) => new Uint8Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
 
@@ -109,8 +113,74 @@ const startTestStream = async () => {
   });
 };
 
+const getThumbnail = async (streamUrl:string, thumbnailPath:string) => {
+  // await fs.remove(thumbnailPath);
+  let exists = await fs.exists(thumbnailPath);
+  if (exists) {
+    const stats = await fs.stat(thumbnailPath);
+    if (new Date() - new Date(stats.ctime) < 60000) {
+      return;
+    }
+  }
+  const args = [
+    '-threads', '1',
+    '-i', streamUrl,
+    '-vf', 'fps=fps=1',
+    '-frames', '1',
+    '-threads', '1',
+    '-y', '-s', '640x360',
+    '-f',
+    'mjpeg',
+    '-pix_fmt',
+    'yuvj444p',
+    thumbnailPath,
+  ];
+  const ffmpegPathCalculated = await ffmpegPathPromise;
+  const mainProcess = spawn(ffmpegPathCalculated, args, {
+    windowsHide: true,
+    shell: false,
+    detached: true,
+  });
+  const pid = mainProcess.pid;
+  const processLogger = makeLogger(`FFmpeg Thumbnail Process ${pid}`);
+  mainProcess.stderr.on('data', (data) => {
+    data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
+  });
+  await new Promise((resolve, reject) => {
+    const handleError = (error) => {
+      if (error.stack) {
+        error.stack.split('\n').forEach((line) => processLogger.error(`\t${line}`));
+      } else {
+        processLogger.error(error.message);
+      }
+      mainProcess.removeListener('error', handleError);
+      mainProcess.removeListener('close', handleClose);
+      reject(error);
+    };
+    const handleClose = (code) => {
+      mainProcess.removeListener('error', handleError);
+      mainProcess.removeListener('close', handleClose);
+      if (code && code !== 255) {
+        const message = `Failed to create thumbnail for stream ${streamUrl}, process failed with code ${code}`;
+        processLogger.error(message);
+        reject(new Error(message));
+      } else {
+        resolve();
+      }
+    };
+    mainProcess.on('error', handleError);
+    mainProcess.once('close', handleClose);
+  });
+  exists = await fs.exists(thumbnailPath);
+  if (!exists) {
+    const message = `Failed to create thumbnail for stream ${streamUrl}`;
+    processLogger.error(message);
+    throw new Error(message);
+  }
+  processLogger.info(`Created thumbnail for stream ${streamUrl}`);
+};
+
 const startStream = async (socketId:number, url:string) => {
-  activeStreamUrls.add(url);
   if (url === 'rtp://127.0.0.1:13337') {
     await startTestStream();
   }
@@ -132,7 +202,6 @@ const startStream = async (socketId:number, url:string) => {
     'pipe:1',
     '-metadata', 'blend=1',
   ];
-
   const ffmpegPathCalculated = await ffmpegPathPromise;
   const mainProcess = spawn(ffmpegPathCalculated, args, {
     windowsHide: true,
@@ -140,9 +209,11 @@ const startStream = async (socketId:number, url:string) => {
     detached: true,
   });
   const pid = mainProcess.pid;
+  activeStreamUrls.set(url, pid);
   socketPidMap.set(socketId, pid);
   const processLogger = makeLogger(`FFmpeg Process ${pid}`);
   mainProcess.on('error', (error) => {
+    activeStreamUrls.delete(url);
     if (error.stack) {
       error.stack.split('\n').forEach((line) => processLogger.error(`\t${line}`));
     } else {
@@ -242,19 +313,43 @@ module.exports.getStreamRouter = () => {
     res.json({ version: pkg.version });
   });
 
+  router.get('/api/1.0/stream/:url/thumbnail.jpg', async (req: express$Request, res: express$Response) => {
+    const streamUrl = req.params.url;
+
+    await fs.ensureDir(baseThumbnailPath);
+    const thumbnailPath = path.join(baseThumbnailPath, `thumbnail_${hash32(streamUrl)}.jpg`);
+    try {
+      await getThumbnail(streamUrl, thumbnailPath);
+    } catch (error) {
+      if (error.stack) {
+        logger.error('Error generating thumbnail:');
+        error.stack.split('\n').forEach((line) => logger.error(`\t${line}`));
+      } else {
+        logger.error(`Error generating thumbnail: ${error.message}`);
+      }
+      res.status(500).send(`Error generating thumbnail for ${streamUrl}`);
+      return;
+    }
+    res.sendFile(thumbnailPath);
+  });
+
   router.ws('/api/1.0/stream/:url/', async (ws:Object, req: express$Request) => {
     const url = req.params.url;
 
-    for (let i = 0; i < 100; i += 1) {
-      if (!activeStreamUrls.has(url)) {
-        break;
+    const pid = activeStreamUrls.get(url);
+    if (pid) {
+      killProcess(pid, 'FFmpeg');
+      for (let i = 0; i < 200; i += 1) {
+        if (!activeStreamUrls.has(url)) {
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
-
-    if (activeStreamUrls.has(url)) {
-      ws.close(1000, 'FFmpeg unavailable');
-      return;
+      if (activeStreamUrls.has(url)) {
+        logger.error(`Unable to start stream for ${url}, cannot kill process ${pid}`);
+        ws.close(1000, 'FFmpeg unavailable');
+        return;
+      }
     }
 
     const socketId = randomInteger();
@@ -266,10 +361,10 @@ module.exports.getStreamRouter = () => {
       try {
         logger.info(`Closed socket ${socketId}`);
         sockets.delete(socketId);
-        const pid = socketPidMap.get(socketId);
-        if (pid) {
-          killProcess(pid, 'FFmpeg');
-          socketPidMap.delete(pid);
+        const closedSocketPid = socketPidMap.get(socketId);
+        if (closedSocketPid) {
+          killProcess(closedSocketPid, 'FFmpeg');
+          socketPidMap.delete(closedSocketPid);
         }
       } catch (error) {
         if (error.stack) {
