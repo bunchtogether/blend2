@@ -12,6 +12,8 @@ const makeLogger = require('./lib/logger');
 const killProcess = require('./lib/kill-process');
 const pkg = require('../../package.json');
 
+let active = false;
+
 const logger = makeLogger('Stream Router API');
 
 // Active sockets
@@ -113,11 +115,10 @@ const startTestStream = async () => {
 };
 
 const getThumbnail = async (streamUrl:string, thumbnailPath:string) => {
-  // await fs.remove(thumbnailPath);
   let exists = await fs.exists(thumbnailPath);
   if (exists) {
     const stats = await fs.stat(thumbnailPath);
-    if (new Date() - new Date(stats.ctime) < 60000) {
+    if (new Date() - new Date(stats.ctime) < 3600000) {
       return;
     }
   }
@@ -202,6 +203,10 @@ const startStream = async (socketId:number, url:string) => {
     '-metadata', 'blend=1',
   ];
   const ffmpegPathCalculated = await ffmpegPathPromise;
+  if (!active) {
+    return;
+  }
+
   const mainProcess = spawn(ffmpegPathCalculated, args, {
     windowsHide: true,
     shell: false,
@@ -237,7 +242,7 @@ const startStream = async (socketId:number, url:string) => {
       killProcess(testStreamProcessPid, 'Test stream');
     }
   });
-  logger.info(`Started FFmpeg process ${pid} with args ${args.join(' ')}`);
+  logger.info(`Started FFmpeg process ${pid} for socket ID ${socketId} with args ${args.join(' ')}`);
   mainProcess.stderr.on('data', (data) => {
     data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
   });
@@ -257,27 +262,6 @@ const startStream = async (socketId:number, url:string) => {
     ws.send(message, { compress: false, binary: true });
   };
   mainProcess.stdout.on('data', stdOutDataHandler);
-};
-
-module.exports.shutdownStreamRouter = async () => {
-  logger.info('Closing');
-  for (const socket of sockets.values()) {
-    socket.close(1000, 'Shutting down');
-  }
-  const killProcessPromises = [...socketPidMap.values()].map((pid) => killProcess(pid, 'FFmpeg'));
-  if (testStreamProcessPid) {
-    killProcessPromises.push(killProcess(testStreamProcessPid, 'Test stream'));
-  }
-  const timeout = Date.now() + 10000;
-  while (sockets.size > 0 && Date.now() < timeout) {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-  await Promise.all(killProcessPromises);
-  if (Date.now() > timeout) {
-    logger.warn('Closed after timeout');
-  } else {
-    logger.info('Closed');
-  }
 };
 
 const getFFmpegProcesses = async () => new Promise((resolve, reject) => {
@@ -303,7 +287,38 @@ getFFmpegProcesses().then((processes) => {
   }
 });
 
+module.exports.shutdownStreamRouter = async () => {
+  active = false;
+  logger.info('Closing');
+  const killProcessPromises = [...socketPidMap.values()].map((pid) => killProcess(pid, 'FFmpeg'));
+  if (testStreamProcessPid) {
+    killProcessPromises.push(killProcess(testStreamProcessPid, 'Test stream'));
+  }
+  for (const socket of sockets.values()) {
+    socket.close(1000, 'Shutting down');
+  }
+  const timeout = Date.now() + 10000;
+  while (sockets.size > 0 && Date.now() < timeout) {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+  await Promise.all(killProcessPromises);
+  const ffmpegProcesses = await getFFmpegProcesses();
+  for (const pid of ffmpegProcesses) {
+    logger.info(`Killing orphaned FFmpeg process ${pid}`);
+    await killProcess(pid, 'FFmpeg (Orphan)');
+  }
+  await fs.remove(baseThumbnailPath);
+  if (Date.now() > timeout) {
+    logger.warn('Closed');
+  } else {
+    logger.info('Closed');
+  }
+};
+
+
 module.exports.getStreamRouter = () => {
+  active = true;
+
   logger.info('Attaching /api/1.0/stream');
 
   const router = Router({ mergeParams: true });
@@ -313,6 +328,11 @@ module.exports.getStreamRouter = () => {
   });
 
   router.get('/api/1.0/stream/:url/thumbnail.jpg', async (req: express$Request, res: express$Response) => {
+    if (!active) {
+      res.status(404).send('Server shutting down');
+      return;
+    }
+
     const streamUrl = req.params.url;
 
     await fs.ensureDir(baseThumbnailPath);
@@ -333,30 +353,28 @@ module.exports.getStreamRouter = () => {
   });
 
   router.ws('/api/1.0/stream/:url/', async (ws:Object, req: express$Request) => {
-    const url = req.params.url;
-
-    const pid = activeStreamUrls.get(url);
-    if (pid) {
-      killProcess(pid, 'FFmpeg');
-      for (let i = 0; i < 200; i += 1) {
-        if (!activeStreamUrls.has(url)) {
-          break;
-        }
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
-      if (activeStreamUrls.has(url)) {
-        logger.error(`Unable to start stream for ${url}, cannot kill process ${pid}`);
-        ws.close(1000, 'FFmpeg unavailable');
-        return;
-      }
+    if (!active) {
+      ws.close(1000, 'Shutting down');
+      return;
     }
+
+    const url = req.params.url;
 
     const socketId = randomInteger();
     sockets.set(socketId, ws);
-    startStream(socketId, url);
-    logger.info(`Opened socket (${socketId}) at path ${req.url}`);
+    logger.info(`Opened socket ID ${socketId} for stream ${req.url}`);
+
+    let hearteatTimeout;
+    ws.on('message', () => {
+      clearTimeout(hearteatTimeout);
+      hearteatTimeout = setTimeout(() => {
+        logger.warn(`Terminating socket ID ${socketId} for stream ${req.url} after heartbeat timeout`);
+        ws.terminate();
+      }, 6000);
+    });
 
     ws.on('close', () => {
+      clearTimeout(hearteatTimeout);
       try {
         logger.info(`Closed socket ${socketId}`);
         sockets.delete(socketId);
@@ -374,6 +392,26 @@ module.exports.getStreamRouter = () => {
         }
       }
     });
+
+    for (let i = 0; i < 100; i += 1) {
+      if (!activeStreamUrls.has(url) || !sockets.has(socketId)) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    if (!sockets.has(socketId)) {
+      logger.error(`Not starting  stream for ${url}, socket closed`);
+      return;
+    }
+
+    const activeStreamPid = activeStreamUrls.get(url);
+    if (activeStreamPid) {
+      logger.error(`Unable to start stream for ${url}, stream ${activeStreamPid} is active`);
+      ws.close(1000, `Unable to start stream for ${url}, stream ${activeStreamPid} is active`);
+      return;
+    }
+    startStream(socketId, url);
   });
 
   return router;

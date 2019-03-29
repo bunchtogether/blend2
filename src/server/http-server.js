@@ -33,17 +33,18 @@ module.exports = async function (app: express$Application, port:number) {
     });
     addExpressWs(app, httpsServer);
     logger.info(`Started listening on https://127.0.0.1:${port + 1}`);
-  }
-  await new Promise((resolve, reject) => {
-    httpServer = http.createServer(app).listen({ host: '127.0.0.1', port }, (error) => {
-      if (error) {
-        reject(error);
-      }
-      resolve();
+  } else {
+    await new Promise((resolve, reject) => {
+      httpServer = http.createServer(app).listen({ host: '127.0.0.1', port }, (error) => {
+        if (error) {
+          reject(error);
+        }
+        resolve();
+      });
     });
-  });
-  addExpressWs(app, httpServer);
-  logger.info(`Started listening on http://127.0.0.1:${port}`);
+    addExpressWs(app, httpServer);
+    logger.info(`Started listening on http://127.0.0.1:${port}`);
+  }
   const stopHttpServer = async function () {
     logger.debug(`Stopping listening on http://127.0.0.1:${port}`);
     await Promise.all([
