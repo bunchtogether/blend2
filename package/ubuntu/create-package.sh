@@ -31,7 +31,6 @@ sudo apt-get install -y jq
 cd ~/build
 
 export BLEND_VERSION=$(cat package.json | jq '.version' -r)
-
 yarn install --ignore-engines
 yarn build
 ./node_modules/.bin/pkg . --targets node10-linux-x64 --options trace-warnings
