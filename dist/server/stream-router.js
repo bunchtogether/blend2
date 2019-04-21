@@ -196,9 +196,11 @@ const startStream = async (socketId       , url       ) => {
     '-c:a', 'aac',
     '-af', 'aresample=async=176000',
     '-c:v', 'copy',
+    '-copyts',
+    '-muxdelay', '0',
+    '-muxpreload', '0',
     '-f', 'mp4',
-    '-frag_duration', '100000',
-    '-movflags', '+empty_moov+omit_tfhd_offset+default_base_moof',
+    '-movflags', '+empty_moov+omit_tfhd_offset+default_base_moof+frag_keyframe',
     'pipe:1',
     '-metadata', 'blend=1',
   ];
