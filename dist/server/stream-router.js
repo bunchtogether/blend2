@@ -147,17 +147,25 @@ const getThumbnail = async (streamUrl       , thumbnailPath       ) => {
     data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
   });
   await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      mainProcess.removeListener('error', handleError);
+      mainProcess.removeListener('close', handleClose);
+      killProcess(pid, "FFmpeg Thumbnail Process");
+      reject(new Error(`Thumbnail creation for stream ${streamUrl} timed out after 10000ms, killing process`));
+    }, 10000);
     const handleError = (error) => {
       if (error.stack) {
         error.stack.split('\n').forEach((line) => processLogger.error(`\t${line}`));
       } else {
         processLogger.error(error.message);
       }
+      clearTimeout(timeout);
       mainProcess.removeListener('error', handleError);
       mainProcess.removeListener('close', handleClose);
       reject(error);
     };
     const handleClose = (code) => {
+      clearTimeout(timeout);
       mainProcess.removeListener('error', handleError);
       mainProcess.removeListener('close', handleClose);
       if (code && code !== 255) {
@@ -188,7 +196,7 @@ const startStream = async (socketId       , url       ) => {
   const args = [
     '-v', 'error',
     '-nostats',
-    '-noaccurate_seek',
+    '-copyts',
     '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
     '-i', url,
@@ -196,7 +204,6 @@ const startStream = async (socketId       , url       ) => {
     '-c:a', 'aac',
     '-af', 'aresample=async=176000',
     '-c:v', 'copy',
-    '-copyts',
     '-muxdelay', '0',
     '-muxpreload', '0',
     '-f', 'mp4',
