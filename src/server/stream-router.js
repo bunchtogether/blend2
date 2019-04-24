@@ -150,7 +150,7 @@ const getThumbnail = async (streamUrl:string, thumbnailPath:string) => {
     const timeout = setTimeout(() => {
       mainProcess.removeListener('error', handleError);
       mainProcess.removeListener('close', handleClose);
-      killProcess(pid, "FFmpeg Thumbnail Process");
+      killProcess(pid, 'FFmpeg Thumbnail Process');
       reject(new Error(`Thumbnail creation for stream ${streamUrl} timed out after 10000ms, killing process`));
     }, 10000);
     const handleError = (error) => {

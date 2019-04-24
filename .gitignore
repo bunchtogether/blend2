@@ -40,3 +40,5 @@ update-vm.sh
 .env
 *files*
 *installers*
+
+.eslintcache

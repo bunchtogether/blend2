@@ -6,6 +6,7 @@ const { addShutdownHandler } = require('@bunchtogether/exit-handler');
 const getExpressApp = require('./express-app');
 const startHttpServer = require('./http-server');
 const { getStreamRouter, shutdownStreamRouter } = require('./stream-router');
+const { getMulticastAssistRouter, shutdownMulticastAssistRouter } = require('./multicast-assist-router');
 const { getLogRouter } = require('./log-router');
 const logger = require('./lib/logger')('Server');
 const { version } = require('../../package.json');
@@ -18,6 +19,7 @@ module.exports = async (port       ) => {
   app.use('', express.static(path.join(__dirname, '../static')));
   const stopHttpServer = await startHttpServer(app, port);
   app.use(getStreamRouter());
+  app.use(getMulticastAssistRouter());
   const shutdown = async () => {
     logger.info('Shutting down');
     try {
@@ -28,6 +30,16 @@ module.exports = async (port       ) => {
         error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
       } else {
         logger.error(`Error shutting down stream router: ${error.message}`);
+      }
+    }
+    try {
+      await shutdownMulticastAssistRouter();
+    } catch (error) {
+      if (error.stack) {
+        logger.error('Error shutting down multicast assist router:');
+        error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
+      } else {
+        logger.error(`Error shutting down multicast assist router: ${error.message}`);
       }
     }
     try {
