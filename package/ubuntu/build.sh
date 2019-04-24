@@ -3,7 +3,7 @@
 set -e
 
 export BLEND_VERSION=$(cat ../../package.json | jq '.version' -r)
-export BUILDER_IP_ADDRESS=192.168.1.9
+export BUILDER_IP_ADDRESS=10.0.1.172
 export BUILDER_PORT=22
 
 header() {
