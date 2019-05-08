@@ -1,6 +1,6 @@
 {
   "name": "blend",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "main": "dist/server/index.js",
   "bin": "dist/server/index.js",
   "repository": "https://github.com/bunchtogether/blend2.git",
