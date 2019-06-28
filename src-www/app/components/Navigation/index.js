@@ -4,25 +4,30 @@ import * as React from 'react';
 import NavigationBase from 'components/NavigationBase';
 import NavigationItem from 'components/NavigationItem';
 import DialogSettings from 'components/DialogSettings';
+import DialogStream from 'components/DialogStream';
 import SettingsIcon from '@material-ui/icons/Settings';
-import BubbleChartIcon from '@material-ui/icons/PlayCircleFilled';
-import { navigateStream } from 'containers/App/actions';
-import LogoSrc from '../../static/blend-white.png';
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import LogoSrc from '../../static/blend.svg';
 
 type Props = {
 };
 
 type State = {
   settingsDialogOpen: boolean,
+  streamDialogOpen: boolean,
 };
 
 export default class Navigation extends React.Component<Props, State> {
   state = {
     settingsDialogOpen: false,
+    streamDialogOpen: false,
   };
 
   openSettingsDialog = () => this.setState({ settingsDialogOpen: true });
   closeSettingsDialog = () => this.setState({ settingsDialogOpen: false });
+
+  openStreamDialog = () => this.setState({ streamDialogOpen: true });
+  closeStreamDialog = () => this.setState({ streamDialogOpen: false });
 
   renderHeader() {
     return (
@@ -48,14 +53,19 @@ export default class Navigation extends React.Component<Props, State> {
   }
 
   render() {
+    const { streamDialogOpen } = this.state;
     return (
       <React.Fragment>
         <NavigationBase header={this.renderHeader()} footer={this.renderFooter()}>
           <NavigationItem
             pathnames={['/stream']}
             label='Stream'
-            icon={<BubbleChartIcon />}
-            action={navigateStream}
+            icon={<PlayCircleFilledIcon />}
+            onClick={this.openStreamDialog}
+          />
+          <DialogStream
+            open={streamDialogOpen}
+            onClose={this.closeStreamDialog}
           />
         </NavigationBase>
       </React.Fragment>
