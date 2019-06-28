@@ -51,3 +51,4 @@ src/stream-to-pull-stream-alias.js
 src/static/player/hls.js
 dist
 dist-www
+src-www

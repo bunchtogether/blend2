@@ -42,5 +42,3 @@ update-vm.sh
 *installers*
 
 .eslintcache
-dist
-dist-www

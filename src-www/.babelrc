@@ -1,0 +1,38 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "modules": false
+      }
+    ],
+    "@babel/preset-react",
+    "@babel/preset-flow"
+  ],
+  "plugins": [
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-proposal-class-properties",
+  ],
+  "env": {
+    "production": {
+      "plugins": [
+        "transform-react-remove-prop-types",
+        "transform-inline-environment-variables",
+        "@babel/plugin-transform-react-inline-elements",
+        "@babel/plugin-transform-react-constant-elements"
+      ]
+    },
+    "development": {
+      "plugins": [
+        "inline-dotenv"
+      ]
+    },
+    "test": {
+      "plugins": [
+        "transform-inline-environment-variables",
+        "dynamic-import-node",
+        "@babel/plugin-transform-flow-strip-types"
+      ]
+    }
+  }
+}
