@@ -7,12 +7,12 @@ const crypto = require('crypto');
 const WebSocket = require('isomorphic-ws');
 const randomip = require('random-ip');
 const BufferList = require('bl');
-const getExpressApp = require('../src/server/express-app');
-const startHttpServer = require('../src/server/http-server');
-const RtpControlPacket = require('../src/server/multicast-assist-router/control-packet');
-const RtpPacket = require('../src/server/multicast-assist-router/packet');
-const AnnouncePacket = require('../src/server/multicast-assist-router/announce-packet');
-const { getMulticastAssistRouter, shutdownMulticastAssistRouter } = require('../src/server/multicast-assist-router');
+const getExpressApp = require('../src/express-app');
+const startHttpServer = require('../src/http-server');
+const RtpControlPacket = require('../src/multicast-assist-router/control-packet');
+const RtpPacket = require('../src/multicast-assist-router/packet');
+const AnnouncePacket = require('../src/multicast-assist-router/announce-packet');
+const { getMulticastAssistRouter, shutdownMulticastAssistRouter } = require('../src/multicast-assist-router');
 
 jest.setTimeout(30000);
 
@@ -67,17 +67,17 @@ const sendBuffer = async (bindAddress: string, multicastAddress:string, port: nu
     const packetSerialized = packet.serialize();
     await new Promise((resolve) => {
       socket.send(packetSerialized, 0, packetSerialized.length, port, multicastAddress, resolve);
-    }); 
+    });
   }
   const socketClose = new Promise((resolve, reject) => {
-     socket.once('error', reject);
-     socket.once('close', resolve);
-     socket.close();
+    socket.once('error', reject);
+    socket.once('close', resolve);
+    socket.close();
   });
   const controlSocketClose = new Promise((resolve, reject) => {
-     controlSocket.once('error', reject);
-     controlSocket.once('close', resolve);
-     controlSocket.close();
+    controlSocket.once('error', reject);
+    controlSocket.once('close', resolve);
+    controlSocket.close();
   });
   await Promise.all([socketClose, controlSocketClose]);
 };
@@ -186,6 +186,5 @@ describe('Multicast Assist', () => {
     expect(buffer).toEqual(bl.slice(0));
     await new Promise((resolve) => setTimeout(resolve, 100));
   });
-
 });
 

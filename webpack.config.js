@@ -1,5 +1,5 @@
 module.exports = {
-  entry: `${__dirname}/src/static/player/index.js`,
+  entry: `${__dirname}/src-www/player/index.js`,
   module: {
     rules: [
       {
@@ -15,7 +15,7 @@ module.exports = {
   mode: 'production',
   devtool: 'source-map',
   output: {
-    path: `${__dirname}/dist/static/player/`,
+    path: `${__dirname}/dist-www/player/`,
     publicPath: '/',
     filename: 'index.js',
   },

@@ -49,4 +49,5 @@ README.md
 src/stream-to-pull-stream-alias.js
 
 src/static/player/hls.js
-dist/static/**
+dist
+dist-www

@@ -9,6 +9,7 @@
 
 [libs]
 flow/
+flow-typed/
 
 [options]
 traces=3
