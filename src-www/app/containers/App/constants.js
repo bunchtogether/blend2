@@ -19,4 +19,4 @@ export const HIDE_NAVIGATION = 'web/App/HIDE_NAVIGATION';
 export const SEARCH = 'web/App/SEARCH';
 export const CLEAR_SEARCH = 'web/App/CLEAR_SEARCH';
 
-export const NAVIGATE_PREVIEW = 'web/App/NAVIGATE_PREVIEW';
+export const NAVIGATE_STREAM = 'web/App/NAVIGATE_STREAM';

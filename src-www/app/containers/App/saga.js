@@ -32,15 +32,19 @@ function* searchSaga(action: ActionType): Saga<*> {
   }
 }
 
-function* navigate(pathname: string): Saga<*> {
+function* navigate(pathname: string, action: ActionType): Saga<*> {
   yield put({ type: constants.HIDE_NAVIGATION, value: null });
   yield put({ type: constants.CLEAR_SEARCH, value: '' });
-  yield put(push(pathname));
+  if (action.value) {
+    yield put(push(`${pathname}/${encodeURIComponent(action.value)}`));
+  } else {
+    yield put(push(pathname));
+  }
 }
 
 export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.SEARCH, searchSaga);
-  yield takeLatest(constants.NAVIGATE_PREVIEW, navigate, '/preview');
+  yield takeLatest(constants.NAVIGATE_STREAM, navigate, '/stream');
   // yield call(setupSaga);
 }
 

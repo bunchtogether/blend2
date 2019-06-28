@@ -85,22 +85,15 @@ type State = {
   content: string,
 };
 
-const CLUSTER_SSL = 'Cluster SSL';
-const SERVER_SSL = 'Server SSL';
-const AWS_S3_GATEWAY = 'S3 Gateway';
-const AWS_S3_UPLOAD_REFLECTOR = 'S3 Upload Reflector';
-const PUBLIC_SERVER_CNAME = 'CNAME';
-const PINNING = 'Pinning';
-const PURGE = 'Purge';
-
-const SECTIONS = [CLUSTER_SSL, SERVER_SSL, AWS_S3_GATEWAY, AWS_S3_UPLOAD_REFLECTOR, PUBLIC_SERVER_CNAME, PINNING, PURGE];
+const DEVICE = 'Device';
+const SECTIONS = [DEVICE];
 
 const BLEND_VERSION = process.env.BLEND_VERSION || 'X.X.X';
 
 export class DialogSettings extends React.PureComponent<Props, State> { // eslint-disable-line react/prefer-stateless-function
   state = {
     anchorEl: null,
-    content: CLUSTER_SSL,
+    content: DEVICE,
   };
 
   handleClose = () => {
@@ -111,19 +104,7 @@ export class DialogSettings extends React.PureComponent<Props, State> { // eslin
 
   renderContent() {
     switch (this.state.content) {
-      case CLUSTER_SSL:
-        return <div />;
-      case SERVER_SSL:
-        return <div />;
-      case AWS_S3_GATEWAY:
-        return <div />;
-      case AWS_S3_UPLOAD_REFLECTOR:
-        return <div />;
-      case PUBLIC_SERVER_CNAME:
-        return <div />;
-      case PINNING:
-        return <div />;
-      case PURGE:
+      case DEVICE:
         return <div />;
       default:
         return null;

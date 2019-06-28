@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import Navigation from '../../components/Navigation';
 import Header from '../../components/Header';
 import Content from '../../components/Content';
-import { navigatePreview } from '../App/actions';
+import { navigateStream } from '../App/actions';
 import getColor from '../../lib/colors';
 
 const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
@@ -55,7 +55,7 @@ const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
 
 type Props = {
   classes: ClassesType,
-  navigatePreview: Function,
+  navigateStream: Function,
 };
 
 export class NotFoundPage extends React.PureComponent<Props> { // eslint-disable-line react/prefer-stateless-function
@@ -80,7 +80,7 @@ export class NotFoundPage extends React.PureComponent<Props> { // eslint-disable
             <Button
               variant="contained"
               color="secondary"
-              onClick={this.props.navigatePreview}
+              onClick={this.props.navigateStream}
               className={classes.button}
             >
               Return Home
@@ -94,7 +94,7 @@ export class NotFoundPage extends React.PureComponent<Props> { // eslint-disable
 
 const withConnect = connect(
   null,
-  (dispatch: Function): Object => bindActionCreators({ navigatePreview }, dispatch),
+  (dispatch: Function): Object => bindActionCreators({ navigateStream }, dispatch),
 );
 
 export default compose(

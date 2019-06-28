@@ -5,9 +5,9 @@ import NavigationBase from 'components/NavigationBase';
 import NavigationItem from 'components/NavigationItem';
 import DialogSettings from 'components/DialogSettings';
 import SettingsIcon from '@material-ui/icons/Settings';
-import BubbleChartIcon from '@material-ui/icons/BubbleChart';
-import { navigatePreview } from 'containers/App/actions';
-import LogoSrc from '../../static/blend.svg';
+import BubbleChartIcon from '@material-ui/icons/PlayCircleFilled';
+import { navigateStream } from 'containers/App/actions';
+import LogoSrc from '../../static/blend-white.png';
 
 type Props = {
 };
@@ -52,10 +52,10 @@ export default class Navigation extends React.Component<Props, State> {
       <React.Fragment>
         <NavigationBase header={this.renderHeader()} footer={this.renderFooter()}>
           <NavigationItem
-            pathnames={['/preview']}
-            label='Preview'
+            pathnames={['/stream']}
+            label='Stream'
             icon={<BubbleChartIcon />}
-            action={navigatePreview}
+            action={navigateStream}
           />
         </NavigationBase>
       </React.Fragment>

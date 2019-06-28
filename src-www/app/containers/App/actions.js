@@ -46,9 +46,9 @@ export function search(value: string): ActionType {
   };
 }
 
-export function navigatePreview(): ActionType {
+export function navigateStream(url?: string): ActionType {
   return {
-    type: constants.NAVIGATE_PREVIEW,
-    value: null,
+    type: constants.NAVIGATE_STREAM,
+    value: url,
   };
 }

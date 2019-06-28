@@ -16,7 +16,7 @@ module.exports = async (port:number) => {
   app.use(getLogRouter());
   app.use('/api/1.0/stream/:url', express.static(path.join(__dirname, '../dist-www/player')));
   app.use('/api/1.0/ffmpeg/:args', express.static(path.join(__dirname, '../dist-www/player')));
-  app.use('', express.static(path.join(__dirname, '../dist-www')));
+  app.use(['/stream*', '/'], express.static(path.join(__dirname, '../dist-www')));
   const stopHttpServer = await startHttpServer(app, port);
   app.use(getStreamRouter());
   app.use(getMulticastAssistRouter());

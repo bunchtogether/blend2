@@ -15,7 +15,7 @@ import * as React from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import Preview from 'containers/Preview';
+import Stream from 'containers/Stream';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Notifications from 'components/Notifications';
 import theme from './theme';
@@ -26,8 +26,9 @@ export default function App() {
       <CssBaseline />
       <Notifications />
       <Switch>
-        <Redirect exact push from='' to='/preview' />
-        <Route exact path='/preview' component={Preview} />
+        <Redirect exact push from='' to='/stream' />
+        <Route exact path='/stream' component={Stream} />
+        <Route exact path='/stream/:url' component={Stream} />
         <Route component={NotFoundPage} />
       </Switch>
     </MuiThemeProvider>
