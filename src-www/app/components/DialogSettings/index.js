@@ -11,6 +11,7 @@ import withMobileDialog from '@material-ui/core/withMobileDialog';
 import { Helmet } from 'react-helmet';
 import { withStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import SettingsDisplay from 'components/SettingsDisplay';
 
 const styles = (theme: Object) => ({
   paper: {
@@ -85,15 +86,15 @@ type State = {
   content: string,
 };
 
-const DEVICE = 'Device';
-const SECTIONS = [DEVICE];
+const DISPLAY = 'Display';
+const SECTIONS = [DISPLAY];
 
 const BLEND_VERSION = process.env.BLEND_VERSION || 'X.X.X';
 
 export class DialogSettings extends React.PureComponent<Props, State> { // eslint-disable-line react/prefer-stateless-function
   state = {
     anchorEl: null,
-    content: DEVICE,
+    content: DISPLAY,
   };
 
   handleClose = () => {
@@ -104,8 +105,8 @@ export class DialogSettings extends React.PureComponent<Props, State> { // eslin
 
   renderContent() {
     switch (this.state.content) {
-      case DEVICE:
-        return <div />;
+      case DISPLAY:
+        return <SettingsDisplay />;
       default:
         return null;
     }

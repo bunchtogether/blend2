@@ -59,3 +59,10 @@ export function navigateRemote(): ActionType {
     value: null,
   };
 }
+
+export function pairDisplay(type: string): ActionType {
+  return {
+    type: constants.PAIR_DISPLAY,
+    value: type,
+  };
+}

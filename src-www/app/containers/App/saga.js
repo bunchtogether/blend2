@@ -2,13 +2,17 @@
 
 import type { Saga } from 'redux-saga';
 import { push } from 'connected-react-router';
-import { select, put, takeLatest } from 'redux-saga/effects';
+import { select, put, takeLatest, call } from 'redux-saga/effects';
+import superagent from 'superagent';
 // import { braidClient } from '@bunchtogether/boost-client';
 import * as constants from './constants';
 
-// const BRAID_PROTOCOL = process.env.BLEND_PROTOCOL ? (process.env.BLEND_PROTOCOL === 'https' ? 'wss' : 'ws') : (window.location.protocol === 'http:' ? 'ws' : 'wss'); // eslint-disable-line no-nested-ternary
-// const PROJECT_HOST = process.env.BLEND_HOST || window.location.hostname;
-// const PROJECT_PORT = process.env.BLEND_PORT || window.location.port;
+const PROJECT_PROTOCOL = process.env.BLEND_PROTOCOL || window.location.protocol; // eslint-disable-line no-nested-ternary
+const PROJECT_HOST = process.env.BLEND_HOST || window.location.hostname;
+const PROJECT_PORT = process.env.BLEND_PORT || window.location.port;
+const BASE_API_URL = `${PROJECT_PROTOCOL}://${PROJECT_HOST}:${PROJECT_PORT}/api/1.0`;
+
+// const BRAID_PROTOCOL = PROJECT_PROTOCOL === 'https' ? 'wss' : 'ws';
 
 // function* braidConnectionSaga(): Saga<*> {
 //   const braidUrl = `${BRAID_PROTOCOL}://${PROJECT_HOST}:${PROJECT_PORT}/braid`;
@@ -32,6 +36,11 @@ function* searchSaga(action: ActionType): Saga<*> {
   }
 }
 
+function* pairDisplaySaga(action: ActionType): Saga<*> {
+  const result = yield call(() => superagent.post(`${BASE_API_URL}/pair`).send({ type: action.value }));
+  console.log(result);
+}
+
 function* navigate(pathname: string, action: ActionType): Saga<*> {
   yield put({ type: constants.HIDE_NAVIGATION, value: null });
   yield put({ type: constants.CLEAR_SEARCH, value: '' });
@@ -44,6 +53,7 @@ function* navigate(pathname: string, action: ActionType): Saga<*> {
 
 export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.SEARCH, searchSaga);
+  yield takeLatest(constants.PAIR_DISPLAY, pairDisplaySaga);
   yield takeLatest(constants.NAVIGATE_STREAM, navigate, '/stream');
   yield takeLatest(constants.NAVIGATE_REMOTE, navigate, '/remote');
   // yield call(setupSaga);

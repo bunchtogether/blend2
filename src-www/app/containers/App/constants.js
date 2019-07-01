@@ -21,3 +21,5 @@ export const CLEAR_SEARCH = 'web/App/CLEAR_SEARCH';
 
 export const NAVIGATE_STREAM = 'web/App/NAVIGATE_STREAM';
 export const NAVIGATE_REMOTE = 'web/App/NAVIGATE_REMOTE';
+
+export const PAIR_DISPLAY = 'web/App/PAIR_DISPLAY';

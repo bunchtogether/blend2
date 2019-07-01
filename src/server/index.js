@@ -1,47 +1,20 @@
 // @flow
 
-const path = require('path');
-const express = require('express');
 const { addShutdownHandler } = require('@bunchtogether/exit-handler');
 const getExpressApp = require('./express-app');
 const startHttpServer = require('./http-server');
-const { getStreamRouter, shutdownStreamRouter } = require('../routers/stream');
-const { getMulticastAssistRouter, shutdownMulticastAssistRouter } = require('../routers/multicast-assist');
-const { getLogRouter } = require('../routers/log');
+const { getRouters, shutdownRouters } = require('../routers');
 const logger = require('../lib/logger')('Server');
 const { version } = require('../../package.json');
 
 module.exports = async (port:number) => {
   const app = getExpressApp();
-  app.use(getLogRouter());
-  app.use('/api/1.0/stream/:url', express.static(path.join(__dirname, '../../dist-www')));
-  app.use('/api/1.0/ffmpeg/:args', express.static(path.join(__dirname, '../../dist-www')));
-  app.use(['/stream*', '/'], express.static(path.join(__dirname, '../../dist-www')));
   const stopHttpServer = await startHttpServer(app, port);
-  app.use(getStreamRouter());
-  app.use(getMulticastAssistRouter());
+  app.use(getRouters());
+
   const shutdown = async () => {
     logger.info('Shutting down');
-    try {
-      await shutdownStreamRouter();
-    } catch (error) {
-      if (error.stack) {
-        logger.error('Error shutting down stream router:');
-        error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
-      } else {
-        logger.error(`Error shutting down stream router: ${error.message}`);
-      }
-    }
-    try {
-      await shutdownMulticastAssistRouter();
-    } catch (error) {
-      if (error.stack) {
-        logger.error('Error shutting down multicast assist router:');
-        error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
-      } else {
-        logger.error(`Error shutting down multicast assist router: ${error.message}`);
-      }
-    }
+    await shutdownRouters();
     try {
       await stopHttpServer();
     } catch (error) {
