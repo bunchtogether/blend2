@@ -20,3 +20,4 @@ export const SEARCH = 'web/App/SEARCH';
 export const CLEAR_SEARCH = 'web/App/CLEAR_SEARCH';
 
 export const NAVIGATE_STREAM = 'web/App/NAVIGATE_STREAM';
+export const NAVIGATE_REMOTE = 'web/App/NAVIGATE_REMOTE';

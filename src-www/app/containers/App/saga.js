@@ -45,6 +45,7 @@ function* navigate(pathname: string, action: ActionType): Saga<*> {
 export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.SEARCH, searchSaga);
   yield takeLatest(constants.NAVIGATE_STREAM, navigate, '/stream');
+  yield takeLatest(constants.NAVIGATE_REMOTE, navigate, '/remote');
   // yield call(setupSaga);
 }
 

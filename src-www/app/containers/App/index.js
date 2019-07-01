@@ -16,6 +16,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import Stream from 'containers/Stream';
+import Remote from 'containers/Remote';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Notifications from 'components/Notifications';
 import theme from './theme';
@@ -30,6 +31,7 @@ export default function App() {
         <Route exact path='/' component={() => <Redirect exact push from='' to='/stream' />} />
         <Route exact path='/stream' component={Stream} />
         <Route exact path='/stream/:url' component={Stream} />
+        <Route exact path='/remote' component={Remote} />
         <Route component={NotFoundPage} />
       </Switch>
     </MuiThemeProvider>

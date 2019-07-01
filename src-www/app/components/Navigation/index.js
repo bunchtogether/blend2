@@ -5,8 +5,10 @@ import NavigationBase from 'components/NavigationBase';
 import NavigationItem from 'components/NavigationItem';
 import DialogSettings from 'components/DialogSettings';
 import DialogStream from 'components/DialogStream';
+import { navigateRemote } from 'containers/App/actions';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
 import LogoSrc from '../../static/blend.svg';
 
 type Props = {
@@ -62,6 +64,12 @@ export default class Navigation extends React.Component<Props, State> {
             label='Stream'
             icon={<PlayCircleFilledIcon />}
             onClick={this.openStreamDialog}
+          />
+          <NavigationItem
+            pathnames={['/remote']}
+            label='Remote'
+            icon={<SettingsRemoteIcon />}
+            action={navigateRemote}
           />
           <DialogStream
             open={streamDialogOpen}

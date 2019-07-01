@@ -52,3 +52,10 @@ export function navigateStream(url?: string): ActionType {
     value: url,
   };
 }
+
+export function navigateRemote(): ActionType {
+  return {
+    type: constants.NAVIGATE_REMOTE,
+    value: null,
+  };
+}
