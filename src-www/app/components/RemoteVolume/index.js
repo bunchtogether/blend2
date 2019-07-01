@@ -2,44 +2,28 @@
 
 import * as React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/lab/Slider';
-import VolumeDown from '@material-ui/icons/VolumeDown';
-import VolumeUp from '@material-ui/icons/VolumeUp';
-import { grey } from '@material-ui/core/colors';
+import VolumeUpIcon from '@material-ui/icons/VolumeUp';
+import RemoteSection from 'components/RemoteSection';
 
 const styles = (theme: Object) => ({
-  volumeTextContainer: {
-    alignSelf: 'flex-start',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginBottom: theme.spacing(1),
-  },
-  title: {
-    fontWeight: 700,
-    fontSize: 16,
-  },
-  value: {
-    fontSize: 16,
-    color: grey[600],
-  },
   root: {
-    marginTop: -2,
+    marginLeft: 8,
   },
   rail: {
     marginTop: 2,
+    backgroundColor: theme.palette.secondary.light,
   },
   track: {
     height: 4,
     marginBottom: 3,
+    backgroundColor: theme.palette.secondary.main,
   },
   thumb: {
     width: 15,
     height: 15,
     paddingBottom: -7,
+    backgroundColor: theme.palette.secondary.main,
   },
 });
 
@@ -60,32 +44,24 @@ class RemoteVolume extends React.Component<Props, State> {
     const { classes } = this.props;
     const { volume } = this.state;
     return (
-      <React.Fragment>
-        <div className={classes.volumeTextContainer}>
-          <Typography className={classes.title}>Volume:&nbsp;</Typography>
-          <Typography className={classes.value}>{volume}</Typography>
+      <RemoteSection
+        icon={<VolumeUpIcon />}
+        title='Volume:'
+        value={volume}
+      >
+        <div className={classes.root}>
+          <Slider
+            value={volume}
+            onChange={(event: Event, vol: number) => this.setState({ volume: vol })}
+            classes={{
+              track: classes.track,
+              thumb: classes.thumb,
+              rail: classes.rail,
+            }}
+            color='secondary'
+          />
         </div>
-        <Grid container spacing={2}>
-          <Grid item>
-            <VolumeDown />
-          </Grid>
-          <Grid item xs>
-            <Slider
-              value={volume}
-              onChange={(event: Event, vol: number) => this.setState({ volume: vol })}
-              classes={{
-                root: classes.root,
-                track: classes.track,
-                thumb: classes.thumb,
-                rail: classes.rail,
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <VolumeUp />
-          </Grid>
-        </Grid>
-      </React.Fragment>
+      </RemoteSection>
     );
   }
 }

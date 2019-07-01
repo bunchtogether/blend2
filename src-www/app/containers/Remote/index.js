@@ -8,19 +8,19 @@ import { compose, bindActionCreators } from 'redux';
 import Navigation from 'components/Navigation';
 import Content from 'components/Content';
 import Header from 'components/Header';
+import RemotePower from 'components/RemotePower';
 import RemoteVolume from 'components/RemoteVolume';
+import RemoteSource from 'components/RemoteSource';
 
 const styles = (theme: Object) => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'flex-start',
     width: '100%',
     height: '100%',
     paddingTop: theme.spacing(8),
-    paddingRight: theme.spacing(8),
-    paddingLeft: theme.spacing(8),
   },
 });
 
@@ -43,7 +43,9 @@ export class Stream extends React.PureComponent<Props, State> { // eslint-disabl
         <Navigation />
         <Content>
           <div className={classes.container}>
+            <RemotePower />
             <RemoteVolume />
+            <RemoteSource />
           </div>
         </Content>
       </React.Fragment>

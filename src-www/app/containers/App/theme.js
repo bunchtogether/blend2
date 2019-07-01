@@ -1,7 +1,7 @@
 // @flow
 
 import { createMuiTheme } from '@material-ui/core/styles';
-import { red, orange } from '@material-ui/core/colors';
+import { red, orange, pink } from '@material-ui/core/colors';
 
 const muiTheme = createMuiTheme({
   navigationWidth: 190,
@@ -13,9 +13,9 @@ const muiTheme = createMuiTheme({
       contrastText: 'rgba(255, 255, 255, 1)',
     },
     secondary: {
-      light: '#63a4f1',
-      main: '#1976d2',
-      dark: '#004ba0',
+      light: pink[200], // '#63a4f1',
+      main: pink[400], // '#1976d2',
+      dark: pink[600], // '#004ba0',
       contrastText: 'rgba(255, 255, 255, 1)',
     },
     background: {
