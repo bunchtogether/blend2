@@ -2,6 +2,8 @@
 
 .*/node_modules/documentation/*
 .*/dist/.*.flow
+.*/dist-www/.*.flow
+.*/src-www/.*
 .*/node_modules/.*/test/*
 .*/node_modules/.*/tests/*
 

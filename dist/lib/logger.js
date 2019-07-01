@@ -32,7 +32,7 @@ module.exports = (name        ) => {
     input: 'grey',
     silly: 'magenta',
   });
-  const logger = createLogger({
+  const logger                    = createLogger({
     transports: [
       new transports.Console({
         debugStdout: false,
@@ -45,6 +45,15 @@ module.exports = (name        ) => {
       }),
     ],
   });
+
+  logger.errorStack = (error        ) => {
+    if (error.stack) {
+      error.stack.split('\n').forEach((line) => logger.error(`\t${line}`));
+    } else {
+      logger.error(error.message);
+    }
+  };
+
   loggers[name] = logger;
   return logger;
 };

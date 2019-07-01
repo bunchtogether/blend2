@@ -7,12 +7,12 @@ const crypto = require('crypto');
 const WebSocket = require('isomorphic-ws');
 const randomip = require('random-ip');
 const BufferList = require('bl');
-const getExpressApp = require('../src/express-app');
-const startHttpServer = require('../src/http-server');
-const RtpControlPacket = require('../src/multicast-assist-router/control-packet');
-const RtpPacket = require('../src/multicast-assist-router/packet');
-const AnnouncePacket = require('../src/multicast-assist-router/announce-packet');
-const { getMulticastAssistRouter, shutdownMulticastAssistRouter } = require('../src/multicast-assist-router');
+const getExpressApp = require('../src/server/express-app');
+const startHttpServer = require('../src/server/http-server');
+const RtpControlPacket = require('../src/routers/multicast-assist/control-packet');
+const RtpPacket = require('../src/routers/multicast-assist/packet');
+const AnnouncePacket = require('../src/routers/multicast-assist/announce-packet');
+const { getMulticastAssistRouter, shutdownMulticastAssistRouter } = require('../src/routers/multicast-assist');
 
 jest.setTimeout(30000);
 
