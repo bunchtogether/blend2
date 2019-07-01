@@ -26,7 +26,8 @@ export default function App() {
       <CssBaseline />
       <Notifications />
       <Switch>
-        <Redirect exact push from='' to='/stream' />
+
+        <Route exact path='/' component={() => <Redirect exact push from='' to='/stream' />} />
         <Route exact path='/stream' component={Stream} />
         <Route exact path='/stream/:url' component={Stream} />
         <Route component={NotFoundPage} />

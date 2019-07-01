@@ -13,8 +13,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { fromJS } from 'immutable';
 import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'react-router-redux';
-import createHistory from 'history/createBrowserHistory';
+import { ConnectedRouter } from 'connected-react-router/immutable';
+import history from 'utils/history';
 
 // Import root app
 import App from 'containers/App';
@@ -29,7 +29,6 @@ import { translationMessages } from './i18n';
 
 // Create redux store with history
 const initialState = fromJS({});
-const history = createHistory();
 const store = configureStore(initialState, history);
 const MOUNT_NODE = document.getElementById('app');
 

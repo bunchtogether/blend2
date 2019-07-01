@@ -1,7 +1,7 @@
 // @flow
 
 import type { Saga } from 'redux-saga';
-import { push } from 'react-router-redux';
+import { push } from 'connected-react-router';
 import { select, put, takeLatest } from 'redux-saga/effects';
 // import { braidClient } from '@bunchtogether/boost-client';
 import * as constants from './constants';
