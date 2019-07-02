@@ -78,11 +78,36 @@ class VizioAdapter {
     return result;
   }
 
+  async setPower(power: boolean) {
+    if (power) {
+      await this.vizio.control.power.on();
+      return true;
+    }
+    await this.vizio.control.power.off();
+    return false;
+  }
+
+  async setVolume(volume: number) {
+    const { PARAMETERS: { VALUE } } = await this.vizio.control.volume.set(volume);
+    return VALUE;
+  }
+
+  async setSource(source: string) {
+    const { PARAMETERS: { VALUE } } = await this.vizio.input.set(source);
+    return VALUE;
+  }
+
   async getDevice() {
     const { ITEMS: [{ VALUE: power }] } = await this.vizio.power.currentMode();
     const { ITEMS: [{ VALUE: source }] } = await this.vizio.input.current();
     const { ITEMS: sources } = await this.vizio.input.list();
     const { ITEMS: [{ VALUE: volume }] } = await this.vizio.control.volume.get();
+    let sourceName;
+    sources.forEach((sourceData: Object) => {
+      if (sourceData.CNAME === source) {
+        sourceName = sourceData.VALUE.NAME;
+      }
+    });
     return {
       ip: this.ip,
       name: this.name,
@@ -90,9 +115,9 @@ class VizioAdapter {
       model: this.model,
       type: VIZIO,
       power: !!power,
-      source,
+      source: sourceName || source,
       volume,
-      sources: sources.map((sourceData: Object) => sourceData.CNAME),
+      sources: sources.map((sourceData: Object) => sourceData.VALUE.NAME),
     };
   }
 

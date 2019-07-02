@@ -60,6 +60,27 @@ export function navigateRemote(): ActionType {
   };
 }
 
+export function setPower(power: boolean): ActionType {
+  return {
+    type: constants.SET_POWER,
+    value: power,
+  };
+}
+
+export function setVolume(volume: boolean): ActionType {
+  return {
+    type: constants.SET_VOLUME,
+    value: volume,
+  };
+}
+
+export function setSource(source: string): ActionType {
+  return {
+    type: constants.SET_SOURCE,
+    value: source,
+  };
+}
+
 export function getPairedDevice(): ActionType {
   return {
     type: constants.GET_PAIRED_DEVICE,

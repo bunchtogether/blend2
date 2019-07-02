@@ -22,10 +22,20 @@ export const CLEAR_SEARCH = 'web/App/CLEAR_SEARCH';
 export const NAVIGATE_STREAM = 'web/App/NAVIGATE_STREAM';
 export const NAVIGATE_REMOTE = 'web/App/NAVIGATE_REMOTE';
 
+
+export const SET_POWER = 'web/App/SET_POWER';
+export const SET_POWER_SUCCESS = 'web/App/SET_POWER_SUCCESS';
+export const SET_POWER_ERROR = 'web/App/SET_POWER_ERROR';
+export const SET_VOLUME = 'web/App/SET_VOLUME';
+export const SET_VOLUME_SUCCESS = 'web/App/SET_VOLUME_SUCCESS';
+export const SET_VOLUME_ERROR = 'web/App/SET_VOLUME_ERROR';
+export const SET_SOURCE = 'web/App/SET_SOURCE';
+export const SET_SOURCE_SUCCESS = 'web/App/SET_SOURCE_SUCCESS';
+export const SET_SOURCE_ERROR = 'web/App/SET_SOURCE_ERROR';
+
 export const GET_PAIRED_DEVICE = 'web/App/GET_PAIRED_DEVICE';
 export const GET_PAIRED_DEVICE_SUCCESS = 'web/App/GET_PAIRED_DEVICE_SUCCESS';
 export const GET_PAIRED_DEVICE_ERROR = 'web/App/GET_PAIRED_DEVICE_ERROR';
-
 export const UNPAIR_DEVICE = 'web/App/UNPAIR_DEVICE';
 export const UNPAIR_DEVICE_SUCCESS = 'web/App/UNPAIR_DEVICE_SUCCESS';
 export const UNPAIR_DEVICE_ERROR = 'web/App/UNPAIR_DEVICE_ERROR';

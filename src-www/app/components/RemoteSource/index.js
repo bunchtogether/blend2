@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import InputIcon from '@material-ui/icons/Input';
 import RemoteSection from 'components/RemoteSection';
 import { sourceSelector, sourcesSelector } from 'containers/App/selectors';
+import { setSource } from 'containers/App/actions';
 
 const styles = (theme: Object) => ({
   sourcesContainer: {
@@ -21,23 +22,26 @@ const styles = (theme: Object) => ({
 
 type Props = {
   classes: Object,
+  setSource: Function,
   source: string, // eslint-disable-line react/no-unused-prop-types
   sources: Array<string>,
 };
 
 type State = {
+  sourceProp: string,
   source: string,
 };
 
 class RemoteSource extends React.Component<Props, State> {
   static getDerivedStateFromProps(props, state) {
-    if (props.source !== state.source) {
-      return { source: props.source };
+    if (props.source !== state.sourceProp) {
+      return { source: props.source, sourceProp: props.source };
     }
     return null;
   }
 
   state = {
+    sourceProp: 'tv',
     source: 'tv',
   }
 
@@ -51,21 +55,20 @@ class RemoteSource extends React.Component<Props, State> {
         value={source}
       >
         <div className={classes.sourcesContainer}>
-          {(sources || []).map((src: string) => {
-            if (src === source) {
-              return null;
-            }
-            return (
-              <Button
-                key={src}
-                color='secondary'
-                variant='outlined'
-                className={classes.button}
-              >
-                {src}
-              </Button>
-            );
-          })}
+          {(sources || []).map((src: string) => (
+            <Button
+              key={src}
+              color='secondary'
+              variant='outlined'
+              className={classes.button}
+              onClick={() => {
+                this.setState({ source: src });
+                this.props.setSource(src);
+              }}
+            >
+              {src}
+            </Button>
+          ))}
         </div>
       </RemoteSection>
     );
@@ -75,7 +78,7 @@ class RemoteSource extends React.Component<Props, State> {
 const withConnect = connect((state: StateType) => ({
   source: sourceSelector(state),
   sources: sourcesSelector(state),
-}), (dispatch: Function): Object => bindActionCreators({ }, dispatch));
+}), (dispatch: Function): Object => bindActionCreators({ setSource }, dispatch));
 
 export default compose(
   withStyles(styles),

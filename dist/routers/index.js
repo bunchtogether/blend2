@@ -6,6 +6,7 @@ const { getStreamRouter, shutdownStreamRouter } = require('./stream');
 const { getMulticastAssistRouter, shutdownMulticastAssistRouter } = require('./multicast-assist');
 const { getLogRouter } = require('./log');
 const { getPairRouter } = require('./pair');
+const { getDeviceRouter } = require('./device');
 const logger = require('../lib/logger')('Routers');
 
 function getRouters() {
@@ -18,6 +19,7 @@ function getRouters() {
   routers.use('/api/1.0/ffmpeg/:args', express.static(path.join(__dirname, '../../dist-www')));
   routers.use(['/stream*', '/'], express.static(path.join(__dirname, '../../dist-www')));
   routers.use(getPairRouter());
+  routers.use(getDeviceRouter());
 
   return routers;
 }

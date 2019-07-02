@@ -25,6 +25,33 @@ function* searchSaga(action: ActionType): Saga<*> {
   }
 }
 
+function* setPowerSaga(action: ActionType): Saga<*> {
+  try {
+    const { body: { power } } = yield call(() => superagent.post(`${BASE_API_URL}/device/power`).send({ power: action.value }));
+    yield put({ type: constants.SET_POWER_SUCCESS, value: power });
+  } catch (error) {
+    yield put({ type: constants.SET_POWER_ERROR, value: error });
+  }
+}
+
+function* setVolumeSaga(action: ActionType): Saga<*> {
+  try {
+    const { body: { volume } } = yield call(() => superagent.post(`${BASE_API_URL}/device/volume`).send({ volume: action.value }));
+    yield put({ type: constants.SET_VOLUME_SUCCESS, value: volume });
+  } catch (error) {
+    yield put({ type: constants.SET_VOLUME_ERROR, value: error });
+  }
+}
+
+function* setSourceSaga(action: ActionType): Saga<*> {
+  try {
+    const { body: { source } } = yield call(() => superagent.post(`${BASE_API_URL}/device/source`).send({ source: action.value }));
+    yield put({ type: constants.SET_SOURCE_SUCCESS, value: source });
+  } catch (error) {
+    yield put({ type: constants.SET_SOURCE_ERROR, value: error });
+  }
+}
+
 function* getPairedDeviceSaga(): Saga<*> {
   try {
     const { body: { device } } = yield call(() => superagent.get(`${BASE_API_URL}/pair`));
@@ -98,6 +125,9 @@ function* navigate(pathname: string, action: ActionType): Saga<*> {
 
 export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.SEARCH, searchSaga);
+  yield takeLatest(constants.SET_POWER, setPowerSaga);
+  yield takeLatest(constants.SET_VOLUME, setVolumeSaga);
+  yield takeLatest(constants.SET_SOURCE, setSourceSaga);
   yield takeLatest(constants.GET_PAIRED_DEVICE, getPairedDeviceSaga);
   yield takeLatest(constants.UNPAIR_DEVICE, unpairDeviceSaga);
   yield takeLatest(constants.DISCOVER_DEVICES, discoverDevicesSaga);
