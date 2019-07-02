@@ -2,7 +2,7 @@
 
 const VizioAdapter = require('./vizio');
 
-let activeAdapter;
+let activeAdapter = null;
 const setActiveAdapter = (adapter        ) => {
   activeAdapter = adapter;
 };

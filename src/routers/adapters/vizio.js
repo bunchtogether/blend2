@@ -5,6 +5,9 @@ const logger = require('../../lib/logger')('Vizio');
 
 type DataType = {
   ip: string,
+  name: string,
+  manufacturer: string,
+  model: string,
 };
 
 type PairDataType = {
@@ -30,11 +33,17 @@ class VizioAdapter {
     });
     return devices;
   }
+
   constructor(data: DataType) {
     if (!data || !data.ip) {
-      logger.error('Can not instantiate VizioAdapter. Missing required parameter ip');
-      throw new Error('Can not instantiate VizioAdapter. Missing required parameter ip');
+      logger.error('Can not instantiate. Missing required parameter ip');
+      throw new Error('Can not instantiate. Missing required parameter ip');
     }
+    this.ip = data.ip;
+    this.name = data.name;
+    this.manufacturer = data.manufacturer;
+    this.model = data.model;
+    this.ready = false;
     this.vizio = new Smartcast(data.ip);
   }
 
@@ -42,14 +51,31 @@ class VizioAdapter {
     return this.vizio.pairing.initiate();
   }
 
-  pair(data: PairDataType) {
+  async pair(data: PairDataType) {
     if (!data || !data.code) {
       logger.error('Can not pair. Missing required parameter code');
       throw new Error('Can not pair. Missing required parameter code');
     }
-    return this.vizio.pairing.pair(data.code);
+    const result = await this.vizio.pairing.pair(data.code);
+    this.ready = true;
+    return result;
   }
 
+  getDevice() {
+    return {
+      ip: this.ip,
+      name: this.name,
+      manufacturer: this.manufacturer,
+      model: this.model,
+      type: 'vizio',
+    };
+  }
+
+  ip: string;
+  name: string;
+  manufacturer: string;
+  model: string;
+  ready: boolean;
   vizio: Object;
 }
 

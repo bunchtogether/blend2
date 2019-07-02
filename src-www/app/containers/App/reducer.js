@@ -8,6 +8,7 @@ const initialState = fromJS({
   navigationVisible: false,
   searchQuery: '',
   notifications: OrderedSet(),
+  pairedDevice: null,
   discoveryDeviceType: '',
   discoveredDevices: null,
   startPairingSuccess: null,
@@ -27,6 +28,8 @@ export default (state: AppStateType = initialState, action: ActionType) => {
       return state.set('searchQuery', action.value);
     case constants.CLEAR_SEARCH:
       return state.set('searchQuery', '');
+    case constants.GET_PAIRED_DEVICE_SUCCESS:
+      return state.set('pairedDevice', action.value);
     case constants.DISCOVER_DEVICES:
       return state.set('discoveryDeviceType', action.value).set('discoveredDevices', null);
     case constants.SET_DISCOVERED_DEVICES:

@@ -6,6 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import TvIcon from '@material-ui/icons/Tv';
 
 const styles = () => ({
@@ -14,13 +15,14 @@ const styles = () => ({
 type Props = {
   device: Object,
   onClick: Function,
+  secondaryAction?: React.Node,
 };
 
 class ListItemDevice extends React.PureComponent<Props> {
   render() {
-    const { device } = this.props;
+    const { device, secondaryAction } = this.props;
     return (
-      <ListItem button onClick={this.props.onClick}>
+      <ListItem button={!!this.props.onClick} onClick={this.props.onClick}>
         <ListItemIcon>
           <TvIcon />
         </ListItemIcon>
@@ -28,6 +30,11 @@ class ListItemDevice extends React.PureComponent<Props> {
           primary={`${device.name} - ${device.ip}`}
           secondary={`${device.manufacturer} ${device.model}`}
         />
+        {secondaryAction ? (
+          <ListItemSecondaryAction>
+            {secondaryAction}
+          </ListItemSecondaryAction>
+        ) : null}
       </ListItem>
     );
   }

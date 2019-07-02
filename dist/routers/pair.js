@@ -74,17 +74,32 @@ module.exports.getPairRouter = () => {
     if (!activeAdapter) {
       logger.error('Failed to pair: no active adapter');
       res.status(400).send('Failed to pair. Pairing not initialized');
+      return;
     }
 
     try {
       const result = await activeAdapter.pair(data);
-      console.log('PAIR RESULT', result);
+      logger.info(`Pairing info: ${JSON.stringify(result)}`);
       res.sendStatus(200);
     } catch (error) {
       logger.error('Error pairing device');
       logger.errorStack(error);
       res.status(400).send('Error pairing device');
     }
+  });
+
+  router.get('/api/1.0/pair', async (req                 , res                  ) => {
+    const activeAdapter = adapters.getActiveAdapter();
+    if (!activeAdapter || !activeAdapter.ready) {
+      res.status(200).send({ device: null });
+      return;
+    }
+    res.status(200).send({ device: activeAdapter.getDevice() });
+  });
+
+  router.post('/api/1.0/unpair', async (req                 , res                  ) => {
+    adapters.setActiveAdapter(null);
+    res.sendStatus(200);
   });
 
   return router;

@@ -13,8 +13,10 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
-import { resetPairing } from 'containers/App/actions';
-import { pairDeviceSuccessSelector, discoveryDeviceTypeSelector } from 'containers/App/selectors';
+import List from '@material-ui/core/List';
+import ListItemDevice from 'components/ListItemDevice';
+import { resetPairing, unpairDevice } from 'containers/App/actions';
+import { pairDeviceSuccessSelector, discoveryDeviceTypeSelector, pairedDeviceSelector } from 'containers/App/selectors';
 import { capitalize } from '../../utils';
 
 const styles = (theme: Object) => ({
@@ -51,8 +53,10 @@ const styles = (theme: Object) => ({
 type Props = {
   classes: Object,
   resetPairing: Function,
+  unpairDevice: Function,
   pairDeviceSuccess: ?boolean,
   discoveryDeviceType: string,
+  pairedDevice: Object,
 };
 
 type State = {
@@ -70,7 +74,15 @@ class SettingsDisplay extends React.Component<Props, State> {
     activeStep: 0,
   };
 
+  componentDidMount() {
+    this.reset();
+  }
+
   componentWillUnmount() {
+    this.reset();
+  }
+
+  reset = () => {
     this.setState({ activeStep: 0 });
     this.props.resetPairing();
   }
@@ -107,8 +119,30 @@ class SettingsDisplay extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, pairedDevice } = this.props;
     const { activeStep } = this.state;
+    if (pairedDevice) {
+      return (
+        <div>
+          <Typography className={classes.title} variant='h6'>Paired display</Typography>
+          <List>
+            <ListItemDevice
+              device={pairedDevice}
+              secondaryAction={(
+                <Button
+                  onClick={() => {
+                    this.reset();
+                    this.props.unpairDevice();
+                  }}
+                >
+                  Remove
+                </Button>
+              )}
+            />
+          </List>
+        </div>
+      );
+    }
     return (
       <div className={classes.container}>
         <Typography className={classes.title} variant='h6'>Pair new display</Typography>
@@ -136,7 +170,8 @@ class SettingsDisplay extends React.Component<Props, State> {
 const withConnect = connect((state: StateType) => ({
   pairDeviceSuccess: pairDeviceSuccessSelector(state),
   discoveryDeviceType: discoveryDeviceTypeSelector(state),
-}), (dispatch: Function): Object => bindActionCreators({ resetPairing }, dispatch));
+  pairedDevice: pairedDeviceSelector(state),
+}), (dispatch: Function): Object => bindActionCreators({ resetPairing, unpairDevice }, dispatch));
 
 export default compose(
   withStyles(styles),

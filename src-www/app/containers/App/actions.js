@@ -60,6 +60,20 @@ export function navigateRemote(): ActionType {
   };
 }
 
+export function getPairedDevice(): ActionType {
+  return {
+    type: constants.GET_PAIRED_DEVICE,
+    value: null,
+  };
+}
+
+export function unpairDevice(): ActionType {
+  return {
+    type: constants.UNPAIR_DEVICE,
+    value: null,
+  };
+}
+
 export function resetPairing(): ActionType {
   return {
     type: constants.RESET_PAIRING,
