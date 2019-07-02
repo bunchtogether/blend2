@@ -60,9 +60,40 @@ export function navigateRemote(): ActionType {
   };
 }
 
-export function pairDisplay(type: string): ActionType {
+export function resetPairing(): ActionType {
   return {
-    type: constants.PAIR_DISPLAY,
+    type: constants.RESET_PAIRING,
+    value: null,
+  };
+}
+
+export function discoverDevices(type: string): ActionType {
+  return {
+    type: constants.DISCOVER_DEVICES,
     value: type,
+  };
+}
+
+export function setDiscoveredDevices(device: Object): ActionType {
+  return {
+    type: constants.SET_DISCOVERED_DEVICES,
+    value: device,
+  };
+}
+
+export function startPairing(type: string, data: Object): ActionType {
+  return {
+    type: constants.START_PAIRING,
+    value: {
+      type,
+      data,
+    },
+  };
+}
+
+export function pairDevice(data: Object): ActionType {
+  return {
+    type: constants.PAIR_DEVICE,
+    value: data,
   };
 }

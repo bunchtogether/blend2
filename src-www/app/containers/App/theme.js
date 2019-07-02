@@ -1,7 +1,7 @@
 // @flow
 
 import { createMuiTheme } from '@material-ui/core/styles';
-import { red, orange, pink } from '@material-ui/core/colors';
+import { red, green, orange, pink } from '@material-ui/core/colors';
 
 const muiTheme = createMuiTheme({
   navigationWidth: 190,
@@ -22,6 +22,7 @@ const muiTheme = createMuiTheme({
       default: '#f4f4f9',
     },
     error: red,
+    success: green,
   },
   typography: {
     useNextVariants: true,

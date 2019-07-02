@@ -22,4 +22,13 @@ export const CLEAR_SEARCH = 'web/App/CLEAR_SEARCH';
 export const NAVIGATE_STREAM = 'web/App/NAVIGATE_STREAM';
 export const NAVIGATE_REMOTE = 'web/App/NAVIGATE_REMOTE';
 
-export const PAIR_DISPLAY = 'web/App/PAIR_DISPLAY';
+export const RESET_PAIRING = 'web/App/RESET_PAIRING';
+export const DISCOVER_DEVICES = 'web/App/DISCOVER_DEVICES';
+export const DISCOVER_DEVICES_ERROR = 'web/App/DISCOVER_DEVICES_ERROR';
+export const SET_DISCOVERED_DEVICES = 'web/App/SET_DISCOVERED_DEVICES';
+export const START_PAIRING = 'web/App/START_PAIRING';
+export const START_PAIRING_ERROR = 'web/App/START_PAIRING_ERROR';
+export const START_PAIRING_SUCCESS = 'web/App/START_PAIRING_SUCCESS';
+export const PAIR_DEVICE = 'web/App/PAIR_DEVICE';
+export const PAIR_DEVICE_ERROR = 'web/App/PAIR_DEVICE_ERROR';
+export const PAIR_DEVICE_SUCCESS = 'web/App/PAIR_DEVICE_SUCCESS';

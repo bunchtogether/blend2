@@ -38,3 +38,23 @@ export const canAutoplayUnmutedSelector = createSelector<StateType, *, *, *>(
 );
 
 export const uploadStatusSelector = (state: StateType, filePath: string) => state.getIn(['app', 'uploadStatus', filePath]);
+
+export const discoveryDeviceTypeSelector = createSelector<StateType, *, *, *>(
+  appState,
+  (state) => state.get('discoveryDeviceType'),
+);
+
+export const discoveredDevicesSelector = createSelector<StateType, *, *, *>(
+  appState,
+  (state) => state.get('discoveredDevices'),
+);
+
+export const startPairingSuccessSelector = createSelector<StateType, *, *, *>(
+  appState,
+  (state) => state.get('startPairingSuccess'),
+);
+
+export const pairDeviceSuccessSelector = createSelector<StateType, *, *, *>(
+  appState,
+  (state) => state.get('pairDeviceSuccess'),
+);

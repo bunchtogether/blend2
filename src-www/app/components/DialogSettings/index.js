@@ -11,7 +11,7 @@ import withMobileDialog from '@material-ui/core/withMobileDialog';
 import { Helmet } from 'react-helmet';
 import { withStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import SettingsDisplay from 'components/SettingsDisplay';
+import SettingsPairDisplay from 'components/SettingsPairDisplay';
 
 const styles = (theme: Object) => ({
   paper: {
@@ -106,7 +106,7 @@ export class DialogSettings extends React.PureComponent<Props, State> { // eslin
   renderContent() {
     switch (this.state.content) {
       case DISPLAY:
-        return <SettingsDisplay />;
+        return <SettingsPairDisplay />;
       default:
         return null;
     }
