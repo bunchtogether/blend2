@@ -1,7 +1,8 @@
 // @flow
 
 const { Router } = require('express');
-const adapters = require('./adapters');
+const adapters = require('../adapters');
+const { getDevice } = require('../models');
 const logger = require('../lib/logger')('Pair API');
 
 module.exports.getPairRouter = () => {
@@ -98,6 +99,10 @@ module.exports.getPairRouter = () => {
   });
 
   router.post('/api/1.0/unpair', async (req: express$Request, res: express$Response) => {
+    const device = await getDevice();
+    await device.update({
+      data: null,
+    });
     adapters.setActiveAdapter(null);
     res.sendStatus(200);
   });

@@ -1,13 +1,16 @@
 // @flow
 
 const Smartcast = require('vizio-smart-cast');
-const logger = require('../../lib/logger')('Vizio');
+const { VIZIO } = require('../constants');
+const { getDevice: getDeviceModel } = require('../models');
+const logger = require('../lib/logger')('Vizio');
 
 type DataType = {
   ip: string,
   name: string,
   manufacturer: string,
   model: string,
+  authToken?: string
 };
 
 type PairDataType = {
@@ -43,8 +46,8 @@ class VizioAdapter {
     this.name = data.name;
     this.manufacturer = data.manufacturer;
     this.model = data.model;
-    this.ready = false;
-    this.vizio = new Smartcast(data.ip);
+    this.ready = !!data.authToken;
+    this.vizio = new Smartcast(data.ip, data.authToken);
   }
 
   initialize() {
@@ -57,7 +60,21 @@ class VizioAdapter {
       throw new Error('Can not pair. Missing required parameter code');
     }
     const result = await this.vizio.pairing.pair(data.code);
-    this.ready = true;
+    const { ITEM: { AUTH_TOKEN } } = result;
+    if (AUTH_TOKEN) {
+      this.ready = true;
+      const device = await getDeviceModel();
+      await device.update({
+        data: {
+          ip: this.ip,
+          name: this.name,
+          manufacturer: this.manufacturer,
+          model: this.model,
+          type: VIZIO,
+          authToken: AUTH_TOKEN,
+        },
+      });
+    }
     return result;
   }
 
@@ -67,7 +84,7 @@ class VizioAdapter {
       name: this.name,
       manufacturer: this.manufacturer,
       model: this.model,
-      type: 'vizio',
+      type: VIZIO,
     };
   }
 
