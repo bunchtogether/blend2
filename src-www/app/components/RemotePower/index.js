@@ -1,15 +1,19 @@
 // @flow
 
 import * as React from 'react';
+import { connect } from 'react-redux';
+import { compose, bindActionCreators } from 'redux';
 import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 import RemoteSection from 'components/RemoteSection';
+import { powerSelector } from 'containers/App/selectors';
 
 const styles = () => ({
 });
 
 type Props = {
+  power: boolean, // eslint-disable-line react/no-unused-prop-types
 };
 
 type State = {
@@ -17,6 +21,13 @@ type State = {
 };
 
 class RemotePower extends React.Component<Props, State> {
+  static getDerivedStateFromProps(props, state) {
+    if (props.power !== state.power) {
+      return { power: props.power };
+    }
+    return null;
+  }
+
   state = {
     power: false,
   }
@@ -39,4 +50,11 @@ class RemotePower extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(RemotePower);
+const withConnect = connect((state: StateType) => ({
+  power: powerSelector(state),
+}), (dispatch: Function): Object => bindActionCreators({ }, dispatch));
+
+export default compose(
+  withStyles(styles),
+  withConnect,
+)(RemotePower);

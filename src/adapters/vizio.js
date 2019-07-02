@@ -78,13 +78,21 @@ class VizioAdapter {
     return result;
   }
 
-  getDevice() {
+  async getDevice() {
+    const { ITEMS: [{ VALUE: power }] } = await this.vizio.power.currentMode();
+    const { ITEMS: [{ VALUE: source }] } = await this.vizio.input.current();
+    const { ITEMS: sources } = await this.vizio.input.list();
+    const { ITEMS: [{ VALUE: volume }] } = await this.vizio.control.volume.get();
     return {
       ip: this.ip,
       name: this.name,
       manufacturer: this.manufacturer,
       model: this.model,
       type: VIZIO,
+      power: !!power,
+      source,
+      volume,
+      sources: sources.map((sourceData: Object) => sourceData.CNAME),
     };
   }
 

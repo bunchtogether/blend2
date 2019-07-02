@@ -21,7 +21,7 @@ const styles = (theme: Object) => ({
   value: {
     fontSize: 18,
     color: grey[700],
-    width: 40,
+    width: 70,
   },
 });
 

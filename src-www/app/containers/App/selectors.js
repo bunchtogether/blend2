@@ -44,6 +44,26 @@ export const pairedDeviceSelector = createSelector<StateType, *, *, *>(
   (state) => state.get('pairedDevice'),
 );
 
+export const powerSelector = createSelector<StateType, *, *, *>(
+  pairedDeviceSelector,
+  (device) => (device ? device.power : null),
+);
+
+export const volumeSelector = createSelector<StateType, *, *, *>(
+  pairedDeviceSelector,
+  (device) => (device ? device.volume : null),
+);
+
+export const sourceSelector = createSelector<StateType, *, *, *>(
+  pairedDeviceSelector,
+  (device) => (device ? device.source : null),
+);
+
+export const sourcesSelector = createSelector<StateType, *, *, *>(
+  pairedDeviceSelector,
+  (device) => (device ? device.sources : null),
+);
+
 export const discoveryDeviceTypeSelector = createSelector<StateType, *, *, *>(
   appState,
   (state) => state.get('discoveryDeviceType'),

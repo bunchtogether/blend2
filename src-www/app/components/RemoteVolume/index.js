@@ -1,10 +1,13 @@
 // @flow
 
 import * as React from 'react';
+import { connect } from 'react-redux';
+import { compose, bindActionCreators } from 'redux';
 import { withStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/lab/Slider';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import RemoteSection from 'components/RemoteSection';
+import { volumeSelector } from 'containers/App/selectors';
 
 const styles = (theme: Object) => ({
   root: {
@@ -29,6 +32,7 @@ const styles = (theme: Object) => ({
 
 type Props = {
   classes: ClassesType,
+  volume: number, // eslint-disable-line react/no-unused-prop-types
 };
 
 type State = {
@@ -36,6 +40,13 @@ type State = {
 };
 
 class RemoteVolume extends React.Component<Props, State> {
+  static getDerivedStateFromProps(props, state) {
+    if (props.volume !== state.volume) {
+      return { volume: props.volume };
+    }
+    return null;
+  }
+
   state = {
     volume: 0,
   };
@@ -66,4 +77,11 @@ class RemoteVolume extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(RemoteVolume);
+const withConnect = connect((state: StateType) => ({
+  volume: volumeSelector(state),
+}), (dispatch: Function): Object => bindActionCreators({ }, dispatch));
+
+export default compose(
+  withStyles(styles),
+  withConnect,
+)(RemoteVolume);

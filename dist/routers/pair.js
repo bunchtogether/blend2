@@ -95,7 +95,8 @@ module.exports.getPairRouter = () => {
       res.status(200).send({ device: null });
       return;
     }
-    res.status(200).send({ device: activeAdapter.getDevice() });
+    const device = await activeAdapter.getDevice();
+    res.status(200).send({ device });
   });
 
   router.post('/api/1.0/unpair', async (req                 , res                  ) => {
