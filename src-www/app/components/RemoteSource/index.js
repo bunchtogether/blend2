@@ -18,6 +18,10 @@ const styles = (theme: Object) => ({
   button: {
     marginRight: theme.spacing(2),
   },
+  buttonDisabled: {
+    marginRight: theme.spacing(2),
+    pointerEvents: 'none',
+  },
 });
 
 type Props = {
@@ -59,8 +63,8 @@ class RemoteSource extends React.Component<Props, State> {
             <Button
               key={src}
               color='secondary'
-              variant='outlined'
-              className={classes.button}
+              variant={src === source ? 'outlined' : 'contained'}
+              className={src === source ? classes.buttonDisabled : classes.button}
               onClick={() => {
                 this.setState({ source: src });
                 this.props.setSource(src);
