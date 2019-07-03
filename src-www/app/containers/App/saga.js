@@ -7,7 +7,7 @@ import superagent from 'superagent';
 import { setDiscoveredDevices, getPairedDevice, resetPairing } from 'containers/App/actions';
 import * as constants from './constants';
 
-const PROJECT_PROTOCOL = process.env.BLEND_PROTOCOL || window.location.protocol;
+const PROJECT_PROTOCOL = process.env.BLEND_PROTOCOL || window.location.protocol.replace(':', '');
 const PROJECT_HOST = process.env.BLEND_HOST || window.location.hostname;
 const PROJECT_PORT = process.env.BLEND_PORT || window.location.port;
 const BASE_API_URL = `${PROJECT_PROTOCOL}://${PROJECT_HOST}:${PROJECT_PORT}/api/1.0`;

@@ -29,7 +29,7 @@ export default function App() {
       <Notifications />
       <Switch>
 
-        <Route exact path='/' component={() => <Redirect exact push from='' to='/stream' />} />
+        <Route exact path='/' component={() => <Redirect exact push from='' to='/remote' />} />
         <Route exact path='/stream' component={Stream} />
         <Route exact path='/stream/:url' component={Stream} />
         <Route exact path='/remote' component={Remote} />
