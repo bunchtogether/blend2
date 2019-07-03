@@ -39,6 +39,11 @@ export const canAutoplayUnmutedSelector = createSelector<StateType, *, *, *>(
 
 export const uploadStatusSelector = (state: StateType, filePath: string) => state.getIn(['app', 'uploadStatus', filePath]);
 
+export const deviceLoadedSelector = createSelector<StateType, *, *, *>(
+  appState,
+  (state) => state.get('deviceLoaded'),
+);
+
 export const pairedDeviceSelector = createSelector<StateType, *, *, *>(
   appState,
   (state) => state.get('pairedDevice'),

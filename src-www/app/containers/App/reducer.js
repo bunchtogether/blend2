@@ -8,6 +8,7 @@ const initialState = fromJS({
   navigationVisible: false,
   searchQuery: '',
   notifications: OrderedSet(),
+  deviceLoaded: false,
   pairedDevice: null,
   discoveryDeviceType: '',
   discoveredDevices: null,
@@ -57,7 +58,9 @@ export default (state: AppStateType = initialState, action: ActionType) => {
       pairedDevice.source = state.get('previousSource');
       return state.set('pairedDevice', pairedDevice);
     case constants.GET_PAIRED_DEVICE_SUCCESS:
-      return state.set('pairedDevice', action.value);
+      return state.set('pairedDevice', action.value).set('deviceLoaded', true);
+    case constants.GET_PAIRED_DEVICE_ERROR:
+      return state.set('deviceLoaded', true);
     case constants.DISCOVER_DEVICES:
       return state.set('discoveryDeviceType', action.value).set('discoveredDevices', null);
     case constants.SET_DISCOVERED_DEVICES:
