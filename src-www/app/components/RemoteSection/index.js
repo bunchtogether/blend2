@@ -21,7 +21,10 @@ const styles = (theme: Object) => ({
   value: {
     fontSize: 18,
     color: grey[700],
-    width: 70,
+    width: 90,
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
   },
 });
 
