@@ -2,7 +2,7 @@
 
 import type { Saga } from 'redux-saga';
 import { push } from 'connected-react-router';
-import { select, put, takeLatest, call } from 'redux-saga/effects';
+import { select, put, takeLatest, call, throttle } from 'redux-saga/effects';
 import superagent from 'superagent';
 import { setDiscoveredDevices, getPairedDevice, resetPairing } from 'containers/App/actions';
 import * as constants from './constants';
@@ -126,7 +126,7 @@ function* navigate(pathname: string, action: ActionType): Saga<*> {
 export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.SEARCH, searchSaga);
   yield takeLatest(constants.SET_POWER, setPowerSaga);
-  yield takeLatest(constants.SET_VOLUME, setVolumeSaga);
+  yield throttle(1000, constants.SET_VOLUME, setVolumeSaga);
   yield takeLatest(constants.SET_SOURCE, setSourceSaga);
   yield takeLatest(constants.GET_PAIRED_DEVICE, getPairedDeviceSaga);
   yield takeLatest(constants.UNPAIR_DEVICE, unpairDeviceSaga);
