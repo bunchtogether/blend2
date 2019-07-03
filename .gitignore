@@ -42,3 +42,4 @@ update-vm.sh
 *installers*
 
 .eslintcache
+db.sqlite
