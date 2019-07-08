@@ -108,6 +108,7 @@ module.exports.getPairRouter = () => {
   router.post('/api/1.0/unpair', async (req: express$Request, res: express$Response) => {
     const device = await getDevice();
     await device.update({
+      type: null,
       data: null,
     });
     adapters.setActiveAdapter(null);

@@ -65,12 +65,12 @@ class VizioAdapter {
       this.ready = true;
       const device = await getDeviceModel();
       await device.update({
+        type: TYPE_VIZIO,
         data: {
           ip: this.ip,
           name: this.name,
           manufacturer: this.manufacturer,
           model: this.model,
-          type: TYPE_VIZIO,
           authToken: AUTH_TOKEN,
         },
       });

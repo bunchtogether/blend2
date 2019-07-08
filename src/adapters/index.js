@@ -13,11 +13,16 @@ let activeAdapter = null;
 
 const initAdapters = async () => {
   logger.info('Initializing adapters');
-  const device = await getDevice();
-  if (device && device.data && device.data.type) {
-    const Adapter = adapters[device.data.type];
-    const adapterInstance = new Adapter(device.data);
-    activeAdapter = adapterInstance;
+  try {
+    const device = await getDevice();
+    if (device && device.data && device.data.type) {
+      const Adapter = adapters[device.type];
+      const adapterInstance = new Adapter(device.data);
+      activeAdapter = adapterInstance;
+    }
+  } catch (error) {
+    logger.error('Failed to initialize adapter');
+    logger.errorStack(error);
   }
 };
 

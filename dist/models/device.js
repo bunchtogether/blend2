@@ -14,6 +14,9 @@ const defineDevice = (db        ) => {
       primaryKey: true,
       defaultValue: Sequelize.UUIDV4,
     },
+    type: {
+      type: Sequelize.STRING,
+    },
     data: {
       type: Sequelize.JSONB,
     },
