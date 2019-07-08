@@ -71,7 +71,7 @@ module.exports.getPairRouter = () => {
       return;
     }
     const { data } = body;
-    const activeAdapter = adapters.getActiveAdapter();
+    const activeAdapter = await adapters.getActiveAdapter();
     if (!activeAdapter) {
       logger.error('Failed to pair: no active adapter');
       res.status(400).send('Failed to pair. Pairing not initialized');
@@ -90,7 +90,7 @@ module.exports.getPairRouter = () => {
   });
 
   router.get('/api/1.0/pair', async (req                 , res                  ) => {
-    const activeAdapter = adapters.getActiveAdapter();
+    const activeAdapter = await adapters.getActiveAdapter();
     if (!activeAdapter || !activeAdapter.ready) {
       res.status(200).send({ device: null });
       return;

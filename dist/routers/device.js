@@ -16,7 +16,7 @@ module.exports.getDeviceRouter = () => {
       return;
     }
 
-    const adapter = adapters.getActiveAdapter();
+    const adapter = await adapters.getActiveAdapter();
     if (!adapter) {
       res.status(400).send('Device not paired');
       return;
@@ -39,7 +39,7 @@ module.exports.getDeviceRouter = () => {
       return;
     }
 
-    const adapter = adapters.getActiveAdapter();
+    const adapter = await adapters.getActiveAdapter();
     if (!adapter) {
       res.status(400).send('Device not paired');
       return;
@@ -62,7 +62,7 @@ module.exports.getDeviceRouter = () => {
       return;
     }
 
-    const adapter = adapters.getActiveAdapter();
+    const adapter = await adapters.getActiveAdapter();
     if (!adapter) {
       res.status(400).send('Device not paired');
       return;

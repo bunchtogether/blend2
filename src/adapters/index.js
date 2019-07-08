@@ -10,8 +10,9 @@ const adapters = {
 };
 
 let activeAdapter = null;
+let initPromise;
 
-const initAdapters = async () => {
+const _initAdapters = async () => { // eslint-disable-line no-underscore-dangle
   logger.info('Initializing adapters');
   try {
     const device = await getDevice();
@@ -26,11 +27,21 @@ const initAdapters = async () => {
   }
 };
 
+const initAdapters = () => {
+  if (!initPromise) {
+    initPromise = _initAdapters();
+  }
+  return initPromise;
+};
+
 const setActiveAdapter = (adapter: Object) => {
   activeAdapter = adapter;
 };
 
-const getActiveAdapter = () => activeAdapter;
+const getActiveAdapter = async () => {
+  await initAdapters();
+  return activeAdapter;
+};
 
 module.exports = {
   ...adapters,
