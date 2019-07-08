@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { compose, bindActionCreators } from 'redux';
 import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
 import Navigation from 'components/Navigation';
 import Content from 'components/Content';
 import Header from 'components/Header';
@@ -23,7 +24,12 @@ const styles = (theme: Object) => ({
     justifyContent: 'flex-start',
     width: '100%',
     height: '100%',
-    paddingTop: theme.spacing(8),
+    paddingTop: theme.spacing(6),
+  },
+  progress: {
+    marginBottom: theme.spacing(4),
+    marginRight: theme.spacing(4),
+    marginLeft: theme.spacing(4),
   },
 });
 
@@ -57,7 +63,7 @@ export class Stream extends React.PureComponent<Props, State> { // eslint-disabl
     );
   }
   render() {
-    const { deviceLoaded } = this.props;
+    const { classes, deviceLoaded } = this.props;
     return (
       <React.Fragment>
         <Helmet>
@@ -65,8 +71,10 @@ export class Stream extends React.PureComponent<Props, State> { // eslint-disabl
         </Helmet>
         <Header showSearch={false} />
         <Navigation />
-        <Content>
-          {deviceLoaded ? this.renderContent() : <Progress />}
+        <Content card>
+          <Card>
+            {deviceLoaded ? this.renderContent() : <Progress className={classes.progress} />}
+          </Card>
         </Content>
       </React.Fragment>
     );

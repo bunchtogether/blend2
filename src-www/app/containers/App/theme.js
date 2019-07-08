@@ -7,9 +7,9 @@ const muiTheme = createMuiTheme({
   navigationWidth: 190,
   palette: {
     primary: {
-      light: orange[100], // '#76d275',
-      main: orange[200], // '#43a047',
-      dark: orange[500], // '#00701a',
+      light: orange[500], // '#76d275',
+      main: orange[700], // '#43a047',
+      dark: orange[900], // '#00701a',
       contrastText: 'rgba(255, 255, 255, 1)',
     },
     secondary: {

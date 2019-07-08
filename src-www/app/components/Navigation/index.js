@@ -9,7 +9,8 @@ import { navigateRemote } from 'containers/App/actions';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
-import LogoSrc from '../../static/blend.svg';
+import { green, blue } from '@material-ui/core/colors';
+import LogoSrc from '../../static/blend-white.svg';
 
 type Props = {
 };
@@ -17,6 +18,16 @@ type Props = {
 type State = {
   settingsDialogOpen: boolean,
   streamDialogOpen: boolean,
+};
+
+const logoStyle = {
+  width: '100%',
+  height: '100%',
+  backgroundRepeat: 'no-repeat',
+  backgroundImage: `url(${LogoSrc})`,
+  backgroundSize: 'contain',
+  backgroundPosition: '50% 50%',
+  transform: 'scale(0.9)',
 };
 
 export default class Navigation extends React.Component<Props, State> {
@@ -33,11 +44,7 @@ export default class Navigation extends React.Component<Props, State> {
 
   renderHeader() {
     return (
-      <img
-        src={LogoSrc}
-        alt='Blend'
-        style={{ width: 110, marginLeft: -10 }}
-      />
+      <div style={logoStyle} />
     );
   }
 
@@ -64,12 +71,14 @@ export default class Navigation extends React.Component<Props, State> {
             label='Stream'
             icon={<PlayCircleFilledIcon />}
             onClick={this.openStreamDialog}
+            color={green[500]}
           />
           <NavigationItem
             pathnames={['/remote']}
             label='Remote'
             icon={<SettingsRemoteIcon />}
             action={navigateRemote}
+            color={blue[700]}
           />
           <DialogStream
             open={streamDialogOpen}

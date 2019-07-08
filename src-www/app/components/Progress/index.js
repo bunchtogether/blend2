@@ -17,13 +17,15 @@ const styles = () => ({
 type Props = {
   classes: Object,
   title: string,
+  className?: string
 };
 
 class ListDiscoveredDevices extends React.PureComponent<Props> {
   render() {
     const { classes, title } = this.props;
+    const className = this.props.className ? `${classes.progressContainer} ${this.props.className}` : classes.progressContainer;
     return (
-      <div className={classes.progressContainer}>
+      <div className={className}>
         <Typography>{title}</Typography>
         <LinearProgress color="secondary" />
       </div>
