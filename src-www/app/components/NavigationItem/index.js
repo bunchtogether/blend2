@@ -47,7 +47,6 @@ type Props = {
 
 function NavigationItem(props:Props) {
   const { dispatch, action, classes, pathnames, pathname } = props;
-  console.log(pathname)
   const listItem = pathnames && pathnames.some((path: string) => pathname.indexOf(path) !== -1)  ? classes.listItemActive : classes.listItem;
 
   const onClick = props.onClick || (action ? () => dispatch(action()) : () => {});

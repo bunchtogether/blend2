@@ -95,8 +95,14 @@ module.exports.getPairRouter = () => {
       res.status(200).send({ device: null });
       return;
     }
-    const device = await activeAdapter.getDevice();
-    res.status(200).send({ device });
+    try {
+      const device = await activeAdapter.getDevice();
+      res.status(200).send({ device });
+    } catch (error) {
+      logger.error('Unable to get paired device');
+      logger.errorStack(error);
+      res.status(400).send('Unable to get paired device');
+    }
   });
 
   router.post('/api/1.0/unpair', async (req: express$Request, res: express$Response) => {
