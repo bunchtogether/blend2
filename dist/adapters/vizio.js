@@ -1,8 +1,11 @@
 //      
 
+                                             
+
 const Smartcast = require('vizio-smart-cast');
 const { TYPE_VIZIO } = require('../constants');
 const { getDevice: getDeviceModel } = require('../models');
+const AbstractAdapter = require('./adapter');
 const logger = require('../lib/logger')('Vizio');
 
                  
@@ -17,7 +20,8 @@ const logger = require('../lib/logger')('Vizio');
                
   
 
-class VizioAdapter {
+(x              ) => (x             ); // eslint-disable-line no-unused-expressions
+class VizioAdapter extends AbstractAdapter {
   static async discover()             {
     const devices = [];
     const timeout = 4000;
@@ -42,6 +46,7 @@ class VizioAdapter {
       logger.error('Can not instantiate. Missing required parameter ip');
       throw new Error('Can not instantiate. Missing required parameter ip');
     }
+    super();
     this.ip = data.ip;
     this.name = data.name;
     this.manufacturer = data.manufacturer;

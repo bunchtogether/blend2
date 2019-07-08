@@ -15,7 +15,7 @@ const initAdapters = async () => {
   logger.info('Initializing adapters');
   try {
     const device = await getDevice();
-    if (device && device.data && device.data.type) {
+    if (device && device.data && device.type) {
       const Adapter = adapters[device.type];
       const adapterInstance = new Adapter(device.data);
       activeAdapter = adapterInstance;
