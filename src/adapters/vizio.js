@@ -1,7 +1,7 @@
 // @flow
 
 const Smartcast = require('vizio-smart-cast');
-const { VIZIO } = require('../constants');
+const { TYPE_VIZIO } = require('../constants');
 const { getDevice: getDeviceModel } = require('../models');
 const logger = require('../lib/logger')('Vizio');
 
@@ -70,7 +70,7 @@ class VizioAdapter {
           name: this.name,
           manufacturer: this.manufacturer,
           model: this.model,
-          type: VIZIO,
+          type: TYPE_VIZIO,
           authToken: AUTH_TOKEN,
         },
       });
@@ -114,13 +114,13 @@ class VizioAdapter {
         name: this.name,
         manufacturer: this.manufacturer,
         model: this.model,
-        type: VIZIO,
+        type: TYPE_VIZIO,
         power: !!power,
         source: sourceName || source,
         volume,
         sources: sources.map((sourceData: Object) => sourceData.VALUE.NAME),
       };
-    } catch(error) {
+    } catch (error) {
       logger.error('Error getting device data');
       logger.errorStack(error);
       throw error;

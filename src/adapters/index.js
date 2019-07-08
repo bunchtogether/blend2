@@ -2,10 +2,11 @@
 
 const VizioAdapter = require('./vizio');
 const { getDevice } = require('../models');
+const constants = require('../constants');
 const logger = require('../lib/logger')('Adapters');
 
 const adapters = {
-  vizio: VizioAdapter,
+  [constants.TYPE_VIZIO]: VizioAdapter,
 };
 
 let activeAdapter = null;

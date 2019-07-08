@@ -7,6 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import GridItemDisplayType from 'components/GridItemDisplayType';
 import { discoverDevices } from 'containers/App/actions';
+import * as constants from '../../constants';
 
 const styles = () => ({
 });
@@ -16,7 +17,7 @@ type Props = {
   onClick?: Function,
 };
 
-const DISPLAYS = ['vizio'];
+const DISPLAYS = [constants.TYPE_VIZIO];
 
 class GridDisplayTypes extends React.PureComponent<Props> {
   render() {
