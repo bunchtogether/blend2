@@ -1,29 +1,22 @@
 // @flow
 
 const { Router } = require('express');
-const adapters = require('../adapters');
 const logger = require('../lib/logger')('Device API');
 
 module.exports.getDeviceRouter = () => {
-  logger.info('Attaching /api/1.0/device');
+  logger.info('Attaching device router');
 
   const router = Router({ mergeParams: true });
 
-  router.post('/api/1.0/device/power', async (req: express$Request, res: express$Response) => {
+  router.post('/power', async (req: express$Request, res: express$Response) => {
     const { body: { power } } = req;
     if (typeof power !== 'boolean') {
       res.status(400).send('Missing required body parameter "power"');
       return;
     }
 
-    const adapter = await adapters.getActiveAdapter();
-    if (!adapter) {
-      res.status(400).send('Device not paired');
-      return;
-    }
-
     try {
-      const pwr = await adapter.setPower(power);
+      const pwr = await req.adapter.setPower(power);
       res.status(200).send({ power: pwr });
     } catch (error) {
       logger.error('Error setting power');
@@ -32,21 +25,15 @@ module.exports.getDeviceRouter = () => {
     }
   });
 
-  router.post('/api/1.0/device/volume', async (req: express$Request, res: express$Response) => {
+  router.post('/volume', async (req: express$Request, res: express$Response) => {
     const { body: { volume } } = req;
     if (typeof volume !== 'number') {
       res.status(400).send('Missing required body parameter "volume"');
       return;
     }
 
-    const adapter = await adapters.getActiveAdapter();
-    if (!adapter) {
-      res.status(400).send('Device not paired');
-      return;
-    }
-
     try {
-      const vol = await adapter.setVolume(volume);
+      const vol = await req.adapter.setVolume(volume);
       res.status(200).send({ volume: vol });
     } catch (error) {
       logger.error('Error setting volume');
@@ -55,21 +42,15 @@ module.exports.getDeviceRouter = () => {
     }
   });
 
-  router.post('/api/1.0/device/source', async (req: express$Request, res: express$Response) => {
+  router.post('/source', async (req: express$Request, res: express$Response) => {
     const { body: { source } } = req;
     if (typeof source !== 'string') {
       res.status(400).send('Missing required body parameter "source"');
       return;
     }
 
-    const adapter = await adapters.getActiveAdapter();
-    if (!adapter) {
-      res.status(400).send('Device not paired');
-      return;
-    }
-
     try {
-      const vol = await adapter.setSource(source);
+      const vol = await req.adapter.setSource(source);
       res.status(200).send({ source: vol });
     } catch (error) {
       logger.error('Error setting source');

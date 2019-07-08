@@ -7,6 +7,7 @@ const { getMulticastAssistRouter, shutdownMulticastAssistRouter } = require('./m
 const { getLogRouter } = require('./log');
 const { getPairRouter } = require('./pair');
 const { getDeviceRouter } = require('./device');
+const adapterMiddleware = require('./middleware/adapter');
 const logger = require('../lib/logger')('Routers');
 
 function getRouters() {
@@ -18,8 +19,8 @@ function getRouters() {
   routers.use('/api/1.0/stream/:url', express.static(path.join(__dirname, '../../dist-www')));
   routers.use('/api/1.0/ffmpeg/:args', express.static(path.join(__dirname, '../../dist-www')));
   routers.use(['/remote*', '/stream*', '/'], express.static(path.join(__dirname, '../../dist-www')));
-  routers.use(getPairRouter());
-  routers.use(getDeviceRouter());
+  routers.use('/api/1.0/pair', getPairRouter());
+  routers.use('/api/1.0/device', adapterMiddleware, getDeviceRouter());
 
   return routers;
 }

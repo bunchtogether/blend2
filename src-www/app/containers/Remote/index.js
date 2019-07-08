@@ -24,7 +24,12 @@ const styles = (theme: Object) => ({
     justifyContent: 'flex-start',
     width: '100%',
     height: '100%',
-    paddingTop: theme.spacing(6),
+    paddingTop: theme.spacing(4),
+  },
+  message: {
+    marginBottom: theme.spacing(4),
+    marginRight: theme.spacing(4),
+    marginLeft: theme.spacing(4),
   },
   progress: {
     marginBottom: theme.spacing(4),
@@ -48,10 +53,10 @@ export class Stream extends React.PureComponent<Props, State> { // eslint-disabl
     return (
       <div className={classes.container}>
         {!pairedDevice ? (
-          <React.Fragment>
+          <div className={classes.message}>
             <Typography>No paired displays found.</Typography>
             <Typography>You can pair a display from the settings.</Typography>
-          </React.Fragment>
+          </div>
         ) : (
           <React.Fragment>
             <RemotePower />

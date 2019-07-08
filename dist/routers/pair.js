@@ -6,11 +6,11 @@ const { getDevice } = require('../models');
 const logger = require('../lib/logger')('Pair API');
 
 module.exports.getPairRouter = () => {
-  logger.info('Attaching /api/1.0/pair');
+  logger.info('Attaching pair router');
 
   const router = Router({ mergeParams: true });
 
-  router.post('/api/1.0/pair/discover', async (req                 , res                  ) => {
+  router.post('/discover', async (req                 , res                  ) => {
     const body = req.body;
     if (!body || typeof body !== 'object') {
       res.status(400).send('Missing request body');
@@ -36,7 +36,7 @@ module.exports.getPairRouter = () => {
     }
   });
 
-  router.post('/api/1.0/pair/start', async (req                 , res                  ) => {
+  router.post('/start', async (req                 , res                  ) => {
     const body = req.body;
     if (!body || typeof body !== 'object') {
       res.status(400).send('Missing request body');
@@ -64,7 +64,7 @@ module.exports.getPairRouter = () => {
     }
   });
 
-  router.post('/api/1.0/pair', async (req                 , res                  ) => {
+  router.post('', async (req                 , res                  ) => {
     const body = req.body;
     if (!body || typeof body !== 'object') {
       res.status(400).send('Missing request body');
@@ -89,7 +89,7 @@ module.exports.getPairRouter = () => {
     }
   });
 
-  router.get('/api/1.0/pair', async (req                 , res                  ) => {
+  router.get('', async (req                 , res                  ) => {
     const activeAdapter = await adapters.getActiveAdapter();
     if (!activeAdapter || !activeAdapter.ready) {
       res.status(200).send({ device: null });
@@ -105,7 +105,7 @@ module.exports.getPairRouter = () => {
     }
   });
 
-  router.post('/api/1.0/unpair', async (req                 , res                  ) => {
+  router.post('/remove', async (req                 , res                  ) => {
     const device = await getDevice();
     await device.update({
       type: null,

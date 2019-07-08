@@ -63,7 +63,7 @@ function* getPairedDeviceSaga(): Saga<*> {
 
 function* unpairDeviceSaga(): Saga<*> {
   try {
-    yield call(() => superagent.post(`${BASE_API_URL}/unpair`));
+    yield call(() => superagent.post(`${BASE_API_URL}/pair/remove`));
     yield put(resetPairing());
     yield put(getPairedDevice());
     yield put({ type: constants.UNPAIR_DEVICE_SUCCESS, value: null });
