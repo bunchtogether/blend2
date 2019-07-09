@@ -1,7 +1,7 @@
 // @flow
 
 export interface AdapterType {
-  initialize(): Promise<*>,
+  initialize(): *,
   pair(data: Object): Promise<*>,
   setPower(power: boolean): Promise<boolean>,
   setVolume(volume: number): Promise<number>,
@@ -9,6 +9,7 @@ export interface AdapterType {
   setMute(mute: boolean): Promise<boolean>,
   toggleCC(): Promise<void>,
   getDevice(): Promise<*>,
+  close(): Promise<*>,
 }
 
 (x: AbstractAdapter) => (x: AdapterType); // eslint-disable-line no-unused-expressions
@@ -17,7 +18,7 @@ class AbstractAdapter {
     throw new Error('Static method discover is not implemented.');
   }
 
-  initialize(): Promise<*> { // eslint-disable-line no-unused-vars
+  initialize(): * { // eslint-disable-line no-unused-vars
     throw new Error('Method initialize is not implemented.');
   }
 
@@ -47,6 +48,10 @@ class AbstractAdapter {
 
   getDevice(): Promise<*> { // eslint-disable-line no-unused-vars
     throw new Error('Method pair is not implemented.');
+  }
+
+  close(): Promise<*> { // eslint-disable-line no-unused-vars
+    throw new Error('Method close is not implemented.');
   }
 }
 

@@ -1,12 +1,14 @@
 //      
 
 const VizioAdapter = require('./vizio');
+const SamsungAdapter = require('./samsung');
 const { getDevice } = require('../models');
 const constants = require('../constants');
 const logger = require('../lib/logger')('Adapters');
 
 const adapters = {
   [constants.TYPE_VIZIO]: VizioAdapter,
+  [constants.TYPE_SAMSUNG]: SamsungAdapter,
 };
 
 let activeAdapter = null;

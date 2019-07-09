@@ -98,6 +98,7 @@
     "moment": "^2.24.0",
     "ps-node": "^0.1.6",
     "sequelize": "^5.9.0",
+    "serialport": "^7.1.5",
     "sqlite3": "^4.0.9",
     "superagent": "^4.1.0",
     "uuid": "^3.3.2",

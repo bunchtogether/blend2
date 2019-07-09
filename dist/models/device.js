@@ -32,7 +32,7 @@ const defineDevice = (db        ) => {
 const initDevice = async (db        ) => {
   defineDevice(db);
   await Device.sync({ alter: true });
-  await Device.upsert({ id: Device.id });
+  await Device.upsert({ id: Device.id, type: 'samsung', data: { path: '/dev/tty.usbserial' } });
 };
 
 const getDevice = () => {

@@ -106,6 +106,10 @@ module.exports.getPairRouter = () => {
   });
 
   router.post('/remove', async (req                 , res                  ) => {
+    const activeAdapter = await adapters.getActiveAdapter();
+    if (activeAdapter && activeAdapter.close) {
+      await activeAdapter.close();
+    }
     const device = await getDevice();
     await device.update({
       type: null,

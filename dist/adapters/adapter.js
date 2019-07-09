@@ -1,7 +1,7 @@
 //      
 
                               
-                           
+                  
                                  
                                              
                                              
@@ -9,6 +9,7 @@
                                            
                             
                           
+                      
  
 
 (x                 ) => (x             ); // eslint-disable-line no-unused-expressions
@@ -17,7 +18,7 @@ class AbstractAdapter {
     throw new Error('Static method discover is not implemented.');
   }
 
-  initialize()             { // eslint-disable-line no-unused-vars
+  initialize()    { // eslint-disable-line no-unused-vars
     throw new Error('Method initialize is not implemented.');
   }
 
@@ -47,6 +48,10 @@ class AbstractAdapter {
 
   getDevice()             { // eslint-disable-line no-unused-vars
     throw new Error('Method pair is not implemented.');
+  }
+
+  close()             { // eslint-disable-line no-unused-vars
+    throw new Error('Method close is not implemented.');
   }
 }
 
