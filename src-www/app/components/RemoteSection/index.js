@@ -40,6 +40,16 @@ type Props = {
 class RemoteVolume extends React.PureComponent<Props> {
   render() {
     const { classes, icon, title, value, children } = this.props;
+    if (!title && !icon && !value) {
+      return (
+        <Grid container spacing={2} classes={{ container: classes.container }} alignItems='center' justify='center'>
+          <Grid item xs={9}>
+            {children}
+          </Grid>
+        </Grid>
+      );
+    }
+
     return (
       <Grid container spacing={2} classes={{ container: classes.container }} alignItems='center' justify='center'>
         <Grid item className={classes.icon}>

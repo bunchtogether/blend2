@@ -17,6 +17,7 @@ const initialState = fromJS({
   previousVolue: 0,
   previousPower: false,
   previousSource: 'HDMI-1',
+  previousMute: false,
 });
 
 export default (state: AppStateType = initialState, action: ActionType) => {
@@ -56,6 +57,14 @@ export default (state: AppStateType = initialState, action: ActionType) => {
       return state.set('pairedDevice', pairedDevice);
     case constants.SET_SOURCE_ERROR:
       pairedDevice.source = state.get('previousSource');
+      return state.set('pairedDevice', pairedDevice);
+    case constants.SET_MUTE:
+      return state.set('previousMute', action.value);
+    case constants.SET_MUTE_SUCCESS:
+      pairedDevice.mute = action.value;
+      return state.set('pairedDevice', pairedDevice);
+    case constants.SET_MUTE_ERROR:
+      pairedDevice.mute = state.get('previousMute');
       return state.set('pairedDevice', pairedDevice);
     case constants.GET_PAIRED_DEVICE_SUCCESS:
       return state.set('pairedDevice', action.value).set('deviceLoaded', true);

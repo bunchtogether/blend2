@@ -59,5 +59,33 @@ module.exports.getDeviceRouter = () => {
     }
   });
 
+  router.post('/mute', async (req: express$Request, res: express$Response) => {
+    const { body: { mute } } = req;
+    if (typeof mute !== 'boolean') {
+      res.status(400).send('Missing required body parameter "mute"');
+      return;
+    }
+
+    try {
+      const value = await req.adapter.setMute(mute);
+      res.status(200).send({ mute: value });
+    } catch (error) {
+      logger.error('Error setting mute');
+      logger.errorStack(error);
+      res.status(400).send('Error setting mute');
+    }
+  });
+
+  router.post('/cc', async (req: express$Request, res: express$Response) => {
+    try {
+      await req.adapter.toggleCC();
+      res.sendStatus(200);
+    } catch (error) {
+      logger.error('Error setting cc');
+      logger.errorStack(error);
+      res.status(400).send('Error setting cc');
+    }
+  });
+
   return router;
 };

@@ -59,6 +59,11 @@ export const volumeSelector = createSelector<StateType, *, *, *>(
   (device) => (device ? device.volume : null),
 );
 
+export const muteSelector = createSelector<StateType, *, *, *>(
+  pairedDeviceSelector,
+  (device) => (device ? device.mute : null),
+);
+
 export const sourceSelector = createSelector<StateType, *, *, *>(
   pairedDeviceSelector,
   (device) => (device ? device.source : null),

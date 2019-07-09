@@ -42,7 +42,7 @@ class RemotePower extends React.Component<Props, State> {
       <RemoteSection
         icon={<PowerSettingsNewIcon />}
         title='Power:'
-        value={power ? 'on' : 'off'}
+        value={power ? 'On' : 'Off'}
       >
         <Switch
           edge='start'

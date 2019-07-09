@@ -3,9 +3,11 @@
                               
                            
                                  
-                                       
-                                        
-                                        
+                                             
+                                             
+                                             
+                                           
+                            
                           
  
 
@@ -23,16 +25,24 @@ class AbstractAdapter {
     throw new Error('Method pair is not implemented.');
   }
 
-  setPower(power         )             { // eslint-disable-line no-unused-vars
+  setPower(power         )                   { // eslint-disable-line no-unused-vars
     throw new Error('Method setPower is not implemented.');
   }
 
-  setVolume(volume        )             { // eslint-disable-line no-unused-vars
+  setVolume(volume        )                  { // eslint-disable-line no-unused-vars
     throw new Error('Method setVolume is not implemented.');
   }
 
-  setSource(source        )             { // eslint-disable-line no-unused-vars
+  setSource(source        )                  { // eslint-disable-line no-unused-vars
     throw new Error('Method setSource is not implemented.');
+  }
+
+  setMute(mute         )                   { // eslint-disable-line no-unused-vars
+    throw new Error('Method setMute is not implemented.');
+  }
+
+  toggleCC()                { // eslint-disable-line no-unused-vars
+    throw new Error('Method toggleCC is not implemented.');
   }
 
   getDevice()             { // eslint-disable-line no-unused-vars

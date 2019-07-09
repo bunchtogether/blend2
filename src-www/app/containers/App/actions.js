@@ -81,6 +81,20 @@ export function setSource(source: string): ActionType {
   };
 }
 
+export function setMute(mute: boolean): ActionType {
+  return {
+    type: constants.SET_MUTE,
+    value: mute,
+  };
+}
+
+export function toggleCC(): ActionType {
+  return {
+    type: constants.TOGGLE_CC,
+    value: null,
+  };
+}
+
 export function getPairedDevice(): ActionType {
   return {
     type: constants.GET_PAIRED_DEVICE,

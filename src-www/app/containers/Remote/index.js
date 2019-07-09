@@ -11,8 +11,10 @@ import Navigation from 'components/Navigation';
 import Content from 'components/Content';
 import Header from 'components/Header';
 import RemotePower from 'components/RemotePower';
+import RemoteMute from 'components/RemoteMute';
 import RemoteVolume from 'components/RemoteVolume';
 import RemoteSource from 'components/RemoteSource';
+import RemoteCC from 'components/RemoteCC';
 import Progress from 'components/Progress';
 import { pairedDeviceSelector, deviceLoadedSelector } from 'containers/App/selectors';
 
@@ -60,8 +62,10 @@ export class Stream extends React.PureComponent<Props, State> { // eslint-disabl
         ) : (
           <React.Fragment>
             <RemotePower />
+            <RemoteMute />
             <RemoteVolume />
             <RemoteSource />
+            <RemoteCC />
           </React.Fragment>
         )}
       </div>

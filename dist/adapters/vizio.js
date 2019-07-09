@@ -102,12 +102,26 @@ class VizioAdapter extends AbstractAdapter {
     return VALUE;
   }
 
+  async setMute(mute         ) {
+    if (mute) {
+      await this.vizio.control.volume.mute();
+      return true;
+    }
+    await this.vizio.control.volume.unmute();
+    return false;
+  }
+
+  async toggleCC() {
+    await this.vizio.control.media.cc();
+  }
+
   async getDevice() {
     try {
       const { ITEMS: [{ VALUE: power }] } = await this.vizio.power.currentMode();
       const { ITEMS: [{ VALUE: source }] } = await this.vizio.input.current();
       const { ITEMS: sources } = await this.vizio.input.list();
       const { ITEMS: [{ VALUE: volume }] } = await this.vizio.control.volume.get();
+      const { ITEMS: [{ VALUE: mute }] } = await this.vizio.control.volume.getMuteState();
       let sourceName;
       sources.forEach((sourceData        ) => {
         if (sourceData.CNAME === source) {
@@ -123,6 +137,7 @@ class VizioAdapter extends AbstractAdapter {
         power: !!power,
         source: sourceName || source,
         volume,
+        mute: mute !== 'Off',
         sources: sources.map((sourceData        ) => sourceData.VALUE.NAME),
       };
     } catch (error) {
