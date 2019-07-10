@@ -7,7 +7,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Slider from '@material-ui/lab/Slider';
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import RemoteSection from 'components/RemoteSection';
-import { volumeSelector } from 'containers/App/selectors';
 import { setVolume } from 'containers/App/actions';
 
 const styles = (theme: Object) => ({
@@ -34,41 +33,33 @@ const styles = (theme: Object) => ({
 type Props = {
   classes: ClassesType,
   setVolume: Function,
-  volume: number, // eslint-disable-line react/no-unused-prop-types
 };
 
 type State = {
-  volumeProp: number,
+  init: boolean,
   volume: number,
 };
 
 class RemoteVolume extends React.Component<Props, State> {
-  static getDerivedStateFromProps(props, state) {
-    if (props.volume !== state.volumeProp) {
-      return { volume: props.volume, volumeProp: props.volume };
-    }
-    return null;
-  }
-
   state = {
-    volumeProp: 0,
+    init: false,
     volume: 0,
   };
 
   render() {
     const { classes } = this.props;
-    const { volume } = this.state;
+    const { volume, init } = this.state;
     return (
       <RemoteSection
         icon={<VolumeUpIcon />}
         title='Volume:'
-        value={volume}
+        value={init ? volume : ''}
       >
         <div className={classes.root}>
           <Slider
             value={volume}
             onChange={(event: Event, vol: number) => {
-              this.setState({ volume: vol });
+              this.setState({ volume: vol, init: true });
               this.props.setVolume(vol);
             }}
             classes={{
@@ -84,9 +75,10 @@ class RemoteVolume extends React.Component<Props, State> {
   }
 }
 
-const withConnect = connect((state: StateType) => ({
-  volume: volumeSelector(state),
-}), (dispatch: Function): Object => bindActionCreators({ setVolume }, dispatch));
+const withConnect = connect(
+  null,
+  (dispatch: Function): Object => bindActionCreators({ setVolume }, dispatch),
+);
 
 export default compose(
   withStyles(styles),

@@ -32,9 +32,9 @@ export const SET_VOLUME_ERROR = 'web/App/SET_VOLUME_ERROR';
 export const SET_SOURCE = 'web/App/SET_SOURCE';
 export const SET_SOURCE_SUCCESS = 'web/App/SET_SOURCE_SUCCESS';
 export const SET_SOURCE_ERROR = 'web/App/SET_SOURCE_ERROR';
-export const SET_MUTE = 'web/App/SET_MUTE';
-export const SET_MUTE_SUCCESS = 'web/App/SET_MUTE_SUCCESS';
-export const SET_MUTE_ERROR = 'web/App/SET_MUTE_ERROR';
+export const TOGGLE_MUTE = 'web/App/TOGGLE_MUTE';
+export const TOGGLE_MUTE_SUCCESS = 'web/App/TOGGLE_MUTE_SUCCESS';
+export const TOGGLE_MUTE_ERROR = 'web/App/TOGGLE_MUTE_ERROR';
 
 export const GET_PAIRED_DEVICE = 'web/App/GET_PAIRED_DEVICE';
 export const GET_PAIRED_DEVICE_SUCCESS = 'web/App/GET_PAIRED_DEVICE_SUCCESS';

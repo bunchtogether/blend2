@@ -64,13 +64,17 @@ class SamsungAdapter extends AbstractAdapter {
     }
     super();
     this.path = data.path;
-    this.port = new SerialPort(data.path);
     this.ready = !!data.ready;
+    this.port = new SerialPort(data.path, (error) => {
+      console.log(error);
+    });
   }
 
   async write(command: string) {
     await new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => reject(new Error('Unable to connect to Samsung display')), 2000);
       this.port.drain((error) => {
+        clearTimeout(timeoutId);
         if (error) {
           logger.error(`Error draining port ${error}`);
           reject(error);
@@ -79,7 +83,9 @@ class SamsungAdapter extends AbstractAdapter {
       });
     });
     await new Promise((resolve, reject) => {
+      const timeoutId = setTimeout(() => reject(new Error('Unable to connect to Samsung display')), 2000);
       this.port.write(Buffer.from(command, 'hex'), (error) => {
+        clearTimeout(timeoutId);
         if (error) {
           logger.error(`Error draining port ${error}`);
           reject(error);
@@ -135,9 +141,8 @@ class SamsungAdapter extends AbstractAdapter {
     return source;
   }
 
-  async setMute(mute: boolean) {
+  async toggleMute() {
     await this.write('082202000000D4');
-    return mute;
   }
 
   getDevice() {
@@ -149,15 +154,17 @@ class SamsungAdapter extends AbstractAdapter {
   }
 
   async close() {
-    await new Promise((resolve, reject) => {
-      this.port.close((err) => {
-        if (err) {
-          logger.error(`Failed to close Samsung adapter ${err}`);
-          reject(err);
-        }
-        resolve();
+    if (this.port.isOpen) {
+      await new Promise((resolve, reject) => {
+        this.port.close((err) => {
+          if (err) {
+            logger.error(`Failed to close Samsung adapter ${err}`);
+            reject(err);
+          }
+          resolve();
+        });
       });
-    });
+    }
   }
 
   ready: boolean;

@@ -4,83 +4,56 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import InputIcon from '@material-ui/icons/Input';
 import RemoteSection from 'components/RemoteSection';
-import { sourceSelector, sourcesSelector } from 'containers/App/selectors';
+import AutoComplete from 'components/AutoComplete';
+import { sourcesSelector } from 'containers/App/selectors';
 import { setSource } from 'containers/App/actions';
 
-const styles = (theme: Object) => ({
-  sourcesContainer: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  button: {
-    marginRight: theme.spacing(2),
-  },
-  buttonDisabled: {
-    marginRight: theme.spacing(2),
-    pointerEvents: 'none',
-  },
+const styles = () => ({
 });
 
 type Props = {
-  classes: Object,
   setSource: Function,
-  source: string, // eslint-disable-line react/no-unused-prop-types
   sources: Array<string>,
 };
 
 type State = {
-  sourceProp: string,
-  source: string,
+  value: string,
 };
 
 class RemoteSource extends React.Component<Props, State> {
-  static getDerivedStateFromProps(props, state) {
-    if (props.source !== state.sourceProp) {
-      return { source: props.source, sourceProp: props.source };
-    }
-    return null;
-  }
-
   state = {
-    sourceProp: 'tv',
-    source: 'tv',
+    value: '',
   }
 
   render() {
-    const { classes, sources } = this.props;
-    const { source } = this.state;
+    const { sources } = this.props;
+    const { value } = this.state;
     return (
       <RemoteSection
         icon={<InputIcon />}
         title='Source:'
-        value={source}
+        value={value}
       >
-        <div className={classes.sourcesContainer}>
-          {(sources || []).map((src: string) => (
-            <Button
-              key={src}
-              color='secondary'
-              variant={src === source ? 'outlined' : 'contained'}
-              className={src === source ? classes.buttonDisabled : classes.button}
-              onClick={() => {
-                this.setState({ source: src });
-                this.props.setSource(src);
-              }}
-            >
-              {src}
-            </Button>
-          ))}
-        </div>
+        <AutoComplete
+          placeholder='Select source to switch'
+          data={(sources || []).map((source: string) => ({
+            label: source,
+            value: source,
+          }))}
+          clearAfterSelect
+          onSelect={(source: string) => {
+            this.setState({ value: source });
+            this.props.setSource(source);
+          }}
+        />
       </RemoteSection>
     );
   }
 }
 
 const withConnect = connect((state: StateType) => ({
-  source: sourceSelector(state),
   sources: sourcesSelector(state),
 }), (dispatch: Function): Object => bindActionCreators({ setSource }, dispatch));
 

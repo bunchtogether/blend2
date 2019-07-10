@@ -21,7 +21,7 @@ module.exports.getDeviceRouter = () => {
     } catch (error) {
       logger.error('Error setting power');
       logger.errorStack(error);
-      res.status(400).send('Error setting power');
+      res.status(400).send(error.message || 'Error setting power');
     }
   });
 
@@ -38,7 +38,7 @@ module.exports.getDeviceRouter = () => {
     } catch (error) {
       logger.error('Error setting volume');
       logger.errorStack(error);
-      res.status(400).send('Error setting volume');
+      res.status(400).send(error.message || 'Error setting volume');
     }
   });
 
@@ -55,24 +55,18 @@ module.exports.getDeviceRouter = () => {
     } catch (error) {
       logger.error('Error setting source');
       logger.errorStack(error);
-      res.status(400).send('Error setting source');
+      res.status(400).send(error.message || 'Error setting source');
     }
   });
 
   router.post('/mute', async (req: express$Request, res: express$Response) => {
-    const { body: { mute } } = req;
-    if (typeof mute !== 'boolean') {
-      res.status(400).send('Missing required body parameter "mute"');
-      return;
-    }
-
     try {
-      const value = await req.adapter.setMute(mute);
-      res.status(200).send({ mute: value });
+      await req.adapter.toggleMute();
+      res.sendStatus(200);
     } catch (error) {
       logger.error('Error setting mute');
       logger.errorStack(error);
-      res.status(400).send('Error setting mute');
+      res.status(400).send(error.message || 'Error toggling mute');
     }
   });
 

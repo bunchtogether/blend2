@@ -81,10 +81,10 @@ export function setSource(source: string): ActionType {
   };
 }
 
-export function setMute(mute: boolean): ActionType {
+export function toggleMute(): ActionType {
   return {
-    type: constants.SET_MUTE,
-    value: mute,
+    type: constants.TOGGLE_MUTE,
+    value: null,
   };
 }
 

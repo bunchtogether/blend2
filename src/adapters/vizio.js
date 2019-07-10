@@ -104,13 +104,8 @@ class VizioAdapter extends AbstractAdapter {
     return VALUE;
   }
 
-  async setMute(mute: boolean) {
-    if (mute) {
-      await this.vizio.control.volume.mute();
-      return true;
-    }
-    await this.vizio.control.volume.unmute();
-    return false;
+  async toggleMute() {
+    await this.vizio.control.volume.toggleMute();
   }
 
   async getDevice() {
