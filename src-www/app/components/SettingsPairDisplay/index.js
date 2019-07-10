@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
+import { List as ImmutableList } from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import GridDisplayTypes from 'components/GridDisplayTypes';
@@ -13,7 +14,7 @@ import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItemDevice from 'components/ListItemDevice';
 import { resetPairing, unpairDevice } from 'containers/App/actions';
-import { pairDeviceSuccessSelector, discoveryDeviceTypeSelector, pairedDeviceSelector } from 'containers/App/selectors';
+import { pairDeviceSuccessSelector, discoveryDeviceTypeSelector, pairedDeviceSelector, discoveredDevicesSelector } from 'containers/App/selectors';
 import { capitalize } from '../../utils';
 
 const styles = (theme: Object) => ({
@@ -37,6 +38,7 @@ type Props = {
   pairDeviceSuccess: ?boolean,
   discoveryDeviceType: string,
   pairedDevice: Object,
+  discoveredDevices: ImmutableList<Object>,
 };
 
 type State = {
@@ -67,8 +69,13 @@ class SettingsDisplay extends React.Component<Props, State> {
   }
 
   handlePreviousStep = () => {
+    const { discoveredDevices } = this.props;
     const { activeStep } = this.state;
-    this.setState({ activeStep: activeStep > 0 ? activeStep - 1 : 0 });
+    if (activeStep === 2 && ImmutableList.isList(discoveredDevices) && discoveredDevices.size === 1) {
+      this.setState({ activeStep: 0 });
+    } else {
+      this.setState({ activeStep: activeStep > 0 ? activeStep - 1 : 0 });
+    }
   }
 
   renderPairMessage() {
@@ -136,6 +143,7 @@ const withConnect = connect((state: StateType) => ({
   pairDeviceSuccess: pairDeviceSuccessSelector(state),
   discoveryDeviceType: discoveryDeviceTypeSelector(state),
   pairedDevice: pairedDeviceSelector(state),
+  discoveredDevices: discoveredDevicesSelector(state),
 }), (dispatch: Function): Object => bindActionCreators({ resetPairing, unpairDevice }, dispatch));
 
 export default compose(

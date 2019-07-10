@@ -21,6 +21,11 @@ const styles = (theme: Object) => ({
   button: {
     marginTop: theme.spacing(1),
   },
+  backButton: {
+    position: 'absolute',
+    bottom: theme.spacing(2),
+    right: theme.spacing(11),
+  },
 });
 
 type Props = {
@@ -61,6 +66,9 @@ class GridDisplayTypes extends React.Component<Props, State> {
             onClick={() => this.handleSelect(constants.TYPE_SAMSUNG)}
           >
             Continue
+          </Button>
+          <Button className={classes.backButton} onClick={() => this.setState({ displayType: null })}>
+            Back
           </Button>
         </div>
       );
