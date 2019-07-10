@@ -1,21 +1,21 @@
 // @flow
 
 import { createMuiTheme } from '@material-ui/core/styles';
-import { red, green, orange, pink } from '@material-ui/core/colors';
+import { red, green, grey, cyan } from '@material-ui/core/colors';
 
 const muiTheme = createMuiTheme({
   navigationWidth: 190,
   palette: {
     primary: {
-      light: orange[500], // '#76d275',
-      main: orange[700], // '#43a047',
-      dark: orange[900], // '#00701a',
+      light: grey[500], // '#76d275',
+      main: grey[700], // '#43a047',
+      dark: grey[900], // '#00701a',
       contrastText: 'rgba(255, 255, 255, 1)',
     },
     secondary: {
-      light: pink[200], // '#63a4f1',
-      main: pink[400], // '#1976d2',
-      dark: pink[600], // '#004ba0',
+      light: cyan[300], // '#63a4f1',
+      main: cyan[500], // '#1976d2',
+      dark: cyan[700], // '#004ba0',
       contrastText: 'rgba(255, 255, 255, 1)',
     },
     background: {

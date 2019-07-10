@@ -4,7 +4,7 @@ const logger = require('./lib/logger')('CLI');
 const startServer = require('./server');
 const initDatabase = require('./database');
 const { initModels } = require('./models');
-const { initAdapters } = require('./adapters');
+const { initAdapter, closeAdapter } = require('./adapters');
 const { API_PORT, DATABASE_CONNECTION } = require('./constants');
 const { addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 
@@ -14,7 +14,7 @@ const start = async ()               => {
   await startServer(API_PORT);
   const db = await initDatabase(DATABASE_CONNECTION);
   await initModels(db);
-  await initAdapters();
+  await initAdapter();
 
   process.on('uncaughtException', (error) => {
     if (error.stack) {
@@ -38,7 +38,8 @@ const start = async ()               => {
     runShutdownHandlers();
   });
 
-  addPostShutdownHandler(() => {
+  addPostShutdownHandler(async () => {
+    await closeAdapter();
     process.exit(exitCode);
   });
 };
