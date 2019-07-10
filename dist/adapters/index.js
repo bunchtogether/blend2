@@ -50,7 +50,7 @@ const closeAdapter = async () => {
   if (activeAdapter && activeAdapter.close) {
     await activeAdapter.close();
   }
-}
+};
 
 module.exports = {
   ...adapters,

@@ -17,25 +17,8 @@ import { pairDeviceSuccessSelector, discoveryDeviceTypeSelector, pairedDeviceSel
 import { capitalize } from '../../utils';
 
 const styles = (theme: Object) => ({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    width: '100%',
-  },
   title: {
     marginBottom: theme.spacing(2),
-  },
-  stepper: {
-    padding: 0,
-    paddingTop: theme.spacing(2),
-    width: '100%',
-  },
-  stepContent: {
-    alignSelf: 'flex-start',
-    paddingTop: theme.spacing(4),
-    width: '100%',
   },
   backButton: {
     position: 'absolute',
@@ -59,12 +42,6 @@ type Props = {
 type State = {
   activeStep: number,
 };
-
-const STEPS = [
-  'Select display type',
-  'Select display',
-  'Confirm',
-];
 
 class SettingsDisplay extends React.Component<Props, State> {
   state = {
@@ -141,12 +118,9 @@ class SettingsDisplay extends React.Component<Props, State> {
       );
     }
     return (
-      <div className={classes.container}>
+      <div>
         <Typography className={classes.title} variant='h6'>Pair new display</Typography>
-        <Typography>{STEPS[activeStep]}</Typography>
-        <div className={classes.stepContent}>
-          {this.renderStepContent(activeStep)}
-        </div>
+        {this.renderStepContent(activeStep)}
         {activeStep > 0 && activeStep < 3 ? (
           <Button className={classes.backButton} onClick={this.handlePreviousStep}>
             Back

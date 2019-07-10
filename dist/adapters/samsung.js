@@ -90,6 +90,8 @@ class SamsungAdapter extends AbstractAdapter {
   }
 
   initialize() {
+    this.togglePower();
+    setTimeout(() => this.togglePower(), 15000);
   }
 
   async pair() {
@@ -103,6 +105,10 @@ class SamsungAdapter extends AbstractAdapter {
     await device.update(deviceUpdate);
     this.ready = true;
     return deviceUpdate;
+  }
+
+  async togglePower() {
+    await this.write('082200000000D6');
   }
 
   async setPower(power         ) {

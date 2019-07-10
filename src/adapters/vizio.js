@@ -145,6 +145,10 @@ class VizioAdapter extends AbstractAdapter {
     }
   }
 
+  async close() {
+    await Promise.resolve();
+  }
+
   ip: string;
   name: string;
   manufacturer: string;
