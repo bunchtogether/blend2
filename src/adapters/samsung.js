@@ -66,16 +66,32 @@ class SamsungAdapter extends AbstractAdapter {
     this.path = data.path;
     this.ready = !!data.ready;
     this.port = new SerialPort(data.path, (error) => {
-      console.log(error);
+      if (error) {
+        this.ready = false;
+      }
+    });
+    this.port.on('close', () => {
+      this.ready = false;
+    });
+    this.port.on('error', () => {
+      this.ready = false;
     });
   }
 
   async write(command: string) {
+    const connectionError = new Error('Unable to connect to Samsung display');
+    if (!this.ready) {
+      throw connectionError;
+    }
     await new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => reject(new Error('Unable to connect to Samsung display')), 2000);
+      const timeoutId = setTimeout(() => reject(connectionError), 2000);
       this.port.drain((error) => {
         clearTimeout(timeoutId);
         if (error) {
+          if (error.message === 'Error: Device not configured, cannot drain') {
+            this.ready = false;
+            reject(connectionError);
+          }
           logger.error(`Error draining port ${error}`);
           reject(error);
         }
@@ -83,7 +99,7 @@ class SamsungAdapter extends AbstractAdapter {
       });
     });
     await new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => reject(new Error('Unable to connect to Samsung display')), 2000);
+      const timeoutId = setTimeout(() => reject(connectionError), 2000);
       this.port.write(Buffer.from(command, 'hex'), (error) => {
         clearTimeout(timeoutId);
         if (error) {
@@ -146,10 +162,15 @@ class SamsungAdapter extends AbstractAdapter {
   }
 
   getDevice() {
+    if (!this.ready) {
+      return Promise.resolve(null);
+    }
     return Promise.resolve({
       type: TYPE_SAMSUNG,
       // $FlowFixMe
       sources: Object.keys(sources),
+      manufacturer: 'Samsung',
+      path: this.path,
     });
   }
 

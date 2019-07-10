@@ -73,3 +73,9 @@ export const pairDeviceSuccessSelector = createSelector<StateType, *, *, *>(
   appState,
   (state) => state.get('pairDeviceSuccess'),
 );
+
+export const remoteErrorSelector = createSelector<StateType, *, *, *>(
+  appState,
+  (state) => state.get('remoteError'),
+);
+

@@ -30,7 +30,8 @@ function* setPowerSaga(action: ActionType): Saga<*> {
     const { body: { power } } = yield call(() => superagent.post(`${BASE_API_URL}/device/power`).send({ power: action.value }));
     yield put({ type: constants.SET_POWER_SUCCESS, value: power });
   } catch (error) {
-    yield put({ type: constants.SET_POWER_ERROR, value: error });
+    const { response: { text } } = error;
+    yield put({ type: constants.SET_POWER_ERROR, value: text || 'Unknown Error' });
   }
 }
 
@@ -39,7 +40,8 @@ function* setVolumeSaga(action: ActionType): Saga<*> {
     const { body: { volume } } = yield call(() => superagent.post(`${BASE_API_URL}/device/volume`).send({ volume: action.value }));
     yield put({ type: constants.SET_VOLUME_SUCCESS, value: volume });
   } catch (error) {
-    yield put({ type: constants.SET_VOLUME_ERROR, value: error });
+    const { response: { text } } = error;
+    yield put({ type: constants.SET_VOLUME_ERROR, value: text || 'Unknown Error' });
   }
 }
 
@@ -48,7 +50,8 @@ function* toggleMuteSaga(): Saga<*> {
     yield call(() => superagent.post(`${BASE_API_URL}/device/mute`));
     yield put({ type: constants.TOGGLE_MUTE_SUCCESS, value: null });
   } catch (error) {
-    yield put({ type: constants.TOGGLE_MUTE_ERROR, value: error });
+    const { response: { text } } = error;
+    yield put({ type: constants.TOGGLE_MUTE_ERROR, value: text || 'Unknown Error' });
   }
 }
 
@@ -57,7 +60,8 @@ function* setSourceSaga(action: ActionType): Saga<*> {
     const { body: { source } } = yield call(() => superagent.post(`${BASE_API_URL}/device/source`).send({ source: action.value }));
     yield put({ type: constants.SET_SOURCE_SUCCESS, value: source });
   } catch (error) {
-    yield put({ type: constants.SET_SOURCE_ERROR, value: error });
+    const { response: { text } } = error;
+    yield put({ type: constants.SET_SOURCE_ERROR, value: text || 'Unknown Error' });
   }
 }
 

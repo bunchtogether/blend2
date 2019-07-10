@@ -14,6 +14,7 @@ const initialState = fromJS({
   discoveredDevices: null,
   startPairingSuccess: null,
   pairDeviceSuccess: null,
+  remoteError: '',
 });
 
 export default (state: AppStateType = initialState, action: ActionType) => {
@@ -55,6 +56,22 @@ export default (state: AppStateType = initialState, action: ActionType) => {
         startPairingSuccess: null,
         pairDeviceSuccess: null,
       });
+    case constants.SET_POWER:
+      return state.set('remoteError', '');
+    case constants.SET_VOLUME:
+      return state.set('remoteError', '');
+    case constants.TOGGLE_MUTE:
+      return state.set('remoteError', '');
+    case constants.SET_SOURCE:
+      return state.set('remoteError', '');
+    case constants.SET_POWER_ERROR:
+      return state.set('remoteError', action.value);
+    case constants.SET_VOLUME_ERROR:
+      return state.set('remoteError', action.value);
+    case constants.TOGGLE_MUTE_ERROR:
+      return state.set('remoteError', action.value);
+    case constants.SET_SOURCE_ERROR:
+      return state.set('remoteError', action.value);
     default:
       return state;
   }

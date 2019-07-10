@@ -109,6 +109,9 @@ class VizioAdapter extends AbstractAdapter {
   }
 
   async getDevice() {
+    if (!this.ready) {
+      return Promise.resolve(null);
+    }
     try {
       const { ITEMS: [{ VALUE: power }] } = await this.vizio.power.currentMode();
       const { ITEMS: [{ VALUE: source }] } = await this.vizio.input.current();

@@ -15,7 +15,7 @@ import RemoteMute from 'components/RemoteMute';
 import RemoteVolume from 'components/RemoteVolume';
 import RemoteSource from 'components/RemoteSource';
 import Progress from 'components/Progress';
-import { pairedDeviceSelector, deviceLoadedSelector } from 'containers/App/selectors';
+import { pairedDeviceSelector, deviceLoadedSelector, remoteErrorSelector } from 'containers/App/selectors';
 
 const styles = (theme: Object) => ({
   container: {
@@ -37,12 +37,18 @@ const styles = (theme: Object) => ({
     marginRight: theme.spacing(4),
     marginLeft: theme.spacing(4),
   },
+  error: {
+    color: theme.palette.error[500],
+    paddingBottom: theme.spacing(4),
+    paddingLeft: theme.spacing(4),
+  },
 });
 
 type Props = {
   classes: ClassesType,
   pairedDevice: Object,
   deviceLoaded: boolean,
+  remoteError: string,
 };
 
 type State = {
@@ -50,7 +56,7 @@ type State = {
 
 export class Stream extends React.PureComponent<Props, State> { // eslint-disable-line react/prefer-stateless-function
   renderContent() {
-    const { classes, pairedDevice } = this.props;
+    const { classes, pairedDevice, remoteError } = this.props;
     return (
       <div className={classes.container}>
         {!pairedDevice ? (
@@ -66,6 +72,9 @@ export class Stream extends React.PureComponent<Props, State> { // eslint-disabl
             <RemoteSource />
           </React.Fragment>
         )}
+        {remoteError ? (
+          <Typography className={classes.error}>{remoteError}</Typography>
+        ) : null}
       </div>
     );
   }
@@ -91,6 +100,7 @@ export class Stream extends React.PureComponent<Props, State> { // eslint-disabl
 const withConnect = connect((state: StateType) => ({
   pairedDevice: pairedDeviceSelector(state),
   deviceLoaded: deviceLoadedSelector(state),
+  remoteError: remoteErrorSelector(state),
 }), (dispatch: Function): Object => bindActionCreators({ }, dispatch));
 
 export default compose(
