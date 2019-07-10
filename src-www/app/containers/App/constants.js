@@ -35,9 +35,6 @@ export const SET_SOURCE_ERROR = 'web/App/SET_SOURCE_ERROR';
 export const SET_MUTE = 'web/App/SET_MUTE';
 export const SET_MUTE_SUCCESS = 'web/App/SET_MUTE_SUCCESS';
 export const SET_MUTE_ERROR = 'web/App/SET_MUTE_ERROR';
-export const TOGGLE_CC = 'web/App/TOGGLE_CC';
-export const TOGGLE_CC_SUCCESS = 'web/App/TOGGLE_CC_SUCCESS';
-export const TOGGLE_CC_ERROR = 'web/App/TOGGLE_CC_ERROR';
 
 export const GET_PAIRED_DEVICE = 'web/App/GET_PAIRED_DEVICE';
 export const GET_PAIRED_DEVICE_SUCCESS = 'web/App/GET_PAIRED_DEVICE_SUCCESS';

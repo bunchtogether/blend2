@@ -52,15 +52,6 @@ function* setMuteSaga(action: ActionType): Saga<*> {
   }
 }
 
-function* toggleCCSaga(): Saga<*> {
-  try {
-    yield call(() => superagent.post(`${BASE_API_URL}/device/cc`));
-    yield put({ type: constants.SET_MUTE_SUCCESS, value: null });
-  } catch (error) {
-    yield put({ type: constants.SET_MUTE_ERROR, value: error });
-  }
-}
-
 function* setSourceSaga(action: ActionType): Saga<*> {
   try {
     const { body: { source } } = yield call(() => superagent.post(`${BASE_API_URL}/device/source`).send({ source: action.value }));
@@ -146,7 +137,6 @@ export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.SET_POWER, setPowerSaga);
   yield throttle(1000, constants.SET_VOLUME, setVolumeSaga);
   yield takeLatest(constants.SET_MUTE, setMuteSaga);
-  yield takeLatest(constants.TOGGLE_CC, toggleCCSaga);
   yield takeLatest(constants.SET_SOURCE, setSourceSaga);
   yield takeLatest(constants.GET_PAIRED_DEVICE, getPairedDeviceSaga);
   yield takeLatest(constants.UNPAIR_DEVICE, unpairDeviceSaga);

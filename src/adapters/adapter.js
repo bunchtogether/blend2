@@ -7,7 +7,6 @@ export interface AdapterType {
   setVolume(volume: number): Promise<number>,
   setSource(source: string): Promise<string>,
   setMute(mute: boolean): Promise<boolean>,
-  toggleCC(): Promise<void>,
   getDevice(): Promise<*>,
   close(): Promise<*>,
 }
@@ -40,10 +39,6 @@ class AbstractAdapter {
 
   setMute(mute: boolean): Promise<boolean> { // eslint-disable-line no-unused-vars
     throw new Error('Method setMute is not implemented.');
-  }
-
-  toggleCC(): Promise<void> { // eslint-disable-line no-unused-vars
-    throw new Error('Method toggleCC is not implemented.');
   }
 
   getDevice(): Promise<*> { // eslint-disable-line no-unused-vars

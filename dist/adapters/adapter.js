@@ -7,7 +7,6 @@
                                              
                                              
                                            
-                            
                           
                       
  
@@ -40,10 +39,6 @@ class AbstractAdapter {
 
   setMute(mute         )                   { // eslint-disable-line no-unused-vars
     throw new Error('Method setMute is not implemented.');
-  }
-
-  toggleCC()                { // eslint-disable-line no-unused-vars
-    throw new Error('Method toggleCC is not implemented.');
   }
 
   getDevice()             { // eslint-disable-line no-unused-vars

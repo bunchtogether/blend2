@@ -34,6 +34,21 @@ type Props = {
 };
 
 class ListDiscoveredDevices extends React.PureComponent<Props> {
+  componentDidUpdate() {
+    const { discoveredDevices } = this.props;
+    if (discoveredDevices && discoveredDevices.size === 1) {
+      this.handleClick(discoveredDevices.first());
+    }
+  }
+
+  handleClick(device: Object) {
+    const { discoveryDeviceType } = this.props;
+    if (this.props.onClick) {
+      this.props.onClick();
+    }
+    this.props.startPairing(discoveryDeviceType, device);
+  }
+
   render() {
     const { classes, discoveredDevices, discoveryDeviceType } = this.props;
     if (!discoveredDevices) {
@@ -46,14 +61,9 @@ class ListDiscoveredDevices extends React.PureComponent<Props> {
       <List>
         {discoveredDevices.toJS().map((device: Object) => (
           <ListItemDevice
-            key={device.name || device.ip}
+            key={device.name || device.ip || device.path}
             device={device}
-            onClick={() => {
-              if (this.props.onClick) {
-                this.props.onClick();
-              }
-              this.props.startPairing(discoveryDeviceType, device);
-            }}
+            onClick={() => this.handleClick(device)}
           />
         ))}
       </List>

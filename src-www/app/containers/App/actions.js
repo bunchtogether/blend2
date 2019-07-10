@@ -88,13 +88,6 @@ export function setMute(mute: boolean): ActionType {
   };
 }
 
-export function toggleCC(): ActionType {
-  return {
-    type: constants.TOGGLE_CC,
-    value: null,
-  };
-}
-
 export function getPairedDevice(): ActionType {
   return {
     type: constants.GET_PAIRED_DEVICE,

@@ -9,9 +9,6 @@ import GridDisplayTypes from 'components/GridDisplayTypes';
 import ListDiscoveredDevices from 'components/ListDiscoveredDevices';
 import SettingsPairDisplayVerification from 'components/SettingsPairDisplayVerification';
 import Progress from 'components/Progress';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItemDevice from 'components/ListItemDevice';
@@ -66,7 +63,7 @@ type State = {
 const STEPS = [
   'Select display type',
   'Select display',
-  'Enter pairing code',
+  'Confirm',
 ];
 
 class SettingsDisplay extends React.Component<Props, State> {
@@ -146,13 +143,7 @@ class SettingsDisplay extends React.Component<Props, State> {
     return (
       <div className={classes.container}>
         <Typography className={classes.title} variant='h6'>Pair new display</Typography>
-        <Stepper activeStep={activeStep} className={classes.stepper} alternativeLabel>
-          {STEPS.map((label:string) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
+        <Typography>{STEPS[activeStep]}</Typography>
         <div className={classes.stepContent}>
           {this.renderStepContent(activeStep)}
         </div>

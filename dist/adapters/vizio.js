@@ -13,7 +13,8 @@ const logger = require('../lib/logger')('Vizio');
                
                        
                 
-                    
+                     
+                  
   
 
                      
@@ -29,6 +30,7 @@ class VizioAdapter extends AbstractAdapter {
       Smartcast.discover(
         (device        ) => {
           logger.info(`New device discovered: ${JSON.stringify(device)}`);
+          device.type = TYPE_VIZIO; // eslint-disable-line no-param-reassign
           devices.push(device);
         },
         (error        ) => {
@@ -51,7 +53,7 @@ class VizioAdapter extends AbstractAdapter {
     this.name = data.name;
     this.manufacturer = data.manufacturer;
     this.model = data.model;
-    this.ready = !!data.authToken;
+    this.ready = !!data.ready;
     this.vizio = new Smartcast(data.ip, data.authToken);
   }
 
@@ -109,10 +111,6 @@ class VizioAdapter extends AbstractAdapter {
     }
     await this.vizio.control.volume.unmute();
     return false;
-  }
-
-  async toggleCC() {
-    await this.vizio.control.media.cc();
   }
 
   async getDevice() {

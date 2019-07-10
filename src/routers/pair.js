@@ -54,7 +54,7 @@ module.exports.getPairRouter = () => {
 
     try {
       const adapterInstance = new Adapter(data);
-      adapters.setActiveAdapter(adapterInstance);
+      await adapters.setActiveAdapter(adapterInstance);
       await adapterInstance.initialize();
       res.sendStatus(200);
     } catch (error) {
@@ -106,16 +106,12 @@ module.exports.getPairRouter = () => {
   });
 
   router.post('/remove', async (req: express$Request, res: express$Response) => {
-    const activeAdapter = await adapters.getActiveAdapter();
-    if (activeAdapter && activeAdapter.close) {
-      await activeAdapter.close();
-    }
     const device = await getDevice();
     await device.update({
       type: null,
       data: null,
     });
-    adapters.setActiveAdapter(null);
+    await adapters.setActiveAdapter(null);
     res.sendStatus(200);
   });
 

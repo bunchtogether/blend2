@@ -20,7 +20,7 @@ const _initAdapters = async () => { // eslint-disable-line no-underscore-dangle
     const device = await getDevice();
     if (device && device.data && device.type) {
       const Adapter = adapters[device.type];
-      const adapterInstance = new Adapter(device.data);
+      const adapterInstance = new Adapter({ ...device.data, ready: true });
       activeAdapter = adapterInstance;
     }
   } catch (error) {
@@ -36,7 +36,10 @@ const initAdapters = () => {
   return initPromise;
 };
 
-const setActiveAdapter = (adapter        ) => {
+const setActiveAdapter = async (adapter        ) => {
+  if (activeAdapter && activeAdapter.close) {
+    await activeAdapter.close();
+  }
   activeAdapter = adapter;
 };
 

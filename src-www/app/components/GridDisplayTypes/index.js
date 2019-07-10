@@ -17,7 +17,7 @@ type Props = {
   onClick?: Function,
 };
 
-const DISPLAYS = [constants.TYPE_VIZIO];
+const DISPLAYS = [constants.TYPE_SAMSUNG, constants.TYPE_VIZIO];
 
 class GridDisplayTypes extends React.PureComponent<Props> {
   render() {

@@ -6,33 +6,35 @@ const SerialPort = require('serialport');
 const { TYPE_SAMSUNG } = require('../constants');
 const { getDevice: getDeviceModel } = require('../models');
 const AbstractAdapter = require('./adapter');
+const manufacturers = require('../manufacturers');
 const logger = require('../lib/logger')('Samsung Adapter');
 
 type DataType = {
   path: string,
+  ready?: boolean,
 };
 
 const sources = {
-  TV: '08220a000000CC',
-  'AV-1': '08220a000100CB',
-  'AV-2': '08220a000101CA',
-  'AV-3': '08220a000102C9',
-  'Svideo-1': '08220a000200CA',
-  'Svideo-2': '08220a000201C9',
-  'Svideo-3': '08220a000202C8',
-  'Component-1': '08220a000300C9',
-  'Component-2': '08220a000301C8',
-  'Component-3': '08220a000302C7',
-  'PC-1': '08220a000400C8',
-  'PC-2': '08220a000401C7',
-  'PC-3': '08220a000402C6',
-  'HDMI-1': '08220a000500C7',
-  'HDMI-2': '08220a000501C6',
-  'HDMI-3': '08220a000502C5',
-  'HDMI-4': '08220a000503C4',
-  'DVI-1': '08220a000600C6',
-  'DVI-2': '08220a000601C5',
-  'DVI-3': '08220a000602C4',
+  TV: '08220A000000CC',
+  'AV-1': '08220A000100CB',
+  'AV-2': '08220A000101CA',
+  'AV-3': '08220A000102C9',
+  'Svideo-1': '08220A000200CA',
+  'Svideo-2': '08220A000201C9',
+  'Svideo-3': '08220A000202C8',
+  'Component-1': '08220A000300C9',
+  'Component-2': '08220A000301C8',
+  'Component-3': '08220A000302C7',
+  'PC-1': '08220A000400C8',
+  'PC-2': '08220A000401C7',
+  'PC-3': '08220A000402C6',
+  'HDMI-1': '08220A000500C7',
+  'HDMI-2': '08220A000501C6',
+  'HDMI-3': '08220A000502C5',
+  'HDMI-4': '08220A000503C4',
+  'DVI-1': '08220A000600C6',
+  'DVI-2': '08220A000601C5',
+  'DVI-3': '08220A000602C4',
 };
 
 function toHex(num: number, pad: number = 2) {
@@ -48,8 +50,11 @@ const addCheckSum = function (hexCode: string) {
 (x: SamsungAdapter) => (x: AdapterType); // eslint-disable-line no-unused-expressions
 class SamsungAdapter extends AbstractAdapter {
   static async discover(): Promise<*> {
-    // const devices = [];
-    // return devices;
+    const list = await new Promise((resolve, reject) => SerialPort.list().then(resolve).catch(reject));
+    return list.filter((port: Object) => manufacturers.includes(port.manufacturer)).map((port: Object) => ({
+      path: port.comName,
+      type: TYPE_SAMSUNG, // eslint-disable-line no-param-reassign
+    }));
   }
 
   constructor(data: DataType) {
@@ -60,7 +65,7 @@ class SamsungAdapter extends AbstractAdapter {
     super();
     this.path = data.path;
     this.port = new SerialPort(data.path);
-    this.ready = true;
+    this.ready = !!data.ready;
   }
 
   async write(command: string) {
@@ -96,11 +101,16 @@ class SamsungAdapter extends AbstractAdapter {
     };
     const device = await getDeviceModel();
     await device.update(deviceUpdate);
+    this.ready = true;
     return deviceUpdate;
   }
 
   async setPower(power: boolean) {
-    await this.write('082200000000D6');
+    if (power) {
+      await this.write('082200000002D4');
+    } else {
+      await this.write('082200000001D5');
+    }
     return power;
   }
 
@@ -122,10 +132,6 @@ class SamsungAdapter extends AbstractAdapter {
   async setMute(mute: boolean) {
     await this.write('082202000000D4');
     return mute;
-  }
-
-  async toggleCC() {
-    await this.write('08220d000025A4');
   }
 
   getDevice() {

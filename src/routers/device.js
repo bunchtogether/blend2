@@ -76,16 +76,5 @@ module.exports.getDeviceRouter = () => {
     }
   });
 
-  router.post('/cc', async (req: express$Request, res: express$Response) => {
-    try {
-      await req.adapter.toggleCC();
-      res.sendStatus(200);
-    } catch (error) {
-      logger.error('Error setting cc');
-      logger.errorStack(error);
-      res.status(400).send('Error setting cc');
-    }
-  });
-
   return router;
 };
