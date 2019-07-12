@@ -68,6 +68,7 @@ class SamsungAdapter extends AbstractAdapter {
     this.port = new SerialPort(data.path, (error) => {
       if (error) {
         this.ready = false;
+        console.log('ERROR', error);
       }
     });
     this.port.on('close', () => {
@@ -78,9 +79,9 @@ class SamsungAdapter extends AbstractAdapter {
     });
   }
 
-  async write(command: string) {
+  async write(command: string, forceWrite: boolean = false) {
     const connectionError = new Error('Unable to connect to Samsung display');
-    if (!this.ready) {
+    if (!this.ready && !forceWrite) {
       throw connectionError;
     }
     await new Promise((resolve, reject) => {
@@ -112,8 +113,12 @@ class SamsungAdapter extends AbstractAdapter {
   }
 
   initialize() {
-    this.togglePower();
-    setTimeout(() => this.togglePower(), 15000);
+    const logError = (error) => {
+      logger.error('Error initializing adapter');
+      logger.errorStack(error);
+    };
+    this.togglePower(true).catch(logError);
+    setTimeout(() => this.togglePower(true).catch(logError), 15000);
   }
 
   async pair() {
@@ -129,8 +134,8 @@ class SamsungAdapter extends AbstractAdapter {
     return deviceUpdate;
   }
 
-  async togglePower() {
-    await this.write('082200000000D6');
+  async togglePower(forceWrite: boolean = false) {
+    await this.write('082200000000D6', forceWrite);
   }
 
   async setPower(power: boolean) {
