@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { BlendClient, blendServerDetectedPromise, makeBlendLogger, getBlendThumbnailUrl } from '@bunchtogether/blend2-client';
+import { BlendClient, getIsServerAvailable, makeBlendLogger, getBlendThumbnailUrl } from '@bunchtogether/blend2-client';
 
 const styles = () => ({
   container: {
@@ -63,7 +63,7 @@ class Player extends React.PureComponent<Props> {
 
       const streamUrl = decodeURIComponent(urlMatch[1][urlMatch[1].length - 1] === '/' ? urlMatch[1].slice(0, urlMatch[1].length - 1) : urlMatch[1]);
 
-      const blendServerDetected = await blendServerDetectedPromise;
+      const blendServerDetected = await getIsServerAvailable();
 
       if (blendServerDetected) {
         windowLogger.info('Blend server detected');
