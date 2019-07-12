@@ -60,7 +60,7 @@ const sampleFilePathPromise = (async () => {
   if (basePathExists) {
     return basePath;
   }
-  const localPath = path.resolve(process.cwd(), '../sample.mp4');
+  const localPath = path.resolve(process.cwd(), 'sample.mp4');
   const localPathExists = await fs.exists(localPath);
   if (localPathExists) {
     return localPath;

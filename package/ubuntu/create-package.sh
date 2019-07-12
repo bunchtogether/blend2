@@ -4,11 +4,8 @@ set -e
 
 sudo apt-get update -y
 
-sudo apt-get install -y tlsdate
-
 sudo timedatectl --adjust-system-clock set-local-rtc true
 sudo timedatectl set-ntp true
-sudo tlsdate -s -H mail.google.com
 sudo timedatectl set-local-rtc false
 sudo timedatectl
 
@@ -32,7 +29,7 @@ cd ~/build
 
 export BLEND_VERSION=$(cat package.json | jq '.version' -r)
 yarn install --ignore-engines
-yarn build
+yarn build:src
 ./node_modules/.bin/pkg . --targets node10-linux-x64 --options trace-warnings
 
 cd ~/
@@ -51,6 +48,9 @@ EOF
 mkdir -p blend/etc/blend
 
 cp ~/build/blend ~/blend/etc/blend/
+cp -r ~/build/dist-www ~/blend/etc/blend/dist-www
+cp ~/build/node_modules/@serialport/bindings/build/Release/bindings.node ~/blend/etc/blend/bindings.node
+cp ~/build/node_modules/sqlite3/lib/binding/node-v64-linux-x64/node_sqlite3.node ~/blend/etc/blend/node_sqlite3.node
 cp ~/build/dist/sample.mp4 ~/blend/etc/blend/sample.mp4
 cp ~/build/node_modules/@bunchtogether/ffmpeg-static/bin/linux/x64/ffmpeg ~/blend/etc/blend/ffmpeg
 

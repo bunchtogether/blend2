@@ -17,9 +17,9 @@ function getRouters() {
   routers.use(getStreamRouter());
   routers.use(getMulticastAssistRouter());
   routers.use(getLogRouter());
-  routers.use('/api/1.0/stream/:url', express.static(path.join(__dirname, '../../dist-www')));
-  routers.use('/api/1.0/ffmpeg/:args', express.static(path.join(__dirname, '../../dist-www')));
-  routers.use(['/remote*', '/stream*', '/'], express.static(path.join(__dirname, '../../dist-www')));
+  routers.use('/api/1.0/stream/:url', express.static(path.join(process.cwd(), 'dist-www')));
+  routers.use('/api/1.0/ffmpeg/:args', express.static(path.join(process.cwd(), 'dist-www')));
+  routers.use(['/remote*', '/stream*', '/'], express.static(path.join(process.cwd(), 'dist-www')));
   routers.use('/api/1.0/capabilities', getCapabilitiesRouter());
   routers.use('/api/1.0/pair', getPairRouter());
   routers.use('/api/1.0/device', adapterMiddleware, getDeviceRouter());
