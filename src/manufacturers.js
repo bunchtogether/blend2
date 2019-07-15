@@ -1,6 +1,6 @@
 // @flow
 
-const PROLIFIC = 'Prolific Technology Inc.';
+const PROLIFIC = 'Prolific';
 
 module.exports = [
   PROLIFIC,

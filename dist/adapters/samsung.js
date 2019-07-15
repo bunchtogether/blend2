@@ -51,7 +51,7 @@ const addCheckSum = function (hexCode        ) {
 class SamsungAdapter extends AbstractAdapter {
   static async discover()             {
     const list = await new Promise((resolve, reject) => SerialPort.list().then(resolve).catch(reject));
-    return list.filter((port        ) => manufacturers.includes(port.manufacturer)).map((port        ) => ({
+    return list.filter((port        ) => manufacturers.some((manufacturer        ) => port.manufacturer && port.manufacturer.indexOf(manufacturer) !== -1)).map((port        ) => ({
       path: port.comName,
       type: TYPE_SAMSUNG, // eslint-disable-line no-param-reassign
     }));
