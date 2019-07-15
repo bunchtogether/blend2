@@ -5,10 +5,7 @@ const express = require('express');
 const { getStreamRouter, shutdownStreamRouter } = require('./stream');
 const { getMulticastAssistRouter, shutdownMulticastAssistRouter } = require('./multicast-assist');
 const { getLogRouter } = require('./log');
-const { getPairRouter } = require('./pair');
-const { getDeviceRouter } = require('./device');
-const { getCapabilitiesRouter } = require('./capabilities');
-const adapterMiddleware = require('./middleware/adapter');
+const { getApiRouters } = require('./api');
 const logger = require('../lib/logger')('Routers');
 
 function getRouters() {
@@ -20,10 +17,7 @@ function getRouters() {
   routers.use('/api/1.0/stream/:url', express.static(path.join(process.cwd(), 'dist-www')));
   routers.use('/api/1.0/ffmpeg/:args', express.static(path.join(process.cwd(), 'dist-www')));
   routers.use(['/remote*', '/stream*', '/'], express.static(path.join(process.cwd(), 'dist-www')));
-  routers.use('/api/1.0/capabilities', getCapabilitiesRouter());
-  routers.use('/api/1.0/pair', getPairRouter());
-  routers.use('/api/1.0/device', adapterMiddleware, getDeviceRouter());
-
+  routers.use('/api/1.0', getApiRouters());
   return routers;
 }
 

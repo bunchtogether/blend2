@@ -1,8 +1,8 @@
 // @flow
 
 const { Router } = require('express');
-const adapters = require('../adapters');
-const logger = require('../lib/logger')('Capabilities API');
+const adapters = require('../../adapters');
+const logger = require('../../lib/logger')('Capabilities API');
 
 module.exports.getCapabilitiesRouter = () => {
   logger.info('Attaching capabilities router');
