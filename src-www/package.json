@@ -62,6 +62,7 @@
       "sanitize.css",
       "fs",
       "@bunchtogether/boost-client",
+      "@bunchtogether/blend2-client",
       "farmhash",
       "hls.js",
       "uglifyjs-webpack-plugin"
