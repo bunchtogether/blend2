@@ -997,10 +997,12 @@
 "@bunchtogether/blend2-client@file:../vendor/client":
   version "2.1.0"
   dependencies:
+    big-integer "^1.6.44"
     codem-isoboxer "^0.3.7"
     flatted "^2.0.0"
     isomorphic-ws "^4.0.1"
     lru-cache "^5.1.1"
+    murmurhash-v3 "^1.0.2"
     mux.js "^5.1.2"
     superagent "^5.0.2"
 
@@ -2226,7 +2228,7 @@ before-after-hook@^1.1.0:
   resolved "https://registry.yarnpkg.com/before-after-hook/-/before-after-hook-1.4.0.tgz#2b6bf23dca4f32e628fd2747c10a37c74a4b484d"
   integrity sha512-l5r9ir56nda3qu14nAXIlyq1MmUSs0meCIaFAh8HwkFwP1F8eToOuS3ah2VAHHcY04jaYD7FpJC5JTXHYRbkzg==
 
-big-integer@^1.6.17:
+big-integer@^1.6.17, big-integer@^1.6.44:
   version "1.6.44"
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.44.tgz#4ee9ae5f5839fc11ade338fea216b4513454a539"
   integrity sha512-7MzElZPTyJ2fNvBkPxtFQ2fWIkVmuzw41+BZHSzpEq3ymB2MfeKp1+yXl/tS75xCx+WnyV+yb0kp+K1C3UNwmQ==
@@ -7863,6 +7865,11 @@ multibase@^0.6.0:
   integrity sha512-R9bNLQhbD7MsitPm1NeY7w9sDgu6d7cuj25snAWH7k5PSNPSwIQQBpcpj8jx1W96dLbdigZqmUWOdQRMnAmgjA==
   dependencies:
     base-x "3.0.4"
+
+murmurhash-v3@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/murmurhash-v3/-/murmurhash-v3-1.0.2.tgz#16ccac61d542e48ed96534e0ea54ab86ea6ec205"
+  integrity sha1-FsysYdVC5I7ZZTTg6lSrhupuwgU=
 
 mute-stream@0.0.7:
   version "0.0.7"
