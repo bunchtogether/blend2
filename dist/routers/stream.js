@@ -27,7 +27,13 @@ let broadcastAddressesInterval;
 
 const getBroadcastAddresses = () => {
   broadcastAddresses = [];
-  for (const iface of Object.keys(os.networkInterfaces())) {
+  const networkInterfaces = os.networkInterfaces();
+  for (const iface of Object.keys(networkInterfaces)) {
+    if(networkInterfaces[iface] && networkInterfaces[iface].length > 0) {
+      if(networkInterfaces[iface][0].internal) {
+        continue;
+      }
+    }
     try {
       const address = broadcastAddress(iface);
       broadcastAddresses.push(address);
