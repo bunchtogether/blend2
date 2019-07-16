@@ -27,8 +27,10 @@ async function joinMeeting(meetingNumber        ) {
 }
 
 async function leaveMeeting() {
-  await disconnect();
-  await zoom.zcommand.dial.leave();
+  if(activeRoom) {
+    await activeRoom.zcommand.dial.leave();
+    await disconnect();
+  }
   await bringApplicationToFront('chrome');
 }
 
