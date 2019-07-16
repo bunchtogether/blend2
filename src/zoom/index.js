@@ -31,7 +31,7 @@ async function joinMeeting(meetingNumber: string, password?: string) {
 async function leaveMeeting() {
   logger.info('Leaving meeting');
   if (activeRoom) {
-    await activeRoom.zcommand.dial.leave();
+    await activeRoom.zcommand.call.leave();
     await disconnect();
   }
   await bringApplicationToFront('chrome');
