@@ -9,20 +9,31 @@ module.exports.getZoomRouter = () => {
 
   const router = Router({ mergeParams: true });
 
-  router.post('/start', async (req: express$Request, res: express$Response) => {
-    const { body: { hostname, password } } = req;
-    if (typeof hostname !== 'string') {
-      res.status(400).send('Missing required body parameter "hostname"');
+  router.post('/join', async (req: express$Request, res: express$Response) => {
+    const { body: { meetingNumber } } = req;
+    if (typeof meetingNumber !== 'string') {
+      res.status(400).send('Missing required body parameter "meetingNumber"');
       return;
     }
 
     try {
-      await zoom.startRoom(hostname, password);
+      await zoom.joinMeeting(meetingNumber);
       res.sendStatus(200);
     } catch (error) {
-      logger.error('Error initializing zoom room');
+      logger.error('Error joining meeting');
       logger.errorStack(error);
-      res.status(400).send('Can not start zoom room');
+      res.status(400).send('Can not join meeting');
+    }
+  });
+
+  router.post('/leave', async (req: express$Request, res: express$Response) => {
+    try {
+      await zoom.leaveMeeting();
+      res.sendStatus(200);
+    } catch (error) {
+      logger.error('Error leaving meeting');
+      logger.errorStack(error);
+      res.status(400).send('Can not leave meeting');
     }
   });
 
