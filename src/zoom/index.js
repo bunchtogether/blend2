@@ -22,14 +22,14 @@ async function disconnect() {
 
 async function joinMeeting(meetingNumber: string) {
   const zoom = await connect();
-  await zoom.zCommand.dial.join({ meetingNumber });
-  await bringApplicationToFront('Zoom');
+  await zoom.zcommand.dial.join({ meetingNumber });
+  await bringApplicationToFront('ZoomRooms');
 }
 
 async function leaveMeeting() {
   await disconnect();
-  await zoom.zCommand.dial.leave();
-  await bringApplicationToFront('Chrome');
+  await zoom.zcommand.dial.leave();
+  await bringApplicationToFront('chrome');
 }
 
 module.exports = {
