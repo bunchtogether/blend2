@@ -1,7 +1,7 @@
 // @flow
 
 const bringApplicationToFront = require('@bunchtogether/bring-application-to-front');
-const ZoomRoomsControlSystem = require('../../vendor/zoom-rooms-control-system');
+const ZoomRoomsControlSystem = require('@bunchtogether/zoom-rooms-control-system');
 const logger = require('../lib/logger')('Zoom Control');
 
 let activeRoom;

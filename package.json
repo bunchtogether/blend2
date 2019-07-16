@@ -80,6 +80,7 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
+    "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
     "@bunchtogether/bring-application-to-front": "^1.0.0",
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
