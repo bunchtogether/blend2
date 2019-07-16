@@ -1,3 +1,6 @@
 [submodule "vendor/client"]
 	path = vendor/client
 	url = https://github.com/bunchtogether/blend2-client.git
+[submodule "vendor/zoom-rooms-control-system"]
+	path = vendor/zoom-rooms-control-system
+	url = https://github.com/bunchtogether/zoom-rooms-control-system.git

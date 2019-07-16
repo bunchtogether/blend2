@@ -4,7 +4,7 @@
 Name "Blend Installer"
 Outfile "blend-installer.exe"
 
-Var /global InstallDir 
+Var /global InstallDir
 
 !macro VerifyUserIsAdmin
 UserInfo::GetAccountType
@@ -16,7 +16,7 @@ ${If} $0 != "admin"
 ${EndIf}
 !macroend
 
-# Installer 
+# Installer
 Function .onInit
 	setShellVarContext all
 	StrCpy $InstallDir "$PROGRAMFILES\Blend"
@@ -26,7 +26,7 @@ FunctionEnd
 Section "install"
   CreateDirectory "$InstallDir"
   SetOutPath "$InstallDir"
-  
+
   # Remove Blend service
   ExecWait '"$InstallDir\nssm.exe" stop "Blend"'
   Sleep 15000
@@ -41,8 +41,10 @@ Section "install"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "DisplayVersion" ${Version}
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "InstallLocation" $InstallDir
 
-  # Sample Video
-  File files\sample.mp4 
+  # Copy Files
+  File files\sample.mp4
+  File /r files\dist-www
+  File files\*.node
 
   ${If} ${RunningX64}
     # Copy 64bit files

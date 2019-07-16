@@ -1,9 +1,9 @@
 // @flow
 
 const { Router } = require('express');
-const adapters = require('../adapters');
-const { getDevice } = require('../models');
-const logger = require('../lib/logger')('Pair API');
+const adapters = require('../../adapters');
+const { getDevice } = require('../../models');
+const logger = require('../../lib/logger')('Pair API');
 
 module.exports.getPairRouter = () => {
   logger.info('Attaching pair router');

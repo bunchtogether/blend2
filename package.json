@@ -80,6 +80,7 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
+    "@bunchtogether/bring-application-to-front": "^1.0.0",
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
     "bl": "^3.0.0",

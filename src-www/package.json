@@ -22,7 +22,7 @@
     "preinstall": "yarn npmcheckversion",
     "postinstall": "yarn build:dll",
     "prebuild": "yarn build:clean",
-    "build": "cross-env BOLT_VERSION=$(cat ../package.json | jq .version | tr  -d '\"\"') NODE_ENV=production webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress --hide-modules --display-optimization-bailout; mv build ../dist-www",
+    "build": "cross-env NODE_ENV=production webpack --config internals/webpack/webpack.prod.babel.js --color -p --progress --hide-modules --display-optimization-bailout && mv build ../dist-www",
     "build:clean": "rimraf ./build && rimraf ../dist-www",
     "build:dll": "node ./internals/scripts/dependencies.js",
     "start": "cross-env NODE_ENV=development node server",

@@ -1,14 +1,14 @@
-// @flow
+//      
 
 const { Router } = require('express');
-const logger = require('../lib/logger')('Device API');
+const logger = require('../../lib/logger')('Device API');
 
 module.exports.getDeviceRouter = () => {
   logger.info('Attaching device router');
 
   const router = Router({ mergeParams: true });
 
-  router.post('/power', async (req: express$Request, res: express$Response) => {
+  router.post('/power', async (req                 , res                  ) => {
     const { body: { power } } = req;
     if (typeof power !== 'boolean') {
       res.status(400).send('Missing required body parameter "power"');
@@ -25,7 +25,7 @@ module.exports.getDeviceRouter = () => {
     }
   });
 
-  router.post('/volume', async (req: express$Request, res: express$Response) => {
+  router.post('/volume', async (req                 , res                  ) => {
     const { body: { volume } } = req;
     if (typeof volume !== 'number') {
       res.status(400).send('Missing required body parameter "volume"');
@@ -42,7 +42,7 @@ module.exports.getDeviceRouter = () => {
     }
   });
 
-  router.post('/source', async (req: express$Request, res: express$Response) => {
+  router.post('/source', async (req                 , res                  ) => {
     const { body: { source } } = req;
     if (typeof source !== 'string') {
       res.status(400).send('Missing required body parameter "source"');
@@ -59,7 +59,7 @@ module.exports.getDeviceRouter = () => {
     }
   });
 
-  router.post('/mute', async (req: express$Request, res: express$Response) => {
+  router.post('/mute', async (req                 , res                  ) => {
     try {
       await req.adapter.toggleMute();
       res.sendStatus(200);
