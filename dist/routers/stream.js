@@ -417,7 +417,9 @@ module.exports.shutdownStreamRouter = async () => {
 module.exports.getStreamRouter = () => {
   broadcastSocket = dgram.createSocket('udp4');
 
-  broadcastSocket.bind(API_PORT);
+  broadcastSocket.bind(API_PORT, function(){
+    broadcastSocket.setBroadcast(true);
+  });
 
   broadcastAddressesInterval = setInterval(getBroadcastAddresses, 1000 * 60 * 60);
 
