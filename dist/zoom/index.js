@@ -15,9 +15,9 @@ async function connect(password         ) {
 }
 
 async function disconnect() {
-  // if (activeRoom) {
-  //   await activeRoom.disconnect();
-  // }
+  if (activeRoom) {
+    await activeRoom.disconnect();
+  }
   activeRoom = null;
 }
 
