@@ -11,13 +11,13 @@ module.exports.getZoomRouter = () => {
 
   router.post('/join', async (req: express$Request, res: express$Response) => {
     const { body: { meetingNumber, password } } = req;
-    if (typeof meetingNumber !== 'string') {
+    if (!meetingNumber) {
       res.status(400).send('Missing required body parameter "meetingNumber"');
       return;
     }
 
     try {
-      await zoom.joinMeeting(meetingNumber, password);
+      await zoom.joinMeeting(meetingNumber.toString(), password);
       res.sendStatus(200);
     } catch (error) {
       logger.error('Error joining meeting');

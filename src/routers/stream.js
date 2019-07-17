@@ -15,6 +15,7 @@ const killProcess = require('../lib/kill-process');
 const pkg = require('../../package.json');
 const { API_PORT } = require('../constants');
 const { deserializeBlendBox } = require('../lib/blend-box');
+
 let active = false;
 
 const logger = makeLogger('Stream Router API');
@@ -29,8 +30,8 @@ const getBroadcastAddresses = () => {
   broadcastAddresses = [];
   const networkInterfaces = os.networkInterfaces();
   for (const iface of Object.keys(networkInterfaces)) {
-    if(networkInterfaces[iface] && networkInterfaces[iface].length > 0) {
-      if(networkInterfaces[iface][0].internal) {
+    if (networkInterfaces[iface] && networkInterfaces[iface].length > 0) {
+      if (networkInterfaces[iface][0].internal) {
         continue;
       }
     }
@@ -292,7 +293,7 @@ const startStream = async (socketId:number, url:string) => {
     try {
       deserializeBlendBox(blendBox);
       ws.send(blendBox, { compress: false, binary: true });
-    } catch(error) {
+    } catch (error) {
       logger.error(`Unable to validate sync message from ${rinfo.address}:${rinfo.port}`);
       logger.errorStack(error);
     }
@@ -417,7 +418,7 @@ module.exports.shutdownStreamRouter = async () => {
 module.exports.getStreamRouter = () => {
   broadcastSocket = dgram.createSocket('udp4');
 
-  broadcastSocket.bind(API_PORT, function(){
+  broadcastSocket.bind(API_PORT, () => {
     broadcastSocket.setBroadcast(true);
   });
 

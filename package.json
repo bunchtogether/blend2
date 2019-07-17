@@ -80,10 +80,10 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
-    "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
     "@bunchtogether/bring-application-to-front": "^1.0.0",
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
+    "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
     "bl": "^3.0.0",
     "body-parser": "^1.18.3",
     "broadcast-address": "^1.0.2",
@@ -100,6 +100,7 @@
     "logform": "^2.1.2",
     "mime-types": "^2.1.22",
     "moment": "^2.24.0",
+    "node-int64": "^0.4.0",
     "ps-node": "^0.1.6",
     "sequelize": "^5.9.0",
     "serialport": "^7.1.5",

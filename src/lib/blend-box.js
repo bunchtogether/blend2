@@ -11,8 +11,8 @@ module.exports.serializeBlendBox = (date:Date, timestamp:number, maxTimestamp:nu
 };
 
 module.exports.deserializeBlendBox = (buffer:Buffer) => {
-  if(buffer[0] !== 0x00 || buffer[1] !== 0x00 || buffer[2] !== 0x00 || buffer[3] !== 0x28 || buffer[4] !== 0x73 || buffer[5] !== 0x6B || buffer[6] !== 0x69 || buffer[7] !== 0x70) {
-    throw new Error("Invalid header");
+  if (buffer[0] !== 0x00 || buffer[1] !== 0x00 || buffer[2] !== 0x00 || buffer[3] !== 0x28 || buffer[4] !== 0x73 || buffer[5] !== 0x6B || buffer[6] !== 0x69 || buffer[7] !== 0x70) {
+    throw new Error('Invalid header');
   }
   const date = new Date(buffer.readDoubleBE(8));
   const timestamp = buffer.readDoubleBE(16);
