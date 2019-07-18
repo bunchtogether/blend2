@@ -8,7 +8,7 @@ import { BlendClient, getIsServerAvailable, makeBlendLogger, getBlendThumbnailUr
 
 const styles = () => ({
   container: {
-    overflow: 'hidden',
+    overflow: 'auto',
     maxHeight: '100%',
   },
   video: {
