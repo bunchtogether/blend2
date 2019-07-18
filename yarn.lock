@@ -665,10 +665,10 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
-"@bunchtogether/bring-application-to-front@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@bunchtogether/bring-application-to-front/-/bring-application-to-front-1.0.0.tgz#a2591347d6b0e64b67684ac622a03d688afeb8f7"
-  integrity sha512-Lg862gG9XxIIbvi4lRRHuVGWANER5U+7vY5d8/7IZQj5zbVb7tKXpjDUIIq5HcRD9CZFBIL8/w1JbXRRzTGPLg==
+"@bunchtogether/bring-application-to-front@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@bunchtogether/bring-application-to-front/-/bring-application-to-front-1.0.1.tgz#b5e59c0b15ff083ad17a34939d77553e7e9b0265"
+  integrity sha512-UltMIjNA/gXycP94mZ9e4g/+AyGub1lQE3xS1b2FNk1U7oxOe31eCjUMd987qqIRx48MCSRyYX0tz/WW7sCj3Q==
   dependencies:
     ffi "^2.3.0"
     node-osascript "^2.1.0"

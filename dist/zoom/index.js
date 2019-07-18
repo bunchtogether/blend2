@@ -25,12 +25,12 @@ async function joinMeeting(meetingNumber        , password         ) {
   logger.info(`Joining meeting ${meetingNumber}`);
   const zoom = await connect(password);
   await zoom.zcommand.dial.join({ meetingNumber });
-  await bringApplicationToFront('ZoomRooms');
+  await bringApplicationToFront('ZoomRooms.exe');
 }
 
 async function leaveMeeting() {
   logger.info('Leaving meeting');
-  await bringApplicationToFront('chrome');
+  await bringApplicationToFront('chrome.exe');
   if (activeRoom) {
     await activeRoom.zcommand.call.leave();
     await disconnect();
