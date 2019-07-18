@@ -8,7 +8,7 @@
 .*/node_modules/.*/tests/.*
 
 [include]
-../vendor/
+../vendor/client
 
 [libs]
 
