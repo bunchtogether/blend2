@@ -18,6 +18,8 @@ const { deserializeBlendBox } = require('../lib/blend-box');
 
 let active = false;
 
+const startRegex = /start: ([0-9]+\.[0-9]+)/;
+
 const logger = makeLogger('Stream Router API');
 
 const BLEND_BOX_DELIMETER = Buffer.from([0x73, 0x6B, 0x69, 0x70]);
@@ -47,7 +49,7 @@ const getBroadcastAddresses = () => {
 
 getBroadcastAddresses();
 
-const broadcastBlendBox = (blendBox           ) => {
+const broadcastBlendBox = (blendBox       ) => {
   if (!broadcastSocket) {
     return;
   }
@@ -234,20 +236,19 @@ const startStream = async (socketId       , url       ) => {
   }
   logger.info(`Sending ${url} to ${socketId}`);
   const args = [
-    '-v', 'error',
     '-nostats',
     '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
     '-copyts',
     '-i', url,
-    '-avoid_negative_ts', 'disabled',
-    '-dts_delta_threshold', '1',
     '-c:a', 'aac',
     '-af', 'aresample=async=176000',
     '-c:v', 'copy',
     '-f', 'mp4',
     '-write_prft', 'wallclock',
-    '-movflags', '+empty_moov+default_base_moof+frag_keyframe',
+    '-muxdelay', '0',
+    '-muxpreload', '0',
+    '-movflags', '+dash+negative_cts_offsets',
     'pipe:1',
     '-metadata', 'blend=1',
   ];
@@ -272,6 +273,24 @@ const startStream = async (socketId       , url       ) => {
       processLogger.error(error.message);
     }
   });
+  const handleStart = (start       ) => {
+    const freeBox = Buffer.alloc(20);
+    freeBox.set([0x00, 0x00, 0x00, 0x14, 0x66, 0x72, 0x65, 0x65], 0);
+    freeBox.set([0x3E, 0x3E], 8);
+    freeBox.writeDoubleBE(start, 10);
+    const ws = sockets.get(socketId);
+    if (!ws) {
+      mainProcess.stdout.removeListener('data', stdOutDataHandler);
+      processLogger.error(`Cannot send start message to socket ID ${socketId}, socket does not exist`);
+      return;
+    }
+    if (ws.readyState !== 1) {
+      mainProcess.stdout.removeListener('data', stdOutDataHandler);
+      processLogger.error(`Cannot send start message to socket ID ${socketId}, ready state is ${ws.readyState}`);
+      return;
+    }
+    ws.send(freeBox, { compress: false, binary: true });
+  };
   const handleBroadcastMessage = (message, rinfo) => {
     const blendBoxIndex = message.indexOf(BLEND_BOX_DELIMETER);
     if (blendBoxIndex !== 4) {
@@ -323,8 +342,17 @@ const startStream = async (socketId       , url       ) => {
     }
   });
   logger.info(`Started FFmpeg process ${pid} for socket ID ${socketId} with args ${args.join(' ')}`);
+  let foundStart = false;
   mainProcess.stderr.on('data', (data) => {
-    data.toString('utf8').trim().split('\n').forEach((line) => processLogger.info(line));
+    const message = data.toString('utf8');
+    if (!foundStart) {
+      const match = startRegex.exec(message);
+      if (match && match[1]) {
+        foundStart = true;
+        handleStart(parseFloat(match[1]));
+      }
+    }
+    message.trim().split('\n').forEach((line) => processLogger.info(line));
   });
   const stdOutDataHandler = (data) => {
     const ws = sockets.get(socketId);
@@ -373,20 +401,21 @@ module.exports.shutdownStreamRouter = async () => {
   logger.info('Closing');
   clearInterval(broadcastAddressesInterval);
   if (broadcastSocket) {
+    const bs = broadcastSocket;
     await new Promise((resolve, reject) => {
       const handleError = (error) => {
-        broadcastSocket.removeListener('error', handleError);
-        broadcastSocket.removeListener('close', handleClose);
+        bs.removeListener('error', handleError);
+        bs.removeListener('close', handleClose);
         reject(error);
       };
       const handleClose = () => {
-        broadcastSocket.removeListener('error', handleError);
-        broadcastSocket.removeListener('close', handleClose);
+        bs.removeListener('error', handleError);
+        bs.removeListener('close', handleClose);
         resolve();
       };
-      broadcastSocket.on('error', handleError);
-      broadcastSocket.on('close', handleClose);
-      broadcastSocket.close();
+      bs.on('error', handleError);
+      bs.on('close', handleClose);
+      bs.close();
     });
   }
   const killProcessPromises = [...socketPidMap.values()].map((pid) => killProcess(pid, 'FFmpeg'));
@@ -418,8 +447,11 @@ module.exports.shutdownStreamRouter = async () => {
 module.exports.getStreamRouter = () => {
   broadcastSocket = dgram.createSocket('udp4');
 
-  broadcastSocket.bind(API_PORT, () => {
-    broadcastSocket.setBroadcast(true);
+
+  broadcastSocket.bind(API_PORT, undefined, () => {
+    if (broadcastSocket) {
+      broadcastSocket.setBroadcast(true);
+    }
   });
 
   broadcastAddressesInterval = setInterval(getBroadcastAddresses, 1000 * 60 * 60);
