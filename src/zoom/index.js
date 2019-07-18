@@ -23,9 +23,9 @@ async function disconnect() {
 
 async function joinMeeting(meetingNumber: string, password?: string) {
   logger.info(`Joining meeting ${meetingNumber}`);
+  await bringApplicationToFront('ZoomRooms.exe');
   const zoom = await connect(password);
   await zoom.zcommand.dial.join({ meetingNumber });
-  await bringApplicationToFront('ZoomRooms.exe');
 }
 
 async function leaveMeeting() {
