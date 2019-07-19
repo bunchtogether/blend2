@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Cleanup Remove any zip filder older than a day
+find /tmp -type f -mtime +1 -name 'logs_*zip' -delete
+
+ZIP_ID=$(date +%s)
+mkdir -p /tmp/$ZIP_ID
+
+export OUTPUT_FILE_NAME="$ZIP_ID.zip"
+if [ "$#" -eq 1 ]; then
+    export OUTPUT_FILE_NAME=$1
+fi
+
+# Dump Version Info
+if [ -x "$(which version)" ]; then
+    version -r >> /tmp/$ZIP_ID/version
+fi
+
+# Dump systemd journal logs
+journalctl --no-pager >> /tmp/$ZIP_ID/systemd-journal.log
+
+# Dump PM2 logs
+mkdir /tmp/$ZIP_ID/application_logs
+cp -r $PM2_HOME/logs/* /tmp/$ZIP_ID/application_logs
+
+# Dump File stats on the application folder
+ls -lah $PM2_HOME/../ >> /tmp/$ZIP_ID/application_file_stat
+
+# /var/logs
+mkdir /tmp/$ZIP_ID/system_logs
+cp -r /var/log/* /tmp/$ZIP_ID/system_logs
+
+# ifconfig
+ip addr >> /tmp/$ZIP_ID/network_interfaces
+
+# Open ports
+lsof -P -n -l -iUDP >>  /tmp/$ZIP_ID/udp_ports.log
+lsof -P -n -l -i -sTCP:LISTEN >>  /tmp/$ZIP_ID/tcp_ports.log
+
+# Disk usage
+echo -e "\nlsblk\n*****\n" >> /tmp/$ZIP_ID/disk.log
+lsblk >> /tmp/$ZIP_ID/disk.log
+echo -e "\n\ndf -h\n*****\n" >> /tmp/$ZIP_ID/disk.log
+df -h >> /tmp/$ZIP_ID/disk.log
+
+# PM2 Usage
+pm2 status --no-color >> /tmp/$ZIP_ID/pm2_status.log
+
+# CPU Info
+top -b -n 1 >> /tmp/$ZIP_ID/process.log
+cat /proc/loadavg >> /tmp/$ZIP_ID/loadavg
+
+$(cd /tmp/$ZIP_ID && zip -r -q "/tmp/$OUTPUT_FILE_NAME" *)
+rm -rf /tmp/$ZIP_ID
+echo /tmp/$OUTPUT_FILE_NAME

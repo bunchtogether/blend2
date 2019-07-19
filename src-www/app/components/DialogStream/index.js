@@ -48,6 +48,9 @@ export class DialogStream extends React.Component<Props, State> {
 
   handleClose = () => {
     this.props.onClose();
+    this.setState({
+      streamUrl: '',
+    });
   };
 
   render() {
@@ -82,7 +85,10 @@ export class DialogStream extends React.Component<Props, State> {
             variant='contained'
             autoFocus
             disabled={!streamUrl}
-            onClick={() => this.props.navigateStream(streamUrl)}
+            onClick={() => {
+              this.props.navigateStream(streamUrl);
+              this.handleClose();
+            }}
           >
             Go
           </Button>

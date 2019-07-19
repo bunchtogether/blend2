@@ -139,3 +139,16 @@ export function pairDevice(data: Object): ActionType {
     value: data,
   };
 }
+
+export function getLogs(): ActionType {
+  return {
+    type: constants.GET_LOGS,
+    value: null,
+  };
+}
+export function generateLogs(): ActionType {
+  return {
+    type: constants.GENERATE_LOGS,
+    value: null,
+  };
+}

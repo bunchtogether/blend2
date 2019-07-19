@@ -68,7 +68,6 @@ class SamsungAdapter extends AbstractAdapter {
     this.port = new SerialPort(data.path, (error) => {
       if (error) {
         this.ready = false;
-        console.log('ERROR', error);
       }
     });
     this.port.on('close', () => {

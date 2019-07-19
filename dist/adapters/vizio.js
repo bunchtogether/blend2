@@ -112,35 +112,31 @@ class VizioAdapter extends AbstractAdapter {
     if (!this.ready) {
       return Promise.resolve(null);
     }
-    try {
-      const { ITEMS: [{ VALUE: power }] } = await this.vizio.power.currentMode();
-      const { ITEMS: [{ VALUE: source }] } = await this.vizio.input.current();
-      const { ITEMS: sources } = await this.vizio.input.list();
-      const { ITEMS: [{ VALUE: volume }] } = await this.vizio.control.volume.get();
-      const { ITEMS: [{ VALUE: mute }] } = await this.vizio.control.volume.getMuteState();
-      let sourceName;
-      sources.forEach((sourceData        ) => {
-        if (sourceData.CNAME === source) {
-          sourceName = sourceData.VALUE.NAME;
+    let timeout = false;
+    return new Promise(async (resolve, reject) => {
+      const timeoutId = setTimeout(() => {
+        timeout = true;
+        reject(new Error('Timeout getting device'));
+      }, 3000);
+      try {
+        const { ITEMS: sources } = await this.vizio.input.list();
+        clearTimeout(timeoutId);
+        resolve({
+          ip: this.ip,
+          name: this.name,
+          manufacturer: this.manufacturer,
+          model: this.model,
+          type: TYPE_VIZIO,
+          sources: sources.map((sourceData        ) => sourceData.VALUE.NAME),
+        });
+      } catch (error) {
+        logger.error('Error getting device data');
+        logger.errorStack(error);
+        if (!timeout) {
+          reject(error);
         }
-      });
-      return {
-        ip: this.ip,
-        name: this.name,
-        manufacturer: this.manufacturer,
-        model: this.model,
-        type: TYPE_VIZIO,
-        power: !!power,
-        source: sourceName || source,
-        volume,
-        mute: mute !== 'Off',
-        sources: sources.map((sourceData        ) => sourceData.VALUE.NAME),
-      };
-    } catch (error) {
-      logger.error('Error getting device data');
-      logger.errorStack(error);
-      throw error;
-    }
+      }
+    });
   }
 
   async close() {
