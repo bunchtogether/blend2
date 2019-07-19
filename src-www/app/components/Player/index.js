@@ -26,6 +26,19 @@ class Player extends React.PureComponent<Props> {
     const windowLogger = makeBlendLogger('Window');
 
     window.addEventListener('unhandledrejection', (event:Object) => {
+      if(event.promise) {
+        event.promise.catch((error) => {
+          if (error.stack) {
+            windowLogger.error(error.stack);
+          } else if (error.message) {
+            windowLogger.error(error.message);
+          } else {
+            windowLogger.error('Unhandled rejection');
+            console.log(event);
+          }
+        });
+        return;
+      }
       if (event && event.error) {
         if (event.error.stack) {
           windowLogger.error(event.error.stack);
@@ -34,8 +47,11 @@ class Player extends React.PureComponent<Props> {
         } else {
           windowLogger.error('Unhandled rejection');
         }
+      } else if (event.message) {
+        windowLogger.error(event.message);
       } else {
         windowLogger.error('Unhandled rejection');
+        console.log(event);
       }
     });
 
@@ -48,8 +64,11 @@ class Player extends React.PureComponent<Props> {
         } else {
           windowLogger.error('Uncaught error');
         }
+      } else if (event.message) {
+        windowLogger.error(event.message);
       } else {
         windowLogger.error('Uncaught error');
+        console.log(event);
       }
     });
 
@@ -81,8 +100,9 @@ class Player extends React.PureComponent<Props> {
         throw new Error('Video element does not exist');
       }
       const client = new BlendClient(element, streamUrl);
-      client.on('error', () => {
-        windowLogger.error('Uncaught blend error');
+      client.on('error', (error) => {
+        windowLogger.error('Uncaught Blend error');
+        console.error(error);
       });
     }
 

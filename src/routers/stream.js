@@ -248,7 +248,7 @@ const startStream = async (socketId:number, url:string) => {
     '-write_prft', 'wallclock',
     '-muxdelay', '0',
     '-muxpreload', '0',
-    '-movflags', '+dash+negative_cts_offsets',
+    '-movflags', '+frag_keyframe+empty_moov+default_base_moof',
     'pipe:1',
     '-metadata', 'blend=1',
   ];
@@ -291,12 +291,25 @@ const startStream = async (socketId:number, url:string) => {
     }
     ws.send(freeBox, { compress: false, binary: true });
   };
+  const syncPeers = {};
+  const syncPeerReportingInterval = setInterval(() => {
+    const cutoff = Date.now() - 20000;
+    for(const peerAddress of Object.keys(syncPeers)) {
+      if(syncPeers[syncPeers] < cutoff) {
+        delete syncPeers[syncPeers];
+      }
+    }
+    const peerAddresses = Object.keys(syncPeers);
+    if(peerAddresses.length > 0) {
+      logger.info(`Syncing with ${peerAddresses.join(", ")}`);
+    }
+  }, 10000);
   const handleBroadcastMessage = (message, rinfo) => {
     const blendBoxIndex = message.indexOf(BLEND_BOX_DELIMETER);
     if (blendBoxIndex !== 4) {
       return;
     }
-    logger.info(`Received sync message from ${rinfo.address}:${rinfo.port}`);
+    syncPeers[`${rinfo.address}:${rinfo.port}`] = Date.now();
     const ws = sockets.get(socketId);
     if (!ws) {
       mainProcess.stdout.removeListener('data', stdOutDataHandler);
@@ -324,6 +337,7 @@ const startStream = async (socketId:number, url:string) => {
     if (broadcastSocket) {
       broadcastSocket.removeListener('message', handleBroadcastMessage);
     }
+    clearInterval(syncPeerReportingInterval);
     activeStreamUrls.delete(url);
     socketPidMap.delete(socketId);
     if (code && code !== 255) {
