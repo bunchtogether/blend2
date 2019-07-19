@@ -26,6 +26,19 @@ type Props = {
 
 const windowLogger = makeBlendLogger('Window');
 const unhandledRejectionHandler = (event:Object) => {
+  if(event.promise) {
+    event.promise.catch((error) => {
+      if (error.stack) {
+        windowLogger.error(error.stack);
+      } else if (error.message) {
+        windowLogger.error(error.message);
+      } else {
+        windowLogger.error('Unhandled rejection');
+        console.log(event);
+      }
+    });
+    return;
+  }
   if (event && event.error) {
     if (event.error.stack) {
       windowLogger.error(event.error.stack);
@@ -34,8 +47,11 @@ const unhandledRejectionHandler = (event:Object) => {
     } else {
       windowLogger.error('Unhandled rejection');
     }
+  } else if (event.message) {
+    windowLogger.error(event.message);
   } else {
     windowLogger.error('Unhandled rejection');
+    console.log(event);
   }
 };
 
@@ -48,8 +64,11 @@ const errorHandler = (event:Object) => {
     } else {
       windowLogger.error('Uncaught error');
     }
+  } else if (event.message) {
+    windowLogger.error(event.message);
   } else {
     windowLogger.error('Uncaught error');
+    console.log(event);
   }
 };
 const urlRegex = /\/stream\/(.*)/;
@@ -58,7 +77,6 @@ class Player extends React.PureComponent<Props> {
   componentDidMount() {
     window.addEventListener('unhandledrejection', unhandledRejectionHandler);
     window.addEventListener('error', errorHandler);
-
     this.initialize();
   }
 
