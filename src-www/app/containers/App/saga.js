@@ -25,6 +25,7 @@ function* searchSaga(action: ActionType): Saga<*> {
   }
 }
 
+// DEVICE SAGAS
 function* setPowerSaga(action: ActionType): Saga<*> {
   try {
     const { body: { power } } = yield call(() => superagent.post(`${BASE_API_URL}/device/power`).send({ power: action.value }));
@@ -126,6 +127,25 @@ function* pairDeviceSaga(action: ActionType): Saga<*> {
   }
 }
 
+// LOGS SAGAS
+export function* getLogsSaga(): Saga<*> {
+  try {
+    const response = yield call(() => superagent.get(`${BASE_API_URL}/logs`));
+    yield put({ type: constants.GET_LOGS_SUCCESS, value: response.body });
+  } catch (e) {
+    yield put({ type: constants.GET_LOGS_ERROR, value: e });
+  }
+}
+
+export function* generateLogsSaga(): Saga<*> {
+  try {
+    const response = yield call(() => superagent.post(`${BASE_API_URL}/logs/generate`));
+    yield put({ type: constants.GENERATE_LOGS_SUCCESS, value: response.body });
+  } catch (e) {
+    yield put({ type: constants.GENERATE_LOGS_ERROR, value: e });
+  }
+}
+
 function* navigate(pathname: string, action: ActionType): Saga<*> {
   yield put({ type: constants.HIDE_NAVIGATION, value: null });
   yield put({ type: constants.CLEAR_SEARCH, value: '' });
@@ -138,6 +158,7 @@ function* navigate(pathname: string, action: ActionType): Saga<*> {
 
 export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.SEARCH, searchSaga);
+  // DEVICE
   yield takeLatest(constants.SET_POWER, setPowerSaga);
   yield throttle(1000, constants.SET_VOLUME, setVolumeSaga);
   yield takeLatest(constants.TOGGLE_MUTE, toggleMuteSaga);
@@ -147,8 +168,13 @@ export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.DISCOVER_DEVICES, discoverDevicesSaga);
   yield takeLatest(constants.START_PAIRING, startPairingSaga);
   yield takeLatest(constants.PAIR_DEVICE, pairDeviceSaga);
+  // LOGS
+  yield takeLatest(constants.GET_LOGS, getLogsSaga);
+  yield takeLatest(constants.GENERATE_LOGS, generateLogsSaga);
+  // NAVIGATION
   yield takeLatest(constants.NAVIGATE_STREAM, navigate, '/stream');
   yield takeLatest(constants.NAVIGATE_REMOTE, navigate, '/remote');
+  // SETUP
   yield call(setupSaga);
 }
 

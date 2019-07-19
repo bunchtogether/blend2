@@ -141,6 +141,7 @@
     "libp2p-pnet": "^0.1.0",
     "lodash": "4.17.11",
     "minimist": "1.2.0",
+    "moment": "^2.24.0",
     "multibase": "^0.6.0",
     "node-rsa": "^1.0.5",
     "prop-types": "15.7.2",

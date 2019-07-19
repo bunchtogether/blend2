@@ -79,3 +79,7 @@ export const remoteErrorSelector = createSelector<StateType, *, *, *>(
   (state) => state.get('remoteError'),
 );
 
+export const availableLogsSelector = createSelector<StateType, *, *, *>(
+  appState,
+  (state) => state.get('availableLogs'),
+);

@@ -15,6 +15,7 @@ const initialState = fromJS({
   startPairingSuccess: null,
   pairDeviceSuccess: null,
   remoteError: '',
+  availableLogs: List(),
 });
 
 export default (state: AppStateType = initialState, action: ActionType) => {
@@ -72,6 +73,10 @@ export default (state: AppStateType = initialState, action: ActionType) => {
       return state.set('remoteError', action.value);
     case constants.SET_SOURCE_ERROR:
       return state.set('remoteError', action.value);
+
+    // LOG FILES
+    case constants.GET_LOGS_SUCCESS:
+      return state.set('availableLogs', List(action.value));
     default:
       return state;
   }

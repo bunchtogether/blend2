@@ -11,6 +11,7 @@ import withMobileDialog from '@material-ui/core/withMobileDialog';
 import { Helmet } from 'react-helmet';
 import { withStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import SettingsLogs from 'components/SettingsLogs';
 import SettingsPairDisplay from 'components/SettingsPairDisplay';
 
 const styles = (theme: Object) => ({
@@ -87,7 +88,8 @@ type State = {
 };
 
 const DISPLAY = 'Display';
-const SECTIONS = [DISPLAY];
+const LOGS = 'Logs';
+const SECTIONS = [DISPLAY, LOGS];
 
 const BLEND_VERSION = process.env.BLEND_VERSION || 'X.X.X';
 
@@ -107,6 +109,8 @@ export class DialogSettings extends React.PureComponent<Props, State> { // eslin
     switch (this.state.content) {
       case DISPLAY:
         return <SettingsPairDisplay />;
+      case LOGS:
+        return <SettingsLogs />;
       default:
         return null;
     }
