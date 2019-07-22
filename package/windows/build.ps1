@@ -3,6 +3,7 @@
 # Remove-Item -Recurse .\node_modules
 Remove-Item -Recurse .\package\windows\files\x64\*
 Remove-Item -Recurse .\package\windows\files\x86\*
+Remove-Item -Recurse .\package\windows\files\dist-www
 
 Add-Type -assembly "system.io.compression.filesystem"
 
@@ -14,8 +15,7 @@ $VERSION = $(Get-Content .\package.json | Out-String | ConvertFrom-JSON).version
 &".\node_modules\.bin\pkg.cmd" . --targets node10-win32-x86 --options trace-warnings --out-path .\package\windows\files\x86\
 
 cp -r .\dist-www .\package\windows\files\dist-www
-cp .\node_modules\@serialport\bindings\build\Release\bindings.node .\package\windows\files\bindings.node
-cp .\node_modules\sqlite3\lib\binding\node-v64-win32-*\node_sqlite3.node .\package\windows\files\node_sqlite3.node
+cp .\package\windows\bindings\* .\package\windows\files
 
 # Copy ffmpeg, ffprobe, nssm binaries
 # 64 bit

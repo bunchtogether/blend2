@@ -6,7 +6,7 @@
   "repository": "https://github.com/bunchtogether/blend2.git",
   "author": "johnwehr@bunchtogether.com",
   "scripts": {
-    "build:src": "rimraf ./dist && mkdirp ./dist && flow-remove-types ./src --out-dir ./dist && ncp ./src/sample.mp4 ./dist/sample.mp4 && mkdir ./dist/cli && cp ./src/cli/dump-logs ./dist/cli/dump-logs",
+    "build:src": "rimraf ./dist && mkdirp ./dist && flow-remove-types ./src --out-dir ./dist && ncp ./src/sample.mp4 ./dist/sample.mp4 && mkdirp ./dist/cli && ncp ./src/cli/dump-logs ./dist/cli/dump-logs",
     "build:src-www": "cd src-www && yarn build && cd ..",
     "build": "yarn build:src-www && yarn build:src",
     "flow-typed": "./node_modules/.bin/flow-typed install -o",
