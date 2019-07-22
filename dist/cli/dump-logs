@@ -16,15 +16,9 @@ if [ -x "$(which version)" ]; then
     version -r >> /tmp/$ZIP_ID/version
 fi
 
-# Dump systemd journal logs
-journalctl --no-pager >> /tmp/$ZIP_ID/systemd-journal.log
-
-# Dump PM2 logs
+# application logs
 mkdir /tmp/$ZIP_ID/application_logs
-cp -r $PM2_HOME/logs/* /tmp/$ZIP_ID/application_logs
-
-# Dump File stats on the application folder
-ls -lah $PM2_HOME/../ >> /tmp/$ZIP_ID/application_file_stat
+cp -r $PWD/dist/logs/* /tmp/$ZIP_ID/application_logs
 
 # /var/logs
 mkdir /tmp/$ZIP_ID/system_logs
@@ -42,9 +36,6 @@ echo -e "\nlsblk\n*****\n" >> /tmp/$ZIP_ID/disk.log
 lsblk >> /tmp/$ZIP_ID/disk.log
 echo -e "\n\ndf -h\n*****\n" >> /tmp/$ZIP_ID/disk.log
 df -h >> /tmp/$ZIP_ID/disk.log
-
-# PM2 Usage
-pm2 status --no-color >> /tmp/$ZIP_ID/pm2_status.log
 
 # CPU Info
 top -b -n 1 >> /tmp/$ZIP_ID/process.log

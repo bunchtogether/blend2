@@ -294,14 +294,14 @@ const startStream = async (socketId:number, url:string) => {
   const syncPeers = {};
   const syncPeerReportingInterval = setInterval(() => {
     const cutoff = Date.now() - 20000;
-    for(const peerAddress of Object.keys(syncPeers)) {
-      if(syncPeers[syncPeers] < cutoff) {
-        delete syncPeers[syncPeers];
+    for (const peerAddress of Object.keys(syncPeers)) {
+      if (syncPeers[peerAddress] < cutoff) {
+        delete syncPeers[peerAddress];
       }
     }
     const peerAddresses = Object.keys(syncPeers);
-    if(peerAddresses.length > 0) {
-      logger.info(`Syncing with ${peerAddresses.join(", ")}`);
+    if (peerAddresses.length > 0) {
+      logger.info(`Syncing with ${peerAddresses.join(', ')}`);
     }
   }, 10000);
   const handleBroadcastMessage = (message, rinfo) => {
