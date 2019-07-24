@@ -41,7 +41,47 @@ async function leaveMeeting() {
   }
 }
 
+async function setVolume(volume: number) {
+  logger.info(`Setting Zoom room volume to: ${volume}`);
+  if (activeZoom) {
+    await activeZoom.zconfiguration.audio.output({ volume });
+  }
+}
+
+async function muteMic() {
+  logger.info('Muting Zoom room microphone');
+  if (activeZoom) {
+    await activeZoom.zconfiguration.call.microphone({ mute: 'on' });
+  }
+}
+
+async function unmuteMic() {
+  logger.info('Un-muting Zoom room microphone');
+  if (activeZoom) {
+    await activeZoom.zconfiguration.call.microphone({ mute: 'off' });
+  }
+}
+
+async function enableVideo() {
+  logger.info('Enabling video for Zoom room');
+  if (activeZoom) {
+    await activeZoom.zconfiguration.call.camera({ mute: 'off' });
+  }
+}
+
+async function disableVideo() {
+  logger.info('Disabling video for Zoom room');
+  if (activeZoom) {
+    await activeZoom.zconfiguration.call.camera({ mute: 'on' });
+  }
+}
+
 module.exports = {
   joinMeeting,
   leaveMeeting,
+  muteMic,
+  unmuteMic,
+  setVolume,
+  enableVideo,
+  disableVideo,
 };
