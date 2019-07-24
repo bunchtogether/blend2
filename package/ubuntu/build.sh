@@ -3,7 +3,7 @@
 set -e
 
 export BLEND_VERSION=$(cat ../../package.json | jq '.version' -r)
-export BUILDER_IP_ADDRESS=10.0.1.172
+export BUILDER_IP_ADDRESS=10.0.1.160
 export BUILDER_PORT=22
 
 header() {
@@ -44,6 +44,7 @@ rm ../../installers/blend.$BLEND_VERSION.deb | true
 ssh -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -p $BUILDER_PORT  ubuntu@$BUILDER_IP_ADDRESS "sudo apt remove blend -y ; rm -rf ~/build; rm -rf ~/blend; mkdir -p ~/build; mkdir -p ~/build/vendor"
 scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../src ubuntu@$BUILDER_IP_ADDRESS:~/build/src
 scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../dist-www ubuntu@$BUILDER_IP_ADDRESS:~/build/dist-www
+scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../vendor/zoom-rooms-control-system ubuntu@$BUILDER_IP_ADDRESS:~/build/vendor/zoom-rooms-control-system
 scp -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../package.json ubuntu@$BUILDER_IP_ADDRESS:~/build/package.json
 
 scp -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ./create-package.sh ubuntu@$BUILDER_IP_ADDRESS:~/create-package.sh

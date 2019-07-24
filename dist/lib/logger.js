@@ -1,6 +1,7 @@
 //      
 
 const path = require('path');
+const fs = require('fs');
 const moment = require('moment');
 const colors = require('colors/safe');
 const { createLogger, transports } = require('winston');
@@ -9,6 +10,11 @@ const combine = require('logform/combine');
 const timestamp = require('logform/timestamp');
 const printf = require('logform/printf');
 require('winston-daily-rotate-file');
+
+const logsPath = path.join(__dirname, '../logs');
+if(!fs.existsSync(logsPath)) {
+  fs.mkdirSync(logsPath);
+}
 
 const loggers = {};
 
@@ -34,7 +40,7 @@ colorize.Colorizer.addColors({
 const logger = createLogger({
   transports: [
     new transports.DailyRotateFile({
-      dirname: path.join(__dirname, '../logs'),
+      dirname: logsPath,
       filename: 'application-%DATE%.log',
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '20m',
