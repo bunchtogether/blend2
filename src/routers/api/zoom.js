@@ -12,88 +12,97 @@ module.exports.getZoomRouter = () => {
   router.post('/join', async (req: express$Request, res: express$Response) => {
     const { body: { meetingNumber, password } } = req;
     if (!meetingNumber) {
-      res.status(400).send('Missing required body parameter "meetingNumber"');
-      return;
+      return res.status(400).send('Missing required body parameter "meetingNumber"');
     }
 
     try {
       await zoom.joinMeeting(meetingNumber.toString(), password);
-      res.sendStatus(200);
+      return res.sendStatus(200);
     } catch (error) {
       logger.error('Error joining meeting');
       logger.errorStack(error);
-      res.status(400).send('Can not join meeting');
+      return res.status(400).send('Can not join meeting');
     }
   });
 
   router.post('/leave', async (req: express$Request, res: express$Response) => {
     try {
       await zoom.leaveMeeting();
-      res.sendStatus(200);
+      return res.sendStatus(200);
     } catch (error) {
       logger.error('Error leaving meeting');
       logger.errorStack(error);
-      res.status(400).send('Can not leave meeting');
+      return res.status(400).send('Can not leave meeting');
+    }
+  });
+
+  router.post('/listparticipants', async (req: express$Request, res: express$Response) => {
+    try {
+      const result = await zoom.listParticipants();
+      return res.send(result);
+    } catch (error) {
+      logger.error('Error listing participants');
+      logger.errorStack(error);
+      return res.status(400).send('Unable to list participants');
     }
   });
 
   router.post('/audio/volume', async (req: express$Request, res: express$Response) => {
     const volume = req.body.volume;
     if (!volume) {
-      res.status(400).send('Missing required body parameter "volume"');
-      return;
+      return res.status(400).send('Missing required body parameter "volume"');
     }
     try {
       await zoom.setVolume(volume);
-      res.sendStatus(200);
+      return res.sendStatus(200);
     } catch (error) {
       logger.error('Error setting volume for zoom room');
       logger.errorStack(error);
-      res.status(400).send('Unable to set volume for zoom room');
+      return res.status(400).send('Unable to set volume for zoom room');
     }
   });
 
   router.post('/mic/mute', async (req: express$Request, res: express$Response) => {
     try {
       await zoom.muteMic();
-      res.sendStatus(200);
+      return res.sendStatus(200);
     } catch (error) {
       logger.error('Error muting zoom room');
       logger.errorStack(error);
-      res.status(400).send('Unable to mute zoom room');
+      return res.status(400).send('Unable to mute zoom room');
     }
   });
 
   router.post('/mic/unmute', async (req: express$Request, res: express$Response) => {
     try {
       await zoom.unmuteMic();
-      res.sendStatus(200);
+      return res.sendStatus(200);
     } catch (error) {
       logger.error('Error unmuting zoom room');
       logger.errorStack(error);
-      res.status(400).send('Unable to unmute zoom room');
+      return res.status(400).send('Unable to unmute zoom room');
     }
   });
 
   router.post('/video/enable', async (req: express$Request, res: express$Response) => {
     try {
       await zoom.enableVideo();
-      res.sendStatus(200);
+      return res.sendStatus(200);
     } catch (error) {
       logger.error('Error enabling zoom room video');
       logger.errorStack(error);
-      res.status(400).send('Unable to enable zoom room video');
+      return res.status(400).send('Unable to enable zoom room video');
     }
   });
 
   router.post('/video/disable', async (req: express$Request, res: express$Response) => {
     try {
       await zoom.disableVideo();
-      res.sendStatus(200);
+      return res.sendStatus(200);
     } catch (error) {
       logger.error('Error disabling zoom room video');
       logger.errorStack(error);
-      res.status(400).send('Unable to disable zoom room video');
+      return res.status(400).send('Unable to disable zoom room video');
     }
   });
 
