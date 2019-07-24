@@ -32,13 +32,27 @@ async function joinMeeting(meetingNumber: string, password?: string) {
   await zoom.zcommand.dial.start({ meetingNumber });
 }
 
+let leaveMeetingPromise;
 async function leaveMeeting() {
   logger.info('Leaving meeting');
-  await bringApplicationToFront('chrome.exe');
-  if (activeZoom) {
-    await activeZoom.zcommand.call.leave();
-    await disconnect();
+  if (leaveMeetingPromise) {
+    return leaveMeetingPromise;
   }
+  leaveMeetingPromise = new Promise(async (resolve, reject) => {
+    try {
+      await bringApplicationToFront('chrome.exe');
+      if (activeZoom) {
+        await activeZoom.zcommand.call.leave();
+        await disconnect();
+      }
+      resolve();
+    } catch (error) {
+      reject(error);
+    } finally {
+      leaveMeetingPromise = null;
+    }
+  });
+  return leaveMeetingPromise;
 }
 
 module.exports = {
