@@ -32,6 +32,10 @@ async function joinMeeting(meetingNumber        , password         ) {
   await zoom.zcommand.dial.start({ meetingNumber });
 }
 
+// TODO: get participant id (zoom room id)
+
+let id;
+
 let leaveMeetingPromise;
 async function leaveMeeting() {
   logger.info('Leaving meeting');
@@ -55,6 +59,15 @@ async function leaveMeeting() {
   return leaveMeetingPromise;
 }
 
+async function listParticipants() {
+  if (activeZoom) {
+    const participants = await activeZoom.zcommand.call.listParticipants();
+    console.log('participants list in zoom meeting: ', participants);
+    return participants;
+  }
+  return null;
+}
+
 async function setVolume(volume        ) {
   logger.info(`Setting Zoom room volume to: ${volume}`);
   if (activeZoom) {
@@ -65,28 +78,28 @@ async function setVolume(volume        ) {
 async function muteMic() {
   logger.info('Muting Zoom room microphone');
   if (activeZoom) {
-    await activeZoom.zconfiguration.call.microphone({ mute: 'on' });
+    await activeZoom.zcommand.muteParticipant({ mute: 'on', id });
   }
 }
 
 async function unmuteMic() {
   logger.info('Un-muting Zoom room microphone');
   if (activeZoom) {
-    await activeZoom.zconfiguration.call.microphone({ mute: 'off' });
+    await activeZoom.zcommand.muteParticipant({ mute: 'off', id });
   }
 }
 
 async function enableVideo() {
   logger.info('Enabling video for Zoom room');
   if (activeZoom) {
-    await activeZoom.zconfiguration.call.camera({ mute: 'off' });
+    await activeZoom.zcommand.call.muteParticipantVideo({ mute: 'off', id });
   }
 }
 
 async function disableVideo() {
   logger.info('Disabling video for Zoom room');
   if (activeZoom) {
-    await activeZoom.zconfiguration.call.camera({ mute: 'on' });
+    await activeZoom.zcommand.call.muteParticipantVideo({ mute: 'on', id });
   }
 }
 
@@ -98,4 +111,5 @@ module.exports = {
   setVolume,
   enableVideo,
   disableVideo,
+  listParticipants,
 };
