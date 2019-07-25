@@ -1,5 +1,6 @@
 // @flow
 
+const path = require('path');
 const moment = require('moment');
 const colors = require('colors/safe');
 const colorize = require('logform/colorize');
@@ -37,6 +38,7 @@ if (mode === 'production') {
       timestamp(),
       printf((info) => `${moment().format('YYYY-MM-DD HH:mm:ss')} - ${(info.name || '').padEnd(30, ' ')} - ${(info.level || '').padEnd(6, ' ')} - ${info.message}`),
     ),
+    dirname: path.resolve(__dirname, '.'),
     filename: 'blend-%DATE%.log',
     maxSize: '25m',
     maxFiles: '10',
