@@ -46,7 +46,7 @@ const start = async ():Promise<void> => {
 
   try {
     await bringApplicationToFront('chrome.exe');
-  } catch(error) {
+  } catch (error) {
     logger.error('Failed to bring chrome to front');
   }
 };
