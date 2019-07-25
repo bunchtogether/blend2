@@ -1,50 +1,40 @@
 //      
 
-const logger = require('./lib/logger')('CLI');
-const startServer = require('./server');
-const { API_PORT } = require('./constants');
-const { addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
+const { addShutdownHandler } = require('@bunchtogether/exit-handler');
+const getExpressApp = require('./express-app');
+const startHttpServer = require('./http-server');
+const { getRouters, shutdownRouters } = require('../routers');
+const logger = require('../lib/logger')('Server');
+const { version } = require('../../package.json');
 
-let exitCode = 0;
+module.exports = async (port       ) => {
+  const app = getExpressApp();
+  const stopHttpServer = await startHttpServer(app, port);
+  app.use(getRouters());
 
-const start = async ()               => {
-  await startServer(API_PORT);
-
-  process.on('uncaughtException', (error) => {
+  const shutdown = async () => {
+    logger.info('Shutting down');
+    await shutdownRouters();
+    try {
+      await stopHttpServer();
+    } catch (error) {
+      if (error.stack) {
+        logger.error('Error shutting down HTTP server:');
+        error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
+      } else {
+        logger.error(`Error shutting down HTTP server: ${error.message}`);
+      }
+    }
+    logger.info(`Shut down Blend ${version}`);
+  };
+  addShutdownHandler(shutdown, (error      ) => {
     if (error.stack) {
-      logger.error('Uncaught exception:');
+      logger.error('Error shutting down:');
       error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
     } else {
-      logger.error(`Uncaught exception: ${error.message}`);
+      logger.error(`Error shutting down: ${error.message}`);
     }
-    exitCode = 1;
-    runShutdownHandlers();
   });
-
-  process.on('unhandledRejection', (error) => {
-    if (error.stack) {
-      logger.error('Unhandled rejection:');
-      error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
-    } else {
-      logger.error(`Unhandled rejection: ${error.message}`);
-    }
-    exitCode = 1;
-    runShutdownHandlers();
-  });
-
-  addPostShutdownHandler(() => {
-    process.exit(exitCode);
-  });
+  logger.info(`Started Blend ${version}`);
+  return shutdown;
 };
-
-start().catch((error) => {
-  if (error.stack) {
-    logger.error('Error starting:');
-    error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
-  } else {
-    logger.error(`Error starting: ${error.message}`);
-  }
-  logger.error(error.message);
-  exitCode = 1;
-  runShutdownHandlers();
-});

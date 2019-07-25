@@ -1,0 +1,36 @@
+// @flow
+
+/**
+*
+* {{ properCase name }}
+*
+*/
+
+import * as React from 'react';
+import { withStyles } from 'material-ui/styles';
+
+{{#if wantMessages}}
+import { FormattedMessage } from 'react-intl';
+import messages from './messages';
+{{/if}}
+
+
+const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
+});
+
+type Props = {
+  children?: React.Node,
+};
+
+function {{ properCase name }}(props:Props) {
+  return (
+    <React.Fragment>
+    {{#if wantMessages}}
+      <FormattedMessage {...messages.header} />
+    {{/if}}
+    {props.children}
+    </React.Fragment>
+  );
+}
+
+export default withStyles(styles)({{ properCase name }});

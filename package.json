@@ -1,15 +1,17 @@
 {
   "name": "blend",
   "version": "2.1.2",
-  "main": "dist/server/index.js",
-  "bin": "dist/server/index.js",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
   "repository": "https://github.com/bunchtogether/blend2.git",
   "author": "johnwehr@bunchtogether.com",
   "scripts": {
-    "build": "rimraf ./dist && mkdirp ./dist && flow-remove-types ./src/server --out-dir ./dist/server && ncp ./src/static ./dist/static && ncp ./src/sample.mp4 ./dist/sample.mp4 && rimraf ./dist/static/player/logger.js && webpack --config ./webpack.config.js",
-    "flow-typed": "./node_modules/.bin/flow-typed install --overwrite",
+    "build:src": "rimraf ./dist && mkdirp ./dist && flow-remove-types ./src --out-dir ./dist && ncp ./src/sample.mp4 ./dist/sample.mp4 && mkdirp ./dist/cli && ncp ./src/cli/dump-logs ./dist/cli/dump-logs",
+    "build:src-www": "cd src-www && yarn build && cd ..",
+    "build": "yarn build:src-www && yarn build:src",
+    "flow-typed": "./node_modules/.bin/flow-typed install -o",
     "test": "yarn lint && yarn build && yarn test:js",
-    "test:js": "cross-env NODE_ENV=test jest --runInBand tests",
+    "test:js": "cross-env NODE_ENV=test jest --runInBand /Users/johnwehr/Projects/bunch/blend2/tests/serialize.test.js",
     "lint": "npm run lint:js && npm run lint:flow",
     "lint:js": "eslint -c ./.eslintrc --no-eslintrc --cache --fix .",
     "lint:flow": "flow --show-all-errors",
@@ -17,7 +19,9 @@
     "package-osx": "cd ./package/osx/; chmod +x ./build.sh; ./build.sh",
     "package-ubuntu": "cd ./package/ubuntu/; chmod +x ./build.sh; ./build.sh",
     "package-windows": "yarn build && .\\package\\windows\\build.cmd",
-    "start": "yarn build && node dist/server/index.js",
+    "start:build": "yarn build && node dist/index.js",
+    "start": "node dist/index.js",
+    "start:flow": "flow-node src/index.js",
     "chaos": "./tests/stream/simulate.sh"
   },
   "pre-commit": [
@@ -39,7 +43,7 @@
   "pkg": {
     "scripts": "dist/**/*.js",
     "assets": [
-      "dist/static/**/*"
+      "dist-www/static/**/*"
     ]
   },
   "devDependencies": {
@@ -63,10 +67,10 @@
     "eslint-plugin-react": "^7.12.4",
     "expect": "^24.1.0",
     "expose-loader": "^0.7.5",
-    "flow-bin": "^0.94.0",
+    "flow-bin": "^0.102.0",
     "flow-remove-types": "^1.2.3",
-    "flow-typed": "^2.5.1",
-    "jest": "^24.1.0",
+    "flow-typed": "^2.5.2",
+    "jest": "^24.8.0",
     "jest-flow-transform": "^1.0.1",
     "ncp": "^2.0.0",
     "pkg": "^4.3.7",
@@ -76,14 +80,17 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
-    "@bunchtogether/blend2-client": "file:./vendor/client",
+    "@bunchtogether/bring-application-to-front": "^1.0.1",
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
+    "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
     "bl": "^3.0.0",
     "body-parser": "^1.18.3",
+    "broadcast-address": "^1.0.2",
     "chokidar": "^2.1.2",
+    "codem-isoboxer": "^0.3.7",
     "colors": "^1.3.3",
-    "express": "^4.16.4",
+    "express": "^4.17.1",
     "express-graceful-exit": "^0.4.2",
     "express-ws": "^4.0.0",
     "flatted": "^2.0.0",
@@ -91,10 +98,17 @@
     "ip": "^1.1.5",
     "isomorphic-ws": "^4.0.1",
     "logform": "^2.1.2",
+    "lru-cache": "^5.1.1",
     "mime-types": "^2.1.22",
     "moment": "^2.24.0",
+    "node-int64": "^0.4.0",
     "ps-node": "^0.1.6",
+    "sequelize": "^5.9.0",
+    "serialport": "^7.1.5",
+    "sqlite3": "^4.0.9",
     "superagent": "^4.1.0",
+    "uuid": "^3.3.2",
+    "vizio-smart-cast": "^1.3.0",
     "winston": "^3.2.1"
   }
 }

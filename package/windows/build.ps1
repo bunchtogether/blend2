@@ -3,6 +3,7 @@
 # Remove-Item -Recurse .\node_modules
 Remove-Item -Recurse .\package\windows\files\x64\*
 Remove-Item -Recurse .\package\windows\files\x86\*
+Remove-Item -Recurse .\package\windows\files\dist-www
 
 Add-Type -assembly "system.io.compression.filesystem"
 
@@ -13,14 +14,15 @@ $VERSION = $(Get-Content .\package.json | Out-String | ConvertFrom-JSON).version
 
 &".\node_modules\.bin\pkg.cmd" . --targets node10-win32-x86 --options trace-warnings --out-path .\package\windows\files\x86\
 
-# Copy ffmpeg, ffprobe, nssm binaries 
+cp -r .\dist-www .\package\windows\files\dist-www
+cp .\package\windows\bindings\* .\package\windows\files
+
+# Copy ffmpeg, ffprobe binaries
 # 64 bit
-cp .\package\windows\x64\nssm.exe .\package\windows\files\x64\nssm.exe
 cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x64\ffmpeg.exe .\package\windows\files\x64\ffmpeg.exe
 cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x64\ffprobe.exe .\package\windows\files\x64\ffprobe.exe
 
 # 32 bit
-cp .\package\windows\x86\nssm.exe .\package\windows\files\x86\nssm.exe
 cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x32\ffmpeg.exe .\package\windows\files\x86\ffmpeg.exe
 cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x32\ffprobe.exe .\package\windows\files\x86\ffprobe.exe
 

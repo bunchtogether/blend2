@@ -4,7 +4,7 @@
 Name "Blend Installer"
 Outfile "blend-installer.exe"
 
-Var /global InstallDir 
+Var /global InstallDir
 
 !macro VerifyUserIsAdmin
 UserInfo::GetAccountType
@@ -16,7 +16,7 @@ ${If} $0 != "admin"
 ${EndIf}
 !macroend
 
-# Installer 
+# Installer
 Function .onInit
 	setShellVarContext all
 	StrCpy $InstallDir "$PROGRAMFILES\Blend"
@@ -26,11 +26,6 @@ FunctionEnd
 Section "install"
   CreateDirectory "$InstallDir"
   SetOutPath "$InstallDir"
-  
-  # Remove Blend service
-  ExecWait '"$InstallDir\nssm.exe" stop "Blend"'
-  Sleep 15000
-  ExecWait '"$InstallDir\nssm.exe" remove "Blend" confirm'
 
   # File /r generate-cert.ps1
   # File /r pfx-to-pem.ps1
@@ -41,8 +36,10 @@ Section "install"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "DisplayVersion" ${Version}
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "InstallLocation" $InstallDir
 
-  # Sample Video
-  File files\sample.mp4 
+  # Copy Files
+  File files\sample.mp4
+  File /r files\dist-www
+  File files\*.node
 
   ${If} ${RunningX64}
     # Copy 64bit files
@@ -52,16 +49,10 @@ Section "install"
     File /r files\x86\*
   ${EndIf}
 
-  ExecWait '"$InstallDir\nssm.exe" install "Blend" "$InstallDir\blend.exe"'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppStdout" "$InstallDir\blend.log"'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppStderr" "$InstallDir\blend.log"'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppStdoutCreationDisposition" 4'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppStderrCreationDisposition" 4'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppRotateFiles" 1'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppRotateOnline" 1'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppRotateSeconds" 604800'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppRotateBytes" 104857600'
-  ExecWait '"$InstallDir\nssm.exe" start "Blend"'
+  CreateShortCut "$SMSTARTUP\blend.lnk" "$InstallDir\blend.exe"
+  AccessControl::GrantOnFile "$InstallDir" "(BU)" "FullAccess"
+  ExecShell "" "$InstallDir\blend.exe"
+
   writeUninstaller "$InstallDir\Uninstaller.exe"
 
   # Exit after installation is finished
@@ -81,11 +72,6 @@ Function un.onInit
 FunctionEnd
 
 Section "uninstall"
-  # Uninstall service
-  ExecWait '"$InstallDir\nssm.exe" stop "Blend"'
-  Sleep 15000
-  ExecWait '"$InstallDir\nssm.exe" remove "Blend" confirm'
-
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend"
   SetOutPath "$InstallDir\..\"
   RMDir /r $InstallDir

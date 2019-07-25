@@ -2,13 +2,17 @@
 
 .*/node_modules/documentation/*
 .*/dist/.*.flow
+.*/dist-www/.*.flow
+.*/src-www/.*
 .*/node_modules/.*/test/*
 .*/node_modules/.*/tests/*
+.*/vendor/client.*
 
 [include]
 
 [libs]
 flow/
+flow-typed/
 
 [options]
 traces=3

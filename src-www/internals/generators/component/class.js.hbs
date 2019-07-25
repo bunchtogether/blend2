@@ -1,0 +1,36 @@
+// @flow
+
+/**
+*
+* {{ properCase name }}
+*
+*/
+
+import * as React from 'react';
+import { withStyles } from 'material-ui/styles';
+{{#if wantMessages}}
+import { FormattedMessage } from 'react-intl';
+import messages from './messages';
+{{/if}}
+
+
+const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
+});
+
+type Props = {};
+
+type State = {};
+
+class {{ properCase name }} extends {{{ type }}}<Props, State> { // eslint-disable-line react/prefer-stateless-function
+  render() {
+    return (
+      <React.Fragment>
+      {{#if wantMessages}}
+        <FormattedMessage {...messages.header} />
+      {{/if}}
+      </React.Fragment>
+    );
+  }
+}
+
+export default withStyles(styles)({{ properCase name }});
