@@ -49,7 +49,9 @@ Section "install"
     File /r files\x86\*
   ${EndIf}
 
+  AccessControl::GrantOnFile "$InstallDir" "(BU)" "FullAccess"
   WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Run" "Blend" "$InstallDir\blend.exe"
+  ExecShell "" "$InstallDir\blend.exe"
 
   writeUninstaller "$InstallDir\Uninstaller.exe"
 
