@@ -49,7 +49,10 @@ Section "install"
     File /r files\x86\*
   ${EndIf}
 
-  CreateShortCut "$SMSTARTUP\blend.lnk" "$InstallDir\blend.exe"
+  # CreateShortCut "$SMSTARTUP\blend.lnk" "$InstallDir\blend.exe"
+  FileOpen $4 "$STARTUPDIR\blend.cmd" a
+  FileWrite $4 'echo @off$\r$\nset NODE_ENV=production$\r$\nSTART /b "" "$InstallDir\blend.exe"'
+  FileClose $4
   AccessControl::GrantOnFile "$InstallDir" "(BU)" "FullAccess"
   ExecShell "" "$InstallDir\blend.exe"
 
