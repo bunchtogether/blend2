@@ -7,6 +7,7 @@ const { initModels } = require('./models');
 const { initAdapter, closeAdapter } = require('./adapters');
 const { API_PORT, DATABASE_CONNECTION } = require('./constants');
 const { addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
+const bringApplicationToFront = require('@bunchtogether/bring-application-to-front');
 
 let exitCode = 0;
 
@@ -42,6 +43,12 @@ const start = async ()               => {
     await closeAdapter();
     process.exit(exitCode);
   });
+
+  try {
+    await bringApplicationToFront('chrome.exe');
+  } catch(error) {
+    logger.error('Failed to bring chrome to front');
+  }
 };
 
 start().catch((error) => {
