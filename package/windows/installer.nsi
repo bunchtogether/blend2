@@ -27,11 +27,6 @@ Section "install"
   CreateDirectory "$InstallDir"
   SetOutPath "$InstallDir"
 
-  # Remove Blend service
-  ExecWait '"$InstallDir\nssm.exe" stop "Blend"'
-  Sleep 15000
-  ExecWait '"$InstallDir\nssm.exe" remove "Blend" confirm'
-
   # File /r generate-cert.ps1
   # File /r pfx-to-pem.ps1
   # ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\generate-cert.ps1"
@@ -54,16 +49,10 @@ Section "install"
     File /r files\x86\*
   ${EndIf}
 
-  ExecWait '"$InstallDir\nssm.exe" install "Blend" "$InstallDir\blend.exe"'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppStdout" "$InstallDir\blend.log"'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppStderr" "$InstallDir\blend.log"'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppStdoutCreationDisposition" 4'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppStderrCreationDisposition" 4'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppRotateFiles" 1'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppRotateOnline" 1'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppRotateSeconds" 604800'
-  ExecWait '"$InstallDir\nssm.exe" set "Blend" "AppRotateBytes" 104857600'
-  ExecWait '"$InstallDir\nssm.exe" start "Blend"'
+  CreateShortCut "$SMSTARTUP\blend.lnk" "$InstallDir\blend.exe"
+  AccessControl::GrantOnFile "$InstallDir" "(BU)" "FullAccess"
+  ExecShell "" "$InstallDir\blend.exe"
+
   writeUninstaller "$InstallDir\Uninstaller.exe"
 
   # Exit after installation is finished
@@ -83,11 +72,6 @@ Function un.onInit
 FunctionEnd
 
 Section "uninstall"
-  # Uninstall service
-  ExecWait '"$InstallDir\nssm.exe" stop "Blend"'
-  Sleep 15000
-  ExecWait '"$InstallDir\nssm.exe" remove "Blend" confirm'
-
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend"
   SetOutPath "$InstallDir\..\"
   RMDir /r $InstallDir
