@@ -1,0 +1,15 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["bunchtogether"],
+  "plugins": ["jest"],
+  "env": {
+    "jest": true
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "./internals/webpack/webpack.prod.babel.js"
+      }
+    }
+  }
+}

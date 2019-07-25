@@ -1,0 +1,81 @@
+// @flow
+
+/*
+ *
+ * {{properCase name }}
+ *
+ */
+
+import * as React from 'react';
+import { withStyles } from 'material-ui/styles';
+import { connect } from 'react-redux';
+{{#if wantHeaders}}
+import { Helmet } from 'react-helmet';
+{{/if}}
+{{#if wantMessages}}
+import { FormattedMessage } from 'react-intl';
+{{/if}}
+{{#if wantActionsAndReducer}}
+import { createStructuredSelector } from 'reselect';
+import makeSelect{{properCase name}} from './selectors';
+{{/if}}
+{{#if wantMessages}}
+import messages from './messages';
+{{/if}}
+
+
+const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
+});
+
+type Props = {
+  dispatch: Function
+};
+
+type State = {};
+
+export class {{ properCase name }} extends React.{{{ component }}}<Props, State> { // eslint-disable-line react/prefer-stateless-function
+  render() {
+    return (
+      <React.Fragment>
+      {{#if wantHeaders}}
+        <Helmet>
+          <title>{{properCase name}}</title>
+          <meta name="description" content="Description of {{properCase name}}" />
+        </Helmet>
+      {{/if}}
+      {{#if wantMessages}}
+        <FormattedMessage {...messages.header} />
+      {{/if}}
+      </React.Fragment>
+    );
+  }
+}
+
+{{#if wantActionsAndReducer}}
+const mapStateToProps = createStructuredSelector({
+  {{name}}: makeSelect{{properCase name}}(),
+});
+{{/if}}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    dispatch,
+  };
+}
+
+{{#if wantActionsAndReducer}}
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
+
+const withReducer = injectReducer({ key: '{{ camelCase name }}', reducer });
+{{else}}
+const withConnect = connect(null, mapDispatchToProps);
+{{/if}}
+
+export default compose(
+  withStyles(styles),
+{{#if wantActionsAndReducer}}
+  withReducer,
+{{/if}}
+  withConnect,
+)({{ properCase name }});
+

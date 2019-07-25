@@ -4,14 +4,14 @@ const fs = require('fs-extra');
 const path = require('path');
 const http = require('http');
 const https = require('https');
-const logger = require('./lib/logger')('HTTP Server');
+const logger = require('../lib/logger')('HTTP Server');
 const gracefulExit = require('express-graceful-exit');
 const addExpressWs = require('express-ws');
 
 const keyPath = path.resolve(process.cwd(), 'key.pem');
 const certPath = path.resolve(process.cwd(), 'cert.pem');
 
-module.exports = async function (app: express$Application, port:number) {
+module.exports = async function (app: Object, port:number) {
   const keyExists = await fs.exists(keyPath);
   const certExists = await fs.exists(certPath);
   let credentials;
