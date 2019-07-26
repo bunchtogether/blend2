@@ -52,13 +52,9 @@ const start = async ():Promise<void> => {
 };
 
 start().catch((error) => {
-  if (error.stack) {
-    logger.error('Error starting:');
-    error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
-  } else {
-    logger.error(`Error starting: ${error.message}`);
-  }
+  logger.error('Error starting:');
   logger.error(error.message);
+  logger.errorStack(error);
   exitCode = 1;
   runShutdownHandlers();
 });
