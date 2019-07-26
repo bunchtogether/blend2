@@ -40,7 +40,6 @@ async function leaveMeeting() {
   }
   leaveMeetingPromise = new Promise(async (resolve, reject) => {
     try {
-      await bringApplicationToFront('chrome.exe');
       if (activeZoom) {
         await activeZoom.zcommand.call.leave();
         await disconnect();
@@ -49,6 +48,9 @@ async function leaveMeeting() {
     } catch (error) {
       reject(error);
     } finally {
+      bringApplicationToFront('chrome.exe').catch((error) => (
+        logger.error(`Failed to bring chrome to front, ${error.message}`)
+      ));
       leaveMeetingPromise = null;
     }
   });
