@@ -59,6 +59,9 @@ cp ~/build/node_modules/@bunchtogether/ffmpeg-static/bin/linux/x64/ffmpeg ~/blen
 cat <<EOF >> blend/etc/blend/blend.defaults
 # Default blend environment variables. It should be sourced via shell
 
+# Node Environment
+NODE_ENV=production
+
 # logging level
 LOG_LEVEL=debug
 
