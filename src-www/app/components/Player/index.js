@@ -26,7 +26,7 @@ type Props = {
 
 const windowLogger = makeBlendLogger('Window');
 const unhandledRejectionHandler = (event:Object) => {
-  if(event.promise) {
+  if (event.promise) {
     event.promise.catch((error) => {
       if (error.stack) {
         windowLogger.error(error.stack);
