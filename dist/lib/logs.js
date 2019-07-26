@@ -1,10 +1,10 @@
 //      
 
+const os = require('os');
 const LRU = require('lru-cache');
 const { spawn } = require('child_process');
 const { checkFileExists } = require('./utils');
 const logger = require('./logger')('Logs');
-
 
 const logMap = new LRU({ max: 10, maxAge: 24 * 60 * 60 * 1000 });
 
@@ -39,7 +39,12 @@ const generateLogs = async function ()                  {
   logMap.set(`${filename}`, { timestamp: Date.now(), available: false, filepath: `/tmp/${filename}` });
 
   try {
-    const dumpLogs = spawn('bash', [`${__dirname}/../cli/dump-logs`, filename]);
+    let dumpLogs;
+    if(os.platform() === 'win32') {
+      dumpLogs = spawn('powershell.exe', [`${__dirname}/../cli/dump-logs.ps1`, filename]);
+    } else {
+      dumpLogs = spawn('bash', [`${__dirname}/../cli/dump-logs`, filename]);
+    }
     dumpLogs.stdout.on('data', (data) => {
       const filepath = data.toString().trim();
       logMap.set(filename, { timestamp: Date.now(), available: true, filepath });

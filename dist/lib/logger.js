@@ -1,6 +1,5 @@
 //      
 
-const path = require('path');
 const moment = require('moment');
 const colors = require('colors/safe');
 const colorize = require('logform/colorize');
@@ -18,9 +17,7 @@ console._stdout = process.stdout; // eslint-disable-line no-underscore-dangle,no
 // $FlowFixMe
 console._stderr = process.stderr; // eslint-disable-line no-underscore-dangle,no-console
 
-const mode = process.env.NODE_ENV || 'development';
 
-const customTransports = [];
 const consoleTransport = new transports.Console({
   debugStdout: false,
   level: process.env.LOG_LEVEL || 'info',
@@ -30,22 +27,16 @@ const consoleTransport = new transports.Console({
     printf((info) => `${moment().format('YYYY-MM-DD HH:mm:ss')} - ${colors.bold((info.name || '').padEnd(30, ' '))} - ${(info.level || '').padEnd(6, ' ')} - ${info.message}`)),
 });
 
-if (mode === 'production') {
-  // Rotates log files daily or after reaching maxSize limit. Keeps upto maxFiles number of log files
-  const loggerFileTransport = new DailyRotateFile({
-    level: process.env.LOG_LEVEL || 'info',
-    format: combine(
-      timestamp(),
-      printf((info) => `${moment().format('YYYY-MM-DD HH:mm:ss')} - ${(info.name || '').padEnd(30, ' ')} - ${(info.level || '').padEnd(6, ' ')} - ${info.message}`),
-    ),
-    filename: 'blend-%DATE%.log',
-    maxSize: '25m',
-    maxFiles: '10',
-  });
-  customTransports.push(loggerFileTransport);
-} else {
-  customTransports.push(consoleTransport);
-}
+const loggerFileTransport = new DailyRotateFile({
+  level: process.env.LOG_LEVEL || 'info',
+  format: combine(
+    timestamp(),
+    printf((info) => `${moment().format('YYYY-MM-DD HH:mm:ss')} - ${(info.name || '').padEnd(30, ' ')} - ${(info.level || '').padEnd(6, ' ')} - ${info.message}`),
+  ),
+  filename: 'blend-%DATE%.log',
+  maxSize: '25m',
+  maxFiles: '10',
+});
 
 colorize.Colorizer.addColors({
   error: 'red',
@@ -60,8 +51,9 @@ colorize.Colorizer.addColors({
   silly: 'magenta',
 });
 
-console.log(`Logging enabled in ${mode} environment`); //eslint-disable-line
-const logger = createLogger({ transports: customTransports });
+const logger = createLogger({
+  transports: [consoleTransport, loggerFileTransport],
+});
 
 module.exports = (name        ) => {
   if (loggers[name]) {
