@@ -41,7 +41,7 @@ const generateLogs = async function (): Promise<string> {
   try {
     let dumpLogs;
     if(os.platform() === 'win32') {
-      dumpLogs = spawn('powershell.exe', [`${__dirname}/../cli/dump-logs.ps1`, filename]);
+      dumpLogs = spawn('powershell.exe', [`${__dirname}\..\cli\dump-logs.ps1`, filename]);
     } else {
       dumpLogs = spawn('bash', [`${__dirname}/../cli/dump-logs`, filename]);
     }
