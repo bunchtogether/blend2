@@ -37,6 +37,8 @@ cat <<EOF >> ./package/osx/files/Library/LaunchDaemons/com.bunchenterprise.blend
     <dict>
       <key>LOG_LEVEL</key>
       <string>debug</string>
+      <key>NODE_ENV</key>
+      <string>production</string>
     </dict>
     <key>RunAtLoad</key>
     <true/>

@@ -43,3 +43,4 @@ update-vm.sh
 
 .eslintcache
 db.sqlite
+*audit.json
