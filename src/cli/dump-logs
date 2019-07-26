@@ -18,7 +18,7 @@ fi
 
 # application logs
 mkdir /tmp/$ZIP_ID/application_logs
-cp -r $PWD/dist/logs/* /tmp/$ZIP_ID/application_logs
+cp -r $PWD/*.log /tmp/$ZIP_ID/application_logs
 
 # /var/logs
 mkdir /tmp/$ZIP_ID/system_logs
