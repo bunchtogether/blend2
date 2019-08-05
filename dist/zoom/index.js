@@ -19,11 +19,13 @@ async function connect(passcode         ) {
 }
 
 async function disconnect() {
-  if (activeZoom) {
-    await activeZoom.disconnect();
+  try {
+    if (activeZoom) {
+      await activeZoom.disconnect();
+    }
+  } finally {
+    activeZoom = null;
   }
-  activeZoom = null;
-  await bringApplicationToFront('chrome.exe');
 }
 
 async function joinMeeting(meetingNumber        , passcode         ) {
