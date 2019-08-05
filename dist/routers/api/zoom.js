@@ -51,6 +51,22 @@ module.exports.getZoomRouter = () => {
     }
   });
 
+  router.post('/phone-call-out', async (req                 , res                  ) => {
+    const { body: { number, password } } = req;
+    if (!number) {
+      return res.status(400).send('Missing required body parameter "number"');
+    }
+
+    try {
+      await zoom.phoneCallOut(number.toString(), password);
+      return res.sendStatus(200);
+    } catch (error) {
+      logger.error('Error making phone call');
+      logger.errorStack(error);
+      return res.status(400).send('Can not phone call out');
+    }
+  });
+
   router.post('/listparticipants', async (req                 , res                  ) => {
     try {
       const result = await zoom.listParticipants();
