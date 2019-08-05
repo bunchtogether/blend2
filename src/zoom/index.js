@@ -6,9 +6,9 @@ const logger = require('../lib/logger')('Zoom Control');
 
 let activeZoom;
 
-async function connect(password?: string) {
+async function connect(passcode?: string) {
   await disconnect();
-  const zoom = new ZoomRoomsControlSystem('127.0.0.1', password || '');
+  const zoom = new ZoomRoomsControlSystem('127.0.0.1', passcode || '');
   await zoom.connect();
   activeZoom = zoom;
   zoom.on('error', (error) => {
@@ -25,10 +25,10 @@ async function disconnect() {
   activeZoom = null;
 }
 
-async function joinMeeting(meetingNumber: string, password?: string) {
+async function joinMeeting(meetingNumber: string, passcode?: string) {
   logger.info(`Joining meeting ${meetingNumber}`);
   await bringApplicationToFront('ZoomRooms.exe');
-  const zoom = await connect(password);
+  const zoom = await connect(passcode);
   await zoom.zcommand.dial.start({ meetingNumber });
 }
 
@@ -55,6 +55,14 @@ async function leaveMeeting() {
     }
   });
   return leaveMeetingPromise;
+}
+
+async function phoneCallOut(number: string, passcode?: string) {
+  let zoom = activeZoom;
+  if (!zoom) {
+    zoom = await connect(passcode);
+  }
+  await zoom.zcommand.dial.phoneCallOut({ number });
 }
 
 async function listParticipants() {
@@ -109,4 +117,7 @@ module.exports = {
   enableVideo,
   disableVideo,
   listParticipants,
+  phoneCallOut,
+  connect,
+  disconnect,
 };

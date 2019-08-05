@@ -1,5 +1,6 @@
 //      
 
+const os = require('os');
 const logger = require('./lib/logger')('CLI');
 const startServer = require('./server');
 const initDatabase = require('./database');
@@ -45,7 +46,10 @@ const start = async ()               => {
   });
 
   try {
-    await bringApplicationToFront('chrome.exe');
+    const platform = os.platform();
+    if(platform === 'win32') {
+      await bringApplicationToFront('chrome.exe');
+    }
   } catch (error) {
     logger.error('Failed to bring chrome to front');
   }
