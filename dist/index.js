@@ -47,7 +47,7 @@ const start = async ()               => {
 
   try {
     const platform = os.platform();
-    if(platform === 'win32') {
+    if (platform === 'win32') {
       await bringApplicationToFront('chrome.exe');
     }
   } catch (error) {

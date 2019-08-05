@@ -13,14 +13,14 @@ module.exports.getZoomRouter = () => {
     const { body: { password } } = req;
 
     try {
-      const result = await zoom.connect(password);
+      await zoom.connect(password);
+      res.sendStatus(200);
       await zoom.disconnect();
-      console.log(result);
-      return res.sendStatus(200);
+      return;
     } catch (error) {
       logger.warn('Zoom rooms not available');
       logger.warn(error);
-      return res.status(400).send('Zoom rooms not available');
+      res.status(400).send('Zoom rooms not available');
     }
   });
 
