@@ -23,6 +23,7 @@ async function disconnect() {
     await activeZoom.disconnect();
   }
   activeZoom = null;
+  await bringApplicationToFront('chrome.exe');
 }
 
 async function joinMeeting(meetingNumber: string, passcode?: string) {
@@ -63,6 +64,7 @@ async function phoneCallOut(number: string, passcode?: string) {
     zoom = await connect(passcode);
   }
   await zoom.zcommand.dial.phoneCallOut({ number });
+  await bringApplicationToFront('ZoomRooms.exe');
 }
 
 async function listParticipants() {
