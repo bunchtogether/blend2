@@ -9,6 +9,21 @@ module.exports.getZoomRouter = () => {
 
   const router = Router({ mergeParams: true });
 
+  router.post('/check', async (req                 , res                  ) => {
+    const { body: { password } } = req;
+
+    try {
+      const result = await zoom.connect(password);
+      await zoom.disconnect();
+      console.log(result);
+      return res.sendStatus(200);
+    } catch (error) {
+      logger.warn('Zoom rooms not available');
+      logger.warn(error);
+      return res.status(400).send('Zoom rooms not available');
+    }
+  });
+
   router.post('/join', async (req                 , res                  ) => {
     const { body: { meetingNumber, password } } = req;
     if (!meetingNumber) {
