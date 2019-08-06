@@ -6,6 +6,17 @@ const logger = require('../lib/logger')('Zoom Control');
 
 let activeZoom;
 
+function focusApplication(name        , tries         = 0) {
+  bringApplicationToFront(name).catch((error        ) => {
+    if (tries < 3) {
+      setTimeout(() => focusApplication(name, tries + 1), (tries + 1) * 1000);
+    } else {
+      logger.error(`Failed to bring ${name} to front, ${error.message}`);
+      logger.errorStack(error);
+    }
+  });
+}
+
 async function connect(passcode         ) {
   await disconnect();
   const zoom = new ZoomRoomsControlSystem('127.0.0.1', passcode || '');
@@ -30,34 +41,21 @@ async function disconnect() {
 
 async function joinMeeting(meetingNumber        , passcode         ) {
   logger.info(`Joining meeting ${meetingNumber}`);
-  await bringApplicationToFront('ZoomRooms.exe');
+  focusApplication('ZoomRooms.exe');
   const zoom = await connect(passcode);
   await zoom.zcommand.dial.start({ meetingNumber });
 }
 
-let leaveMeetingPromise;
 async function leaveMeeting() {
   logger.info('Leaving meeting');
-  if (leaveMeetingPromise) {
-    return leaveMeetingPromise;
-  }
-  leaveMeetingPromise = new Promise(async (resolve, reject) => {
-    try {
-      if (activeZoom) {
-        await activeZoom.zcommand.call.leave();
-        await disconnect();
-      }
-      resolve();
-    } catch (error) {
-      reject(error);
-    } finally {
-      bringApplicationToFront('chrome.exe').catch((error) => (
-        logger.error(`Failed to bring chrome to front, ${error.message}`)
-      ));
-      leaveMeetingPromise = null;
+  try {
+    if (activeZoom) {
+      await activeZoom.zcommand.call.leave();
+      await disconnect();
     }
-  });
-  return leaveMeetingPromise;
+  } finally {
+    focusApplication('chrome.exe');
+  }
 }
 
 async function phoneCallOut(number        , passcode         ) {
