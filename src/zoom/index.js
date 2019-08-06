@@ -30,12 +30,10 @@ async function connect(passcode?: string) {
 }
 
 async function disconnect() {
-  try {
-    if (activeZoom) {
-      await activeZoom.disconnect();
-    }
-  } finally {
-    activeZoom = null;
+  const zoom = activeZoom;
+  activeZoom = null;
+  if (zoom) {
+    await zoom.disconnect();
   }
 }
 
