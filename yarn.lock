@@ -665,15 +665,6 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
-"@bunchtogether/bring-application-to-front@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@bunchtogether/bring-application-to-front/-/bring-application-to-front-1.0.1.tgz#b5e59c0b15ff083ad17a34939d77553e7e9b0265"
-  integrity sha512-UltMIjNA/gXycP94mZ9e4g/+AyGub1lQE3xS1b2FNk1U7oxOe31eCjUMd987qqIRx48MCSRyYX0tz/WW7sCj3Q==
-  dependencies:
-    ffi "^2.3.0"
-    node-osascript "^2.1.0"
-    ref "^1.3.5"
-
 "@bunchtogether/exit-handler@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@bunchtogether/exit-handler/-/exit-handler-1.0.0.tgz#350caef9ef93e047080d1139a22e818098eea290"
