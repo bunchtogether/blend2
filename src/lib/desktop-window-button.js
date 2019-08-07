@@ -12,13 +12,13 @@ const showBandButton = (onClick: Function, x: number = 20, y: number = 20) => {
 };
 
 const hideBandButton = () => {
-  if(closeBandButton) {
+  if (closeBandButton) {
     closeBandButton();
   }
   closeBandButton = null;
-}
+};
 
 module.exports = {
   showBandButton,
   hideBandButton,
-}
+};
