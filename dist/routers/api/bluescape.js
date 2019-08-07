@@ -10,7 +10,6 @@ module.exports.getBluescapeRouter = () => {
   const router = Router({ mergeParams: true });
 
   router.post('/focus', async (req                 , res                  ) => {
-
     try {
       await bluescape.focus();
       res.sendStatus(200);
