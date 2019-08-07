@@ -1,17 +1,17 @@
 // @flow
 
-const bringApplicationToFront = require('@bunchtogether/bring-application-to-front');
 const ZoomRoomsControlSystem = require('@bunchtogether/zoom-rooms-control-system');
+const { setForegroundWindow } = require('../lib/picture-in-picture');
 const logger = require('../lib/logger')('Zoom Control');
 
 let activeZoom;
 
 function focusApplication(name: string, tries: number = 0) {
-  bringApplicationToFront(name).catch((error: Object) => {
+  setForegroundWindow(name).catch((error: Object) => {
     if (tries < 3) {
       setTimeout(() => focusApplication(name, tries + 1), (tries + 1) * 1000);
     } else {
-      logger.error(`Failed to bring ${name} to front, ${error.message}`);
+      logger.error(`Failed to set ${name} as foreground window, ${error.message}`);
       logger.errorStack(error);
     }
   });
@@ -39,30 +39,28 @@ async function disconnect() {
 
 async function joinMeeting(meetingNumber: string, passcode?: string) {
   logger.info(`Joining meeting ${meetingNumber}`);
-  focusApplication('ZoomRooms.exe');
+  focusApplication('ZoomRooms');
   const zoom = await connect(passcode);
   await zoom.zcommand.dial.start({ meetingNumber });
 }
 
 async function leaveMeeting() {
   logger.info('Leaving meeting');
-  try {
-    if (activeZoom) {
-      await activeZoom.zcommand.call.leave();
-      await disconnect();
-    }
-  } finally {
-    focusApplication('chrome.exe');
+  focusApplication('chrome');
+  if (activeZoom) {
+    await activeZoom.zcommand.call.leave();
+    await disconnect();
   }
 }
 
 async function phoneCallOut(number: string, passcode?: string) {
+  logger.info(`Phone Call Out to ${number}`);
+  focusApplication('ZoomRooms');
   let zoom = activeZoom;
   if (!zoom) {
     zoom = await connect(passcode);
   }
   await zoom.zcommand.dial.phoneCallOut({ number });
-  await bringApplicationToFront('ZoomRooms.exe');
 }
 
 async function listParticipants() {

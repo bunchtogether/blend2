@@ -1,14 +1,13 @@
 //      
 
-const os = require('os');
 const logger = require('./lib/logger')('CLI');
+const { setForegroundWindow } = require('./lib/picture-in-picture');
 const startServer = require('./server');
 const initDatabase = require('./database');
 const { initModels } = require('./models');
 const { initAdapter, closeAdapter } = require('./adapters');
 const { API_PORT, DATABASE_CONNECTION } = require('./constants');
 const { addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
-const bringApplicationToFront = require('@bunchtogether/bring-application-to-front');
 
 let exitCode = 0;
 
@@ -46,12 +45,10 @@ const start = async ()               => {
   });
 
   try {
-    const platform = os.platform();
-    if (platform === 'win32') {
-      await bringApplicationToFront('chrome.exe');
-    }
+    await setForegroundWindow('chrome');
   } catch (error) {
     logger.error('Failed to bring chrome to front');
+    logger.errorStack(error);
   }
 };
 

@@ -15,8 +15,6 @@ module.exports.getZoomRouter = () => {
     try {
       await zoom.connect(password);
       res.sendStatus(200);
-      await zoom.disconnect();
-      return;
     } catch (error) {
       logger.warn('Zoom rooms not available');
       logger.warn(error);
