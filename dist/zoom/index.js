@@ -17,7 +17,7 @@ function focusApplication(name        , tries         = 0) {
   });
 }
 
-function handleZoomEvents(key        , data        ) {
+function handleZoomEvents(key        ) {
   if(key === 'CallDisconnect') {
     focusApplication('chrome');
   }
