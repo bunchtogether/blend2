@@ -17,15 +17,18 @@ function focusApplication(name: string, tries: number = 0) {
   });
 }
 
+function handleZoomEvents(key: string, data: Object) {
+  if(key === 'CallDisconnect') {
+    focusApplication('chrome');
+  }
+}
+
 async function connect(passcode?: string) {
   await disconnect();
   const zoom = new ZoomRoomsControlSystem('127.0.0.1', passcode || '');
+  zoom.on('zEvent', handleZoomEvents)
   await zoom.connect();
   activeZoom = zoom;
-  zoom.on('error', (error) => {
-    logger.error('Zoom Rooms Control System error');
-    logger.errorStack(error);
-  });
   return zoom;
 }
 
