@@ -1,7 +1,6 @@
 // @flow
 
 const os = require('os');
-const { showBandButton, hideBandButton } = require('./desktop-window-button');
 const logger = require('./logger')('Picture In Picture');
 
 const platform = os.platform();
@@ -10,6 +9,7 @@ let setForegroundWindow = (name: string) => logger.warn(`setForegroundWindow is 
 let createWindow = (name: string) => logger.warn(`createWindow is not available on ${platform}, ${name}`);
 
 if (platform === 'win32') {
+  const { showBandButton, hideBandButton } = require('./desktop-window-button'); // eslint-disable-line global-require
   const pictureInPicture = require('@bunchtogether/picture-in-picture'); // eslint-disable-line global-require
   setForegroundWindow = async (name: string, disableButton: boolean = false) => {
     await pictureInPicture.setForegroundWindow(name);
