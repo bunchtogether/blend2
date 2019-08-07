@@ -6,7 +6,7 @@
   "repository": "https://github.com/bunchtogether/blend2.git",
   "author": "johnwehr@bunchtogether.com",
   "scripts": {
-    "build:src": "rimraf ./dist && mkdirp ./dist && flow-remove-types ./src --out-dir ./dist && ncp ./src/sample.mp4 ./dist/sample.mp4 && mkdirp ./dist/cli && ncp ./src/cli ./dist/cli",
+    "build:src": "rimraf ./dist && mkdirp ./dist && flow-remove-types ./src --out-dir ./dist && ncp ./src/sample.mp4 ./dist/sample.mp4 && ncp ./src/band.png ./dist/band.png && mkdirp ./dist/cli && ncp ./src/cli ./dist/cli",
     "build:src-www": "cd src-www && yarn build && cd ..",
     "build": "yarn build:src-www && yarn build:src",
     "flow-typed": "./node_modules/.bin/flow-typed install -o",
@@ -80,9 +80,10 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
+    "@bunchtogether/desktop-window-button": "^1.0.3",
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
-    "@bunchtogether/picture-in-picture": "^1.0.1",
+    "@bunchtogether/picture-in-picture": "^1.0.4",
     "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
     "bl": "^3.0.0",
     "body-parser": "^1.18.3",
