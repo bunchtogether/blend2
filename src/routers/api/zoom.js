@@ -65,6 +65,18 @@ module.exports.getZoomRouter = () => {
     }
   });
 
+  router.post('/share', async (req: express$Request, res: express$Response) => {
+    const { body: { password } } = req;
+    try {
+      await zoom.share(password);
+      return res.sendStatus(200);
+    } catch (error) {
+      logger.error('Error sharing content');
+      logger.errorStack(error);
+      return res.status(400).send('Can not share content');
+    }
+  });
+
   router.post('/listparticipants', async (req: express$Request, res: express$Response) => {
     try {
       const result = await zoom.listParticipants();
