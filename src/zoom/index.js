@@ -18,7 +18,7 @@ function focusApplication(name: string, tries: number = 0) {
 }
 
 function handleZoomEvents(key: string) {
-  if(key === 'CallDisconnect') {
+  if (key === 'CallDisconnect') {
     focusApplication('chrome');
   }
 }
@@ -26,7 +26,7 @@ function handleZoomEvents(key: string) {
 async function connect(passcode?: string) {
   await disconnect();
   const zoom = new ZoomRoomsControlSystem('127.0.0.1', passcode || '');
-  zoom.on('zEvent', handleZoomEvents)
+  zoom.on('zEvent', handleZoomEvents);
   await zoom.connect();
   activeZoom = zoom;
   return zoom;
