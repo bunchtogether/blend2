@@ -136,7 +136,7 @@ module.exports = () => {
     });
   });
 
-  router.post('zcommand.dial.start', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.dial.start', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -158,7 +158,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.dial.startPMI', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.dial.startPMI', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -180,7 +180,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.dial.join', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.dial.join', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -202,7 +202,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.disconnect', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.disconnect', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -218,7 +218,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.info', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.info', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -234,7 +234,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.muteAll', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.muteAll', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -256,7 +256,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.muteParticipant', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.muteParticipant', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -284,7 +284,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.listParticipants', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.listParticipants', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -300,7 +300,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.accept', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.accept', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -322,7 +322,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.reject', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.reject', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -344,7 +344,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.invite', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.invite', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -374,7 +374,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.phonebook.list', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.phonebook.list', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -396,7 +396,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.run', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.run', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -418,7 +418,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.comment', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.comment', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -440,7 +440,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.wait', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.wait', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -462,7 +462,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.leave', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.leave', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -478,7 +478,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.invite', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.invite', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -506,7 +506,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.inviteH323Room', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.inviteH323Room', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -534,7 +534,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.inviteSIPRoom', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.inviteSIPRoom', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -562,7 +562,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.muteParticipantVideo', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.muteParticipantVideo', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -587,7 +587,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.bookings.update', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.bookings.update', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -603,7 +603,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.dial.sharing', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.dial.sharing', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -637,7 +637,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.shareCamera', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.shareCamera', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -665,7 +665,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.setInstructions', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.setInstructions', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -693,7 +693,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.sharing.toNormal', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.sharing.toNormal', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -709,7 +709,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.sharing.disconnect', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.sharing.disconnect', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -725,7 +725,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.sharing.hdmi.start', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.sharing.hdmi.start', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -741,7 +741,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.sharing.hdmi.stop', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.sharing.hdmi.stop', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -757,7 +757,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.layout.turnPage', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.layout.turnPage', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -776,7 +776,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.expel', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.expel', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -798,7 +798,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.test.microphone.start', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.test.microphone.start', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -820,7 +820,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.test.microphone.stop', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.test.microphone.stop', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -836,7 +836,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.test.speaker.start', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.test.speaker.start', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -858,7 +858,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.test.speaker.stop', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.test.speaker.stop', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -874,7 +874,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.hostChange', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.hostChange', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -896,7 +896,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.hostClaim', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.hostClaim', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -918,7 +918,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.record', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.record', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -940,7 +940,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.spotlight', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.spotlight', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -968,7 +968,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.allowRecord', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.allowRecord', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -996,7 +996,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.call.cameraControl', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.call.cameraControl', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1027,7 +1027,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.dial.checkin', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.dial.checkin', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1049,7 +1049,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.schedule.add', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.schedule.add', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1089,7 +1089,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.schedule.delete', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.schedule.delete', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1111,7 +1111,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.dial.phoneCallOut', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.dial.phoneCallOut', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1133,7 +1133,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.dial.phoneHangUp', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.dial.phoneHangUp', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1155,7 +1155,7 @@ module.exports = () => {
   });
 
 
-  router.post('zcommand.phonecall.list', async (req: express$Request, res: express$Response) => {
+  router.post('/zcommand.phonecall.list', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1171,7 +1171,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.call.sharing', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.call.sharing', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1193,7 +1193,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.call.sharing.optimize_video_sharing', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.call.sharing.optimize_video_sharing', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1209,7 +1209,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.call.microphone', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.call.microphone', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1231,7 +1231,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.call.microphone.mute', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.call.microphone.mute', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1247,7 +1247,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.call.camera', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.call.camera', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1269,7 +1269,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.audio.input', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.audio.input', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1291,7 +1291,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.audio.input', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.audio.input', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1313,7 +1313,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.audio.input', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.audio.input', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1335,7 +1335,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.audio.input', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.audio.input', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1357,7 +1357,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.audio.output', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.audio.output', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1379,7 +1379,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.audio.output', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.audio.output', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1401,7 +1401,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.video', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.video', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1423,7 +1423,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.video.camera', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.video.camera', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1445,7 +1445,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.video.camera', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.video.camera', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1467,7 +1467,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.client', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.client', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1489,7 +1489,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.client', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.client', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1511,7 +1511,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.call.layout', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.call.layout', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1540,7 +1540,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.call.lock', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.call.lock', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1559,7 +1559,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.call.muteUserOnEntry', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.call.muteUserOnEntry', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1578,7 +1578,7 @@ module.exports = () => {
   });
 
 
-  router.post('zconfiguration.call.closedCaption', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.call.closedCaption', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1600,7 +1600,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.call.status', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.call.status', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1616,7 +1616,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.audio.input.line', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.audio.input.line', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1632,7 +1632,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.audio.output.line', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.audio.output.line', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1648,7 +1648,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.video.camera.line', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.video.camera.line', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1664,7 +1664,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.video.optimizable', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.video.optimizable', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1680,7 +1680,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.systemUnit', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.systemUnit', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1696,7 +1696,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.capabilities', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.capabilities', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1712,7 +1712,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.sharing', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.sharing', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1728,7 +1728,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.cameraShare', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.cameraShare', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1744,7 +1744,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.call.layout', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.call.layout', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1760,7 +1760,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.call.closedCaption.available', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.call.closedCaption.available', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -1776,7 +1776,7 @@ module.exports = () => {
   });
 
 
-  router.post('zstatus.numberOfScreens', async (req: express$Request, res: express$Response) => {
+  router.post('/zstatus.numberOfScreens', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
