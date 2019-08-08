@@ -2,7 +2,6 @@
 
 const VizioAdapter = require('./vizio');
 const SamsungAdapter = require('./samsung');
-const { getDevice } = require('../models');
 const constants = require('../constants');
 const logger = require('../lib/logger')('Adapters');
 
@@ -14,13 +13,13 @@ const adapters = {
 let activeAdapter = null;
 let initPromise;
 
-const _initAdapter = async () => { // eslint-disable-line no-underscore-dangle
+const _initAdapter = async (Device       ) => { // eslint-disable-line no-underscore-dangle
   logger.info('Initializing adapters');
   try {
-    const device = await getDevice();
+    const device = await Device.findByPk(Device.id);
     if (device && device.data && device.type) {
       const Adapter = adapters[device.type];
-      const adapterInstance = new Adapter({ ...device.data, ready: true });
+      const adapterInstance = new Adapter({ ...device.data, ready: true }, device);
       activeAdapter = adapterInstance;
     }
   } catch (error) {
@@ -29,9 +28,9 @@ const _initAdapter = async () => { // eslint-disable-line no-underscore-dangle
   }
 };
 
-const initAdapter = () => {
+const initAdapter = (Device       ) => {
   if (!initPromise) {
-    initPromise = _initAdapter();
+    initPromise = _initAdapter(Device);
   }
   return initPromise;
 };
@@ -41,10 +40,7 @@ const setActiveAdapter = async (adapter        ) => {
   activeAdapter = adapter;
 };
 
-const getActiveAdapter = async () => {
-  await initAdapter();
-  return activeAdapter;
-};
+const getActiveAdapter = async () => activeAdapter;
 
 const closeAdapter = async () => {
   if (activeAdapter && activeAdapter.close) {
