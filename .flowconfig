@@ -9,9 +9,6 @@
 
 [include]
 
-src/
-vendor/
-
 [libs]
 flow/
 flow-typed/
