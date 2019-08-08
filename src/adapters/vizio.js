@@ -4,7 +4,6 @@ import type { AdapterType } from './adapter';
 
 const Smartcast = require('vizio-smart-cast');
 const { TYPE_VIZIO } = require('../constants');
-const { getDevice: getDeviceModel } = require('../models');
 const AbstractAdapter = require('./adapter');
 const logger = require('../lib/logger')('Vizio');
 
@@ -26,10 +25,9 @@ class VizioAdapter extends AbstractAdapter {
   static async discover(): Promise<*> {
     const devices = [];
     const timeout = 4000;
-    await new Promise((resolve: Function) => {
+    await new Promise((resolve) => {
       Smartcast.discover(
         (device: Object) => {
-          logger.info(`New device discovered: ${JSON.stringify(device)}`);
           device.type = TYPE_VIZIO; // eslint-disable-line no-param-reassign
           devices.push(device);
         },
@@ -43,7 +41,7 @@ class VizioAdapter extends AbstractAdapter {
     return devices;
   }
 
-  constructor(data: DataType) {
+  constructor(data: DataType, device: Object) {
     if (!data || !data.ip) {
       logger.error('Can not instantiate. Missing required parameter ip');
       throw new Error('Can not instantiate. Missing required parameter ip');
@@ -55,6 +53,7 @@ class VizioAdapter extends AbstractAdapter {
     this.model = data.model;
     this.ready = !!data.ready;
     this.vizio = new Smartcast(data.ip, data.authToken);
+    this.device = device;
   }
 
   initialize() {
@@ -70,8 +69,7 @@ class VizioAdapter extends AbstractAdapter {
     const { ITEM: { AUTH_TOKEN } } = result;
     if (AUTH_TOKEN) {
       this.ready = true;
-      const device = await getDeviceModel();
-      await device.update({
+      await this.device.update({
         type: TYPE_VIZIO,
         data: {
           ip: this.ip,
@@ -149,6 +147,7 @@ class VizioAdapter extends AbstractAdapter {
   model: string;
   ready: boolean;
   vizio: Object;
+  device: Object;
 }
 
 module.exports = VizioAdapter;

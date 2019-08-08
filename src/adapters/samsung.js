@@ -4,7 +4,6 @@ import type { AdapterType } from './adapter';
 
 const SerialPort = require('serialport');
 const { TYPE_SAMSUNG } = require('../constants');
-const { getDevice: getDeviceModel } = require('../models');
 const AbstractAdapter = require('./adapter');
 const manufacturers = require('../manufacturers');
 const logger = require('../lib/logger')('Samsung Adapter');
@@ -57,12 +56,13 @@ class SamsungAdapter extends AbstractAdapter {
     }));
   }
 
-  constructor(data: DataType) {
+  constructor(data: DataType, device: Object) {
     if (!data || !data.path) {
       logger.error('Can not instantiate. Missing required parameter path');
       throw new Error('Can not instantiate. Missing required parameter path');
     }
     super();
+    this.device = device;
     this.path = data.path;
     this.ready = !!data.ready;
     this.port = new SerialPort(data.path, (error) => {
@@ -127,8 +127,7 @@ class SamsungAdapter extends AbstractAdapter {
         path: this.path,
       },
     };
-    const device = await getDeviceModel();
-    await device.update(deviceUpdate);
+    await this.device.update(deviceUpdate);
     this.ready = true;
     return deviceUpdate;
   }
@@ -194,6 +193,7 @@ class SamsungAdapter extends AbstractAdapter {
 
   ready: boolean;
   path: string;
+  device: Object;
   port: Object;
 }
 
