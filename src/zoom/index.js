@@ -66,6 +66,16 @@ async function phoneCallOut(number: string, passcode?: string) {
   await zoom.zcommand.dial.phoneCallOut({ number });
 }
 
+async function share(passcode?: string) {
+  logger.info('Share Content');
+  focusApplication('ZoomRooms');
+  let zoom = activeZoom;
+  if (!zoom) {
+    zoom = await connect(passcode);
+  }
+  await zoom.zcommand.dial.sharing({ duration: 60, displayState: 'Laptop' });
+}
+
 async function listParticipants() {
   if (activeZoom) {
     const participants = await activeZoom.zcommand.call.listParticipants();
@@ -119,6 +129,7 @@ module.exports = {
   disableVideo,
   listParticipants,
   phoneCallOut,
+  share,
   connect,
   disconnect,
 };
