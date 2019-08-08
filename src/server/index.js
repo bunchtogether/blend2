@@ -3,14 +3,15 @@
 const { addShutdownHandler } = require('@bunchtogether/exit-handler');
 const getExpressApp = require('./express-app');
 const startHttpServer = require('./http-server');
-const { getRouters, shutdownRouters } = require('../routers');
+const getRouters = require('../routers');
 const logger = require('../lib/logger')('Server');
 const { version } = require('../../package.json');
 
 module.exports = async (port:number) => {
   const app = getExpressApp();
   const stopHttpServer = await startHttpServer(app, port);
-  app.use(getRouters());
+  const [routers, shutdownRouters] = getRouters();
+  app.use(routers);
 
   const shutdown = async () => {
     logger.info('Shutting down');

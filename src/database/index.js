@@ -20,10 +20,8 @@ async function _initDatabase(connection: string) { // eslint-disable-line no-und
   try {
     logger.info(`Establishing ${db.getDialect()} database connection.`);
     await db.authenticate();
-    logger.info(`Syncing ${db.getDialect()} database.`);
-    await db.sync();
   } catch (error) {
-    logger.error(`Failed to initialize ${db.getDialect()} database: `, error.stack);
+    logger.error(`Failed to authenticate ${db.getDialect()} database: `, error.stack);
     throw error;
   }
   return db;
