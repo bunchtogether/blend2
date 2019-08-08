@@ -1,21 +1,31 @@
 //      
 
 const logger = require('./lib/logger')('CLI');
+
+const getExpressApp = require('./express-app');
+const startHttpServer = require('./http-server');
+const getRouters = require('./routers');
 const { setForegroundWindow } = require('./lib/picture-in-picture');
-const startServer = require('./server');
 const initDatabase = require('./database');
 const { initModels } = require('./models');
 const { initAdapter, closeAdapter } = require('./adapters');
 const { API_PORT, DATABASE_CONNECTION } = require('./constants');
-const { addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
+const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
+const { version } = require('../package.json');
 
 let exitCode = 0;
 
 const start = async ()               => {
-  await startServer(API_PORT);
   const db = await initDatabase(DATABASE_CONNECTION);
-  await initModels(db);
-  await initAdapter();
+  const { Device } = await initModels(db);
+  await initAdapter(Device);
+
+  const app = getExpressApp();
+  const stopHttpServer = await startHttpServer(app, API_PORT);
+  const [routers, shutdownRouters] = getRouters(Device);
+  app.use(routers);
+
+  // Create tables in database
 
   process.on('uncaughtException', (error) => {
     if (error.stack) {
@@ -39,9 +49,36 @@ const start = async ()               => {
     runShutdownHandlers();
   });
 
-  addPostShutdownHandler(async () => {
-    await closeAdapter();
-    process.exit(exitCode);
+  const shutdown = async () => {
+    logger.info('Shutting down');
+    try {
+      await closeAdapter();
+    } catch (error) {
+      logger.error('Error closing adapter');
+      logger.errorStack(error);
+    }
+    try {
+      await shutdownRouters();
+    } catch (error) {
+      logger.error('Error shutting down routers');
+      logger.errorStack(error);
+    }
+    try {
+      await stopHttpServer();
+    } catch (error) {
+      logger.error('Error shutting down HTTP server');
+      logger.errorStack(error);
+    }
+    logger.info(`Shut down Blend ${version}`);
+  };
+
+  addShutdownHandler(shutdown, (error      ) => {
+    if (error.stack) {
+      logger.error('Error shutting down:');
+      error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
+    } else {
+      logger.error(`Error shutting down: ${error.message}`);
+    }
   });
 
   try {
@@ -51,6 +88,10 @@ const start = async ()               => {
     logger.errorStack(error);
   }
 };
+
+addPostShutdownHandler(async () => {
+  process.exit(exitCode);
+});
 
 start().catch((error) => {
   logger.error('Error starting:');

@@ -1,5 +1,6 @@
 // @flow
 
+const os = require('os');
 const moment = require('moment');
 const colors = require('colors/safe');
 const colorize = require('logform/colorize');
@@ -51,9 +52,17 @@ colorize.Colorizer.addColors({
   silly: 'magenta',
 });
 
-const logger = createLogger({
-  transports: [consoleTransport, loggerFileTransport],
-});
+let logger;
+// File based logger only on windows
+if (os.platform() === 'win32') {
+  logger = createLogger({
+    transports: [consoleTransport, loggerFileTransport],
+  });
+} else {
+  logger = createLogger({
+    transports: [consoleTransport],
+  });
+}
 
 module.exports = (name: string) => {
   if (loggers[name]) {
