@@ -3,7 +3,7 @@
 const express = require('express');
 const { getPairRouter } = require('./pair');
 const { getDeviceRouter } = require('./device');
-const getZoomRoomsRouter = require('./zoom');
+const getZoomRoomRouter = require('./zoom-room');
 const { getBluescapeRouter } = require('./bluescape');
 const { getLogsRouter } = require('./logs');
 const { getCapabilitiesRouter } = require('./capabilities');
@@ -15,8 +15,8 @@ function getApiRouters(Device:Object) {
   routers.use('/capabilities', getCapabilitiesRouter());
   routers.use('/pair', getPairRouter(Device));
   routers.use('/device', adapterMiddleware, getDeviceRouter());
-  const [zoomRoomsRouter, shutdownZoomRoomsRouter] = getZoomRoomsRouter();
-  routers.use('/zoom', zoomRoomsRouter);
+  const [zoomRoomRouter, shutdownZoomRoomsRouter] = getZoomRoomRouter();
+  routers.use('/zoom-room', zoomRoomRouter);
   routers.use('/bluescape', getBluescapeRouter());
   routers.use('/logs', getLogsRouter());
 

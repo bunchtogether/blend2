@@ -11,7 +11,7 @@
     "build": "yarn build:src-www && yarn build:src",
     "flow-typed": "./node_modules/.bin/flow-typed install -o",
     "test": "yarn lint && yarn test:js",
-    "test:js": "cross-env NODE_ENV=test jest --runInBand tests/zoom-rooms.test.js",
+    "test:js": "cross-env NODE_ENV=test jest --runInBand tests/zoom-room.test.js",
     "lint": "npm run lint:js && npm run lint:flow",
     "lint:js": "eslint -c ./.eslintrc --no-eslintrc --cache --fix .",
     "lint:flow": "flow --show-all-errors",
@@ -38,8 +38,12 @@
       "vendor/client/src/*.js",
       "vendor/client/src/**/*.js"
     ],
-    "modulePathIgnorePatterns": ["<rootDir>/vendor/client/"],
-    "transformIgnorePatterns": ["/node_modules/"],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/vendor/client/"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/"
+    ],
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
     }
@@ -53,6 +57,7 @@
   "devDependencies": {
     "@babel/core": "^7.3.4",
     "@babel/preset-env": "^7.3.4",
+    "@babel/preset-flow": "^7.0.0",
     "babel-eslint": "^9.0.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
