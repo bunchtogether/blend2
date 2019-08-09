@@ -1,14 +1,16 @@
 //      
 
-const { getDevice, initDevice } = require('./device');
+const { initDevice } = require('./device');
 const logger = require('../lib/logger')('Models');
 
 const initModels = async (db       ) => {
   logger.info('Initializing models');
-  await initDevice(db);
+  const Device = await initDevice(db);
+  logger.info(`Syncing ${db.getDialect()} database.`);
+  await db.sync();
+  return { Device };
 };
 
 module.exports = {
   initModels,
-  getDevice,
 };
