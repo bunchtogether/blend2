@@ -3,7 +3,7 @@
 /* eslint-disable camelcase */
 
 const { Router } = require('express');
-const { setForegroundWindow } = require("../../lib/picture-in-picture");
+const { setForegroundWindow } = require('../../lib/picture-in-picture');
 const crypto = require('crypto');
 const ZoomRoomsControlSystem = require('@bunchtogether/zoom-rooms-control-system');
 const logger = require('../../lib/logger')('Zoom Rooms API');
@@ -42,8 +42,11 @@ module.exports = () => {
     };
 
     const handleStatus = (key:string, data:Object) => {
-      if(key === "Call" && data.Status === "NOT_IN_MEETING") {
-        setForegroundWindow("chrome");
+      if (key === 'Call' && data.Status === 'NOT_IN_MEETING') {
+        setForegroundWindow('chrome').catch((error) => {
+          logger.error('Set foreground window failed when switching to Chrome');
+          logger.errorStack(error);
+        });
       }
       if (ws.readyState !== 1) {
         logger.error(`Cannot send message to socket ID ${socketId}, ready state is ${ws.readyState}`);
@@ -631,7 +634,6 @@ module.exports = () => {
     }
     try {
       const response = await zrcs.zcommand.dial.sharing({ duration, displayState, password });
-      await setForegroundWindow("ZoomRooms");
       return res.json(response);
     } catch (error) {
       logger.error('Error for command zcommand.dial.sharing');
