@@ -16,7 +16,7 @@ function focusApplication(name        , tries         = 0) {
 }
 
 const resultPromise = find('name', 'ZoomRooms', true).catch((error) => {
-  logger.error("Error while finding process");
+  logger.error('Error while finding process');
   logger.errorStack(error);
 });
 
