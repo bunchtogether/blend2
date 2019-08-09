@@ -1,18 +1,16 @@
 // @flow
 
-const ps = require('ps-node');
+const find = require('find-process');
 const { setForegroundWindow } = require('../lib/picture-in-picture');
 const logger = require('../lib/logger')('Bluescape Control');
 
+const resultPromise = find('name', 'tsx_winmaster', true).catch((error) => {
+  logger.error("Error while finding process");
+  logger.errorStack(error);
+});
+
 async function isAvailable() {
-  const result = await new Promise((resolve: Function, reject: Function) => {
-    ps.lookup({ command: 'tsx_winmaster' }, (err: Object, res: Array<*>) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(res);
-    });
-  });
+  const result = await resultPromise;
   return Array.isArray(result) && result.length > 0;
 }
 

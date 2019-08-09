@@ -1,10 +1,8 @@
 // @flow
 
-const ZoomRoomsControlSystem = require('@bunchtogether/zoom-rooms-control-system');
+const find = require('find-process');
 const { setForegroundWindow } = require('../lib/picture-in-picture');
 const logger = require('../lib/logger')('Zoom Control');
-
-let activeZoom;
 
 function focusApplication(name: string, tries: number = 0) {
   setForegroundWindow(name).catch((error: Object) => {
@@ -17,6 +15,22 @@ function focusApplication(name: string, tries: number = 0) {
   });
 }
 
+const resultPromise = find('name', 'ZoomRooms', true).catch((error) => {
+  logger.error("Error while finding process");
+  logger.errorStack(error);
+});
+
+async function isAvailable() {
+  const result = await resultPromise;
+  return Array.isArray(result) && result.length > 0;
+}
+
+module.exports = {
+  focusApplication,
+  isAvailable,
+};
+
+/*
 function handleZoomEvents(key: string) {
   if (key === 'CallDisconnect') {
     focusApplication('chrome');
@@ -133,3 +147,5 @@ module.exports = {
   connect,
   disconnect,
 };
+
+*/

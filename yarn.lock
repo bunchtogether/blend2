@@ -723,7 +723,7 @@
     ref-struct "^1.1.0"
 
 "@bunchtogether/zoom-rooms-control-system@file:./vendor/zoom-rooms-control-system":
-  version "1.0.0"
+  version "1.0.1"
   dependencies:
     ssh2 "^0.8.4"
     ssh2-streams "^0.4.4"
@@ -3929,6 +3929,15 @@ find-cache-dir@^2.0.0, find-cache-dir@^2.1.0:
     commondir "^1.0.1"
     make-dir "^2.0.0"
     pkg-dir "^3.0.0"
+
+find-process@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/find-process/-/find-process-1.4.2.tgz#8703cbb542df0e4cd646f581fbcce860d0131c31"
+  integrity sha512-O83EVJr4dWvHJ7QpUzANNAMeQVKukRzRqRx4AIzdLYRrQorRdbqDwLPigkd9PYPhJRhmNPAoVjOm9bcwSmcZaw==
+  dependencies:
+    chalk "^2.0.1"
+    commander "^2.11.0"
+    debug "^2.6.8"
 
 find-up@^2.0.0, find-up@^2.1.0:
   version "2.1.0"
