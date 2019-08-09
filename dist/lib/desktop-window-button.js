@@ -10,11 +10,11 @@ const platform = os.platform();
 const bandSrc = path.resolve(__dirname, '../band.png');
 let closeBandButton;
 
-let showBandButton = () => logger.warn(`showBandButton is not available on ${platform}`);
+let showBandButton = (onClick          , x         , y         ) => logger.warn(`showBandButton is not available on ${platform}`); // eslint-disable-line no-unused-vars
 let hideBandButton = () => logger.warn(`hideBandButton is not available on ${platform}`);
 
 if (platform === 'win32') {
-  showBandButton = async (onClick          , x         = 20, y         = 100) => {
+  showBandButton = async (onClick          , x          = 20, y          = 100) => {
     hideBandButton();
     closeBandButton = await openDesktopWindowButton(bandSrc, x, y, onClick || (() => {}), 'top right');
   };
