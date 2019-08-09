@@ -2,10 +2,9 @@
 
 const { Router } = require('express');
 const adapters = require('../../adapters');
-const { getDevice } = require('../../models');
 const logger = require('../../lib/logger')('Pair API');
 
-module.exports.getPairRouter = () => {
+module.exports.getPairRouter = (Device       ) => {
   logger.info('Attaching pair router');
 
   const router = Router({ mergeParams: true });
@@ -106,7 +105,7 @@ module.exports.getPairRouter = () => {
   });
 
   router.post('/remove', async (req                 , res                  ) => {
-    const device = await getDevice();
+    const device = await Device.findByPk(Device.id);
     await device.update({
       type: null,
       data: null,
