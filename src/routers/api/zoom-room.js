@@ -1361,19 +1361,19 @@ module.exports = () => {
   });
 
 
-  router.post('/zconfiguration.audio.output', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.audio.output.selectedID', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
-    const { body: { selectedID } } = req;
-    if (!selectedID) {
-      return res.status(400).send('Missing required body parameter "selectedID"');
+    const { body: { value } } = req;
+    if (!value) {
+      return res.status(400).send('Missing required body parameter "value"');
     }
-    if (typeof selectedID !== 'string') {
-      return res.status(400).send('Missing required body parameter "selectedID" with type string');
+    if (typeof value !== 'string') {
+      return res.status(400).send('Missing required body parameter "value" with type string');
     }
     try {
-      const response = await zrcs.zconfiguration.audio.output({ selectedID });
+      const response = await zrcs.zconfiguration.audio.output.selectedID({ selectedId: value });
       return res.json(response);
     } catch (error) {
       logger.error('Error for command zconfiguration.audio.output');
@@ -1383,19 +1383,19 @@ module.exports = () => {
   });
 
 
-  router.post('/zconfiguration.audio.output', async (req: express$Request, res: express$Response) => {
+  router.post('/zconfiguration.audio.output.volume', async (req: express$Request, res: express$Response) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
-    const { body: { volume } } = req;
-    if (!volume) {
-      return res.status(400).send('Missing required body parameter "volume"');
+    const { body: { value } } = req;
+    if (!value) {
+      return res.status(400).send('Missing required body parameter "value"');
     }
-    if (typeof volume !== 'number') {
-      return res.status(400).send('Missing required body parameter "volume" with type number');
+    if (typeof value !== 'number') {
+      return res.status(400).send('Missing required body parameter "value" with type number');
     }
     try {
-      const response = await zrcs.zconfiguration.audio.output({ volume });
+      const response = await zrcs.zconfiguration.audio.output.volume({ volume: value });
       return res.json(response);
     } catch (error) {
       logger.error('Error for command zconfiguration.audio.output');
