@@ -1,0 +1,18 @@
+{
+  "name": "blend-runtime",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "bin": "index.js",
+  "scripts": {
+    "build": "npm run build:winx64",
+    "build:winx64": "pkg --output blend-runtime-x64.exe --target node10-win-x64 index.js",
+    "build:winx86": "pkg --output blend-runtime-x86.exe --target node10-win-x86 index.js"
+  },
+  "dependencies": {
+    "pm2": "^3.5.1"
+  },
+  "devDependencies": {
+    "pkg": "^4.4.0"
+  }
+}

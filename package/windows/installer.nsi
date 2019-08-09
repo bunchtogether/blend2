@@ -51,7 +51,7 @@ Section "install"
 
   SetShellVarContext "all"
   FileOpen $4 "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\blend.cmd" a
-  FileWrite $4 'echo @off$\r$\nset NODE_ENV=production$\r$\ncd "$InstallDir"$\r$\nSTART /b /min "" "blend.exe"'
+  FileWrite $4 'echo @off$\r$\nset BLEND_RUNTIME_DIR=$InstallDir$\r$\ncd "$InstallDir"$\r$\nSTART /b /min "" "blend.exe"'
   FileClose $4
   AccessControl::GrantOnFile "$InstallDir" "(BU)" "FullAccess"
   ExecShell "" "$InstallDir\blend.exe"
