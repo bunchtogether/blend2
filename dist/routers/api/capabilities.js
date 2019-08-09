@@ -3,6 +3,7 @@
 const { Router } = require('express');
 const adapters = require('../../adapters');
 const bluescape = require('../../bluescape');
+const zoom = require('../../zoom');
 const logger = require('../../lib/logger')('Capabilities API');
 
 module.exports.getCapabilitiesRouter = () => {
@@ -12,12 +13,16 @@ module.exports.getCapabilitiesRouter = () => {
 
   router.get('', async (req                 , res                  ) => {
     try {
-      const activeAdapter = await adapters.getActiveAdapter();
-      const isBluescapeAvailable = await bluescape.isAvailable();
+      const [activeAdapter, isBluescapeAvailable, isZoomRoomAvailable] = await Promise.all([
+        adapters.getActiveAdapter(),
+        bluescape.isAvailable(),
+        zoom.isAvailable()
+      ]);
       res.status(200).send({
         isServerAvailable: true,
         isDeviceAvailable: activeAdapter && activeAdapter.ready,
         isBluescapeAvailable,
+        isZoomRoomAvailable,
       });
     } catch (error) {
       logger.error('Unable to get capabilities');

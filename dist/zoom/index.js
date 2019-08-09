@@ -1,10 +1,8 @@
 //      
 
-const ZoomRoomsControlSystem = require('@bunchtogether/zoom-rooms-control-system');
+const find = require('find-process');
 const { setForegroundWindow } = require('../lib/picture-in-picture');
 const logger = require('../lib/logger')('Zoom Control');
-
-let activeZoom;
 
 function focusApplication(name        , tries         = 0) {
   setForegroundWindow(name).catch((error        ) => {
@@ -17,13 +15,29 @@ function focusApplication(name        , tries         = 0) {
   });
 }
 
-function handleZoomEvents(key        ) {
+const resultPromise = find('name', 'ZoomRooms', true).catch((error) => {
+  logger.error("Error while finding process");
+  logger.errorStack(error);
+});
+
+async function isAvailable() {
+  const result = await resultPromise;
+  return Array.isArray(result) && result.length > 0;
+}
+
+module.exports = {
+  focusApplication,
+  isAvailable,
+};
+
+/*
+function handleZoomEvents(key: string) {
   if (key === 'CallDisconnect') {
     focusApplication('chrome');
   }
 }
 
-async function connect(passcode         ) {
+async function connect(passcode?: string) {
   await disconnect();
   const zoom = new ZoomRoomsControlSystem('127.0.0.1', passcode || '');
   zoom.on('zEvent', handleZoomEvents);
@@ -40,7 +54,7 @@ async function disconnect() {
   }
 }
 
-async function joinMeeting(meetingNumber        , passcode         ) {
+async function joinMeeting(meetingNumber: string, passcode?: string) {
   logger.info(`Joining meeting ${meetingNumber}`);
   focusApplication('ZoomRooms');
   const zoom = await connect(passcode);
@@ -56,7 +70,7 @@ async function leaveMeeting() {
   }
 }
 
-async function phoneCallOut(number        , passcode         ) {
+async function phoneCallOut(number: string, passcode?: string) {
   logger.info(`Phone Call Out to ${number}`);
   focusApplication('ZoomRooms');
   let zoom = activeZoom;
@@ -66,7 +80,7 @@ async function phoneCallOut(number        , passcode         ) {
   await zoom.zcommand.dial.phoneCallOut({ number });
 }
 
-async function share(passcode         ) {
+async function share(passcode?: string) {
   logger.info('Share Content');
   focusApplication('ZoomRooms');
   let zoom = activeZoom;
@@ -84,7 +98,7 @@ async function listParticipants() {
   return null;
 }
 
-async function setVolume(volume        ) {
+async function setVolume(volume: number) {
   logger.info(`Setting Zoom room volume to: ${volume}`);
   if (activeZoom) {
     await activeZoom.zconfiguration.audio.output({ volume });
@@ -133,3 +147,5 @@ module.exports = {
   connect,
   disconnect,
 };
+
+*/
