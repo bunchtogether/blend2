@@ -16,7 +16,7 @@ module.exports.getCapabilitiesRouter = () => {
       const [activeAdapter, isBluescapeAvailable, isZoomRoomAvailable] = await Promise.all([
         adapters.getActiveAdapter(),
         bluescape.isAvailable(),
-        zoom.isAvailable()
+        zoom.isAvailable(),
       ]);
       res.status(200).send({
         isServerAvailable: true,

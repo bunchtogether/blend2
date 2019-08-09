@@ -1,22 +1,31 @@
 // @flow
 
 const path = require('path');
+const os = require('os');
 const openDesktopWindowButton = require('@bunchtogether/desktop-window-button');
+const logger = require('./logger')('Desktop Window Button');
+
+const platform = os.platform();
 
 const bandSrc = path.resolve(__dirname, '../band.png');
 let closeBandButton;
 
-const showBandButton = (onClick: Function, x: number = 20, y: number = 20) => {
-  hideBandButton();
-  closeBandButton = openDesktopWindowButton(bandSrc, x, y, onClick || (() => {}));
-};
+let showBandButton = () => logger.warn(`showBandButton is not available on ${platform}`);
+let hideBandButton = () => logger.warn(`hideBandButton is not available on ${platform}`);
 
-const hideBandButton = () => {
-  if (closeBandButton) {
-    closeBandButton();
-  }
-  closeBandButton = null;
-};
+if (platform === 'win32') {
+  showBandButton = async (onClick: Function, x: number = 20, y: number = 100) => {
+    hideBandButton();
+    closeBandButton = await openDesktopWindowButton(bandSrc, x, y, onClick || (() => {}), 'top right');
+  };
+  hideBandButton = () => {
+    if (closeBandButton) {
+      closeBandButton();
+    }
+    closeBandButton = null;
+  };
+}
+
 
 module.exports = {
   showBandButton,

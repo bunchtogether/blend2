@@ -89,10 +89,10 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
-    "@bunchtogether/desktop-window-button": "^1.0.5",
+    "@bunchtogether/desktop-window-button": "^1.0.6",
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
-    "@bunchtogether/picture-in-picture": "^1.0.5",
+    "@bunchtogether/picture-in-picture": "^1.0.6",
     "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
     "bl": "^3.0.0",
     "body-parser": "^1.18.3",
