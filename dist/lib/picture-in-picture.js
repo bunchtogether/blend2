@@ -12,12 +12,15 @@ if (platform === 'win32') {
   const { showBandButton, hideBandButton } = require('./desktop-window-button'); // eslint-disable-line global-require
   const pictureInPicture = require('@bunchtogether/picture-in-picture'); // eslint-disable-line global-require
   setForegroundWindow = async (name        , disableButton          = false) => {
+    console.log("setForegroundWindow", name);
     await pictureInPicture.setForegroundWindow(name);
     if (!disableButton) {
       if (name === 'chrome') {
         hideBandButton();
       } else {
-        showBandButton(() => setForegroundWindow('chrome'));
+        showBandButton(() => {
+          setForegroundWindow('chrome')
+        });
       }
     }
   };
