@@ -87,6 +87,7 @@ const start = async ():Promise<void> => {
     logger.error('Failed to bring chrome to front');
     logger.errorStack(error);
   }
+  logger.info('Started');
 };
 
 addPostShutdownHandler(async () => {
