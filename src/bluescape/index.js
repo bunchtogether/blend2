@@ -19,10 +19,10 @@ async function focus() {
   logger.info('Switching to Bluescape');
   await setForegroundWindow('tsx_winslave');
   await showBandButton(() => {
-  	setForegroundWindow("chrome").catch((error) => {
-  		logger.error("Could not set Foreground window");
-  		logger.errorStack(error);
-  	})
+    setForegroundWindow('chrome').catch((error) => {
+      logger.error('Could not set Foreground window');
+      logger.errorStack(error);
+    });
   });
 }
 
