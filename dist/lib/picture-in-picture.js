@@ -2,6 +2,7 @@
 
 const os = require('os');
 const logger = require('./logger')('Picture In Picture');
+const { hideBandButton } = require('../lib/desktop-window-button');
 
 const platform = os.platform();
 
@@ -9,20 +10,13 @@ let setForegroundWindow = (name        ) => logger.warn(`setForegroundWindow is 
 let createWindow = (name        ) => logger.warn(`createWindow is not available on ${platform}, ${name}`);
 
 if (platform === 'win32') {
-  const { showBandButton, hideBandButton } = require('./desktop-window-button'); // eslint-disable-line global-require
   const pictureInPicture = require('@bunchtogether/picture-in-picture'); // eslint-disable-line global-require
-  setForegroundWindow = async (name        , disableButton          = false) => {
-    console.log("setForegroundWindow", name);
-    await pictureInPicture.setForegroundWindow(name);
-    if (!disableButton) {
-      if (name === 'chrome') {
-        hideBandButton();
-      } else {
-        showBandButton(() => {
-          setForegroundWindow('chrome')
-        });
-      }
+  setForegroundWindow = async (name        ) => {
+    if (name.indexOf('chrome') !== -1) {
+      await hideBandButton();
     }
+    console.log('setForegroundWindow', name);
+    await pictureInPicture.setForegroundWindow(name);
   };
   createWindow = pictureInPicture.createWindow;
 }
