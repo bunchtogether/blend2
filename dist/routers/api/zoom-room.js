@@ -3,6 +3,7 @@
 /* eslint-disable camelcase */
 
 const { Router } = require('express');
+const { setForegroundWindow } = require("../../lib/picture-in-picture");
 const crypto = require('crypto');
 const ZoomRoomsControlSystem = require('@bunchtogether/zoom-rooms-control-system');
 const logger = require('../../lib/logger')('Zoom Rooms API');
@@ -29,7 +30,8 @@ module.exports = () => {
     }
 
     const passcode = req.params.passcode;
-    zrcs = new ZoomRoomsControlSystem('127.0.0.1', passcode || '');
+
+    const zoomRoomsControlSystem = new ZoomRoomsControlSystem('127.0.0.1', passcode || '');
 
     const handleConfiguration = (key       , data       ) => {
       if (ws.readyState !== 1) {
@@ -40,6 +42,9 @@ module.exports = () => {
     };
 
     const handleStatus = (key       , data       ) => {
+      if(key === "Call" && data.Status === "NOT_IN_MEETING") {
+        setForegroundWindow("chrome");
+      }
       if (ws.readyState !== 1) {
         logger.error(`Cannot send message to socket ID ${socketId}, ready state is ${ws.readyState}`);
         return;
@@ -84,13 +89,14 @@ module.exports = () => {
       zrcs = null;
     };
 
-    zrcs.on('zConfiguration', handleConfiguration);
-    zrcs.on('zStatus', handleStatus);
-    zrcs.on('zCommand', handleCommand);
-    zrcs.on('error', handleError);
-    zrcs.on('close', handleClose);
+    zoomRoomsControlSystem.on('zConfiguration', handleConfiguration);
+    zoomRoomsControlSystem.on('zStatus', handleStatus);
+    zoomRoomsControlSystem.on('zCommand', handleCommand);
+    zoomRoomsControlSystem.on('error', handleError);
+    zoomRoomsControlSystem.on('close', handleClose);
 
-    zrcs.connect(passcode).then(() => {
+    zoomRoomsControlSystem.connect(passcode).then(() => {
+      zrcs = zoomRoomsControlSystem;
       logger.info('Connected to Zoom Room Control System');
     }).catch((error) => {
       ws.close(1001, 'Zoom Room Control System connection error');
@@ -608,9 +614,6 @@ module.exports = () => {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
     const { body: { duration, displayState, password } } = req;
-    if (!password) {
-      return res.status(400).send('Missing required body parameter "password"');
-    }
     if (typeof password !== 'string') {
       return res.status(400).send('Missing required body parameter "password" with type string');
     }
@@ -628,6 +631,7 @@ module.exports = () => {
     }
     try {
       const response = await zrcs.zcommand.dial.sharing({ duration, displayState, password });
+      await setForegroundWindow("ZoomRooms");
       return res.json(response);
     } catch (error) {
       logger.error('Error for command zcommand.dial.sharing');
@@ -1357,19 +1361,19 @@ module.exports = () => {
   });
 
 
-  router.post('/zconfiguration.audio.output', async (req                 , res                  ) => {
+  router.post('/zconfiguration.audio.output.selectedID', async (req                 , res                  ) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
-    const { body: { selectedID } } = req;
-    if (!selectedID) {
-      return res.status(400).send('Missing required body parameter "selectedID"');
+    const { body: { value } } = req;
+    if (!value) {
+      return res.status(400).send('Missing required body parameter "value"');
     }
-    if (typeof selectedID !== 'string') {
-      return res.status(400).send('Missing required body parameter "selectedID" with type string');
+    if (typeof value !== 'string') {
+      return res.status(400).send('Missing required body parameter "value" with type string');
     }
     try {
-      const response = await zrcs.zconfiguration.audio.output({ selectedID });
+      const response = await zrcs.zconfiguration.audio.output.selectedID({ selectedId: value });
       return res.json(response);
     } catch (error) {
       logger.error('Error for command zconfiguration.audio.output');
@@ -1379,19 +1383,19 @@ module.exports = () => {
   });
 
 
-  router.post('/zconfiguration.audio.output', async (req                 , res                  ) => {
+  router.post('/zconfiguration.audio.output.volume', async (req                 , res                  ) => {
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
-    const { body: { volume } } = req;
-    if (!volume) {
-      return res.status(400).send('Missing required body parameter "volume"');
+    const { body: { value } } = req;
+    if (!value) {
+      return res.status(400).send('Missing required body parameter "value"');
     }
-    if (typeof volume !== 'number') {
-      return res.status(400).send('Missing required body parameter "volume" with type number');
+    if (typeof value !== 'number') {
+      return res.status(400).send('Missing required body parameter "value" with type number');
     }
     try {
-      const response = await zrcs.zconfiguration.audio.output({ volume });
+      const response = await zrcs.zconfiguration.audio.output.volume({ volume: value });
       return res.json(response);
     } catch (error) {
       logger.error('Error for command zconfiguration.audio.output');
