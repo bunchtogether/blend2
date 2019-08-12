@@ -725,7 +725,7 @@
     ref-struct "^1.1.0"
 
 "@bunchtogether/zoom-rooms-control-system@file:./vendor/zoom-rooms-control-system":
-  version "1.0.1"
+  version "1.0.2"
   dependencies:
     ssh2 "^0.8.4"
     ssh2-streams "^0.4.4"
