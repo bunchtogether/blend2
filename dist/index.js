@@ -5,7 +5,7 @@ const logger = require('./lib/logger')('CLI');
 const getExpressApp = require('./express-app');
 const startHttpServer = require('./http-server');
 const getRouters = require('./routers');
-const { setForegroundWindow } = require('./lib/picture-in-picture');
+const { switchToBand } = require('./lib/window-control');
 const initDatabase = require('./database');
 const { initModels } = require('./models');
 const { initAdapter, closeAdapter } = require('./adapters');
@@ -81,12 +81,8 @@ const start = async ()               => {
     }
   });
 
-  try {
-    await setForegroundWindow('chrome');
-  } catch (error) {
-    logger.error('Failed to bring chrome to front');
-    logger.errorStack(error);
-  }
+  await switchToBand();
+
   logger.info('Started');
 };
 
