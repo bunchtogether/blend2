@@ -1,7 +1,7 @@
 // @flow
 
 const superagent = require('superagent');
-// const expect = require('expect');
+const expect = require('expect');
 const getExpressApp = require('../src/server/express-app');
 const startHttpServer = require('../src/server/http-server');
 const { getCapabilitiesRouter } = require('../src/routers/api/capabilities');
@@ -24,9 +24,11 @@ describe('Capabilities', () => {
     await stopHttpServer();
   });
 
-  test('Checks capabiltiies.', async () => {
-    const start = Date.now();
+  test('Checks capabilties.', async () => {
     const response = await superagent.get('http://127.0.0.1:61340/api/1.0/capabilities');
-    console.log(Date.now() - start, response.body);
+    expect(response.body).toHaveProperty('isServerAvailable');
+    expect(response.body).toHaveProperty('isDeviceAvailable');
+    expect(response.body).toHaveProperty('isBluescapeAvailable');
+    expect(response.body).toHaveProperty('isZoomRoomAvailable');
   });
 });
