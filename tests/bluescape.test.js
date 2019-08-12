@@ -6,7 +6,6 @@ const getExpressApp = require('../src/server/express-app');
 const startHttpServer = require('../src/server/http-server');
 const { getBluescapeRouter } = require('../src/routers/api/bluescape');
 const { getLogRouter } = require('../src/routers/log');
-const { isAvailable } = require('../src/bluescape');
 
 let stopHttpServer;
 const PORT = 61340;
@@ -21,10 +20,6 @@ describe('Bluescape', () => {
 
   afterAll(async () => {
     await stopHttpServer();
-  });
-
-  test('Checks if Bluescape is available.', async () => {
-    expect(typeof (await isAvailable())).toBe('boolean');
   });
 
   test('Should focus Bluescape.', async () => {
