@@ -3,7 +3,7 @@
 /* eslint-disable camelcase */
 
 const { Router } = require('express');
-const { setForegroundWindow } = require('../../lib/picture-in-picture');
+const { switchToBand, switchToApp } = require('../../lib/window-control');
 const crypto = require('crypto');
 const ZoomRoomsControlSystem = require('@bunchtogether/zoom-rooms-control-system');
 const logger = require('../../lib/logger')('Zoom Rooms API');
@@ -17,9 +17,50 @@ module.exports = () => {
 
   let active = false;
   let zrcs;
+  let activePasscode;
   const router = Router({ mergeParams: true });
 
   const sockets = new Map();
+
+  const connectToZoom = async (passcode:string) => {
+    if (zrcs && passcode === activePasscode) {
+      return zrcs;
+    }
+    if (zrcs && passcode !== activePasscode) {
+      await zrcs.disconnect();
+    }
+    const zoomRoomsControlSystem = new ZoomRoomsControlSystem('127.0.0.1', passcode || '');
+    activePasscode = passcode;
+    const handleError = (error) => {
+      logger.error('Zoom Room Control System error');
+      logger.errorStack(error);
+      zoomRoomsControlSystem.removeListeners('zConfiguration');
+      zoomRoomsControlSystem.removeListeners('zStatus');
+      zoomRoomsControlSystem.removeListeners('zCommand');
+      zoomRoomsControlSystem.removeListeners('error');
+      zoomRoomsControlSystem.removeListeners('close');
+      zrcs = null;
+    };
+    const handleClose = () => {
+      logger.info('Zoom Room Control System closed');
+      zoomRoomsControlSystem.removeListeners('zConfiguration');
+      zoomRoomsControlSystem.removeListeners('zStatus');
+      zoomRoomsControlSystem.removeListeners('zCommand');
+      zoomRoomsControlSystem.removeListeners('error');
+      zoomRoomsControlSystem.removeListeners('close');
+      zrcs = null;
+    };
+    zoomRoomsControlSystem.on('error', handleError);
+    zoomRoomsControlSystem.on('close', handleClose);
+    try {
+      await zoomRoomsControlSystem.connect();
+    } catch (error) {
+      logger.error('Unable to connect to Zoom Room');
+      throw error;
+    }
+    zrcs = zoomRoomsControlSystem;
+    return zoomRoomsControlSystem;
+  };
 
   router.ws('/socket/:passcode', async (ws:Object, req: express$Request) => {
     logger.info('Zoom Room Control System incoming connection');
@@ -31,8 +72,6 @@ module.exports = () => {
 
     const passcode = req.params.passcode;
 
-    const zoomRoomsControlSystem = new ZoomRoomsControlSystem('127.0.0.1', passcode || '');
-
     const handleConfiguration = (key:string, data:Object) => {
       if (ws.readyState !== 1) {
         logger.error(`Cannot send message to socket ID ${socketId}, ready state is ${ws.readyState}`);
@@ -43,8 +82,8 @@ module.exports = () => {
 
     const handleStatus = (key:string, data:Object) => {
       if (key === 'Call' && data.Status === 'NOT_IN_MEETING') {
-        setForegroundWindow('chrome').catch((error) => {
-          logger.error('Set foreground window failed when switching to Chrome');
+        switchToBand().catch((error) => {
+          logger.error('Switch to Band failed');
           logger.errorStack(error);
         });
       }
@@ -56,6 +95,20 @@ module.exports = () => {
     };
 
     const handleCommand = (key:string, data:Object) => {
+      if (key === 'InfoResult') {
+        const { meeting_id: meetingId } = data;
+        if (meetingId) {
+          switchToApp('ZoomRoom').catch((error) => {
+            logger.error('Switch to Zoom Rooms failed');
+            logger.errorStack(error);
+          });
+        }
+      } else if (key === 'CallDisconnectResult') {
+        switchToBand().catch((error) => {
+          logger.error('Switch to Band failed');
+          logger.errorStack(error);
+        });
+      }
       if (ws.readyState !== 1) {
         logger.error(`Cannot send message to socket ID ${socketId}, ready state is ${ws.readyState}`);
         return;
@@ -63,49 +116,29 @@ module.exports = () => {
       ws.send(JSON.stringify(['zCommand', key, data]), { compress: false, binary: false });
     };
 
-    const handleError = (error) => {
-      logger.error('Zoom Room Control System error');
-      logger.errorStack(error);
+    const handleError = () => {
       ws.close(1001, 'Zoom Room Control System error');
-      if (!zrcs) {
-        return;
-      }
-      zrcs.removeListener('zConfiguration', handleConfiguration);
-      zrcs.removeListener('zStatus', handleStatus);
-      zrcs.removeListener('zCommand', handleCommand);
-      zrcs.removeListener('error', handleError);
-      zrcs.removeListener('close', handleClose);
-      zrcs = null;
     };
 
     const handleClose = () => {
       logger.info('Zoom Room Control System closed');
       ws.close(1000, 'Zoom Room Control System closed');
-      if (!zrcs) {
-        return;
-      }
-      zrcs.removeListener('zConfiguration', handleConfiguration);
-      zrcs.removeListener('zStatus', handleStatus);
-      zrcs.removeListener('zCommand', handleCommand);
-      zrcs.removeListener('error', handleError);
-      zrcs.removeListener('close', handleClose);
-      zrcs = null;
     };
+
+    let zoomRoomsControlSystem;
+
+    try {
+      zoomRoomsControlSystem = await connectToZoom(passcode);
+    } catch (error) {
+      ws.close(1001, 'Zoom Room Control System error');
+      return;
+    }
 
     zoomRoomsControlSystem.on('zConfiguration', handleConfiguration);
     zoomRoomsControlSystem.on('zStatus', handleStatus);
     zoomRoomsControlSystem.on('zCommand', handleCommand);
     zoomRoomsControlSystem.on('error', handleError);
     zoomRoomsControlSystem.on('close', handleClose);
-
-    zoomRoomsControlSystem.connect(passcode).then(() => {
-      zrcs = zoomRoomsControlSystem;
-      logger.info('Connected to Zoom Room Control System');
-    }).catch((error) => {
-      ws.close(1001, 'Zoom Room Control System connection error');
-      logger.error('Unable to connect to Zoom Room');
-      logger.errorStack(error);
-    });
 
     const socketId = randomInteger();
     sockets.set(socketId, ws);
@@ -124,21 +157,11 @@ module.exports = () => {
     });
 
     ws.on('close', () => {
-      if (zrcs) {
-        zrcs.removeListener('zConfiguration', handleConfiguration);
-        zrcs.removeListener('zStatus', handleStatus);
-        zrcs.removeListener('zCommand', handleCommand);
-        zrcs.removeListener('error', handleError);
-        zrcs.removeListener('close', handleClose);
-        logger.info('Disconnecting from Zoom Room Control System');
-        zrcs.disconnect().then(() => {
-          logger.info('Disconnected from Zoom Room Control System');
-        }).catch((error) => {
-          logger.error('Zoom Room Control System disconnect error');
-          logger.errorStack(error);
-        });
-        zrcs = null;
-      }
+      zoomRoomsControlSystem.removeListener('zConfiguration', handleConfiguration);
+      zoomRoomsControlSystem.removeListener('zStatus', handleStatus);
+      zoomRoomsControlSystem.removeListener('zCommand', handleCommand);
+      zoomRoomsControlSystem.removeListener('error', handleError);
+      zoomRoomsControlSystem.removeListener('close', handleClose);
       clearTimeout(heartbeatTimeout);
       logger.info(`Closed socket ${socketId}`);
       sockets.delete(socketId);

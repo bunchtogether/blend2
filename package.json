@@ -76,7 +76,7 @@
     "eslint-plugin-react": "^7.12.4",
     "expect": "^24.1.0",
     "expose-loader": "^0.7.5",
-    "flow-bin": "^0.102.0",
+    "flow-bin": "^0.105.0",
     "flow-remove-types": "^1.2.3",
     "flow-typed": "^2.5.2",
     "jest": "^24.8.0",
@@ -89,10 +89,10 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
-    "@bunchtogether/desktop-window-button": "^1.0.6",
+    "@bunchtogether/desktop-window-button": "^1.0.8",
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
-    "@bunchtogether/picture-in-picture": "^1.0.6",
+    "@bunchtogether/picture-in-picture": "^1.0.8",
     "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
     "bl": "^3.0.0",
     "body-parser": "^1.18.3",

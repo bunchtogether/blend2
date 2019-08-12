@@ -1,19 +1,8 @@
 // @flow
 
 const find = require('find-process');
-const { setForegroundWindow } = require('../lib/picture-in-picture');
 const logger = require('../lib/logger')('Zoom Control');
 
-function focusApplication(name: string, tries: number = 0) {
-  setForegroundWindow(name).catch((error: Object) => {
-    if (tries < 3) {
-      setTimeout(() => focusApplication(name, tries + 1), (tries + 1) * 1000);
-    } else {
-      logger.error(`Failed to set ${name} as foreground window, ${error.message}`);
-      logger.errorStack(error);
-    }
-  });
-}
 
 const resultPromise = find('name', 'ZoomRooms', true).catch((error) => {
   logger.error('Error while finding process');
@@ -26,11 +15,22 @@ async function isAvailable() {
 }
 
 module.exports = {
-  focusApplication,
   isAvailable,
 };
 
 /*
+
+function focusApplication(name: string, tries: number = 0) {
+  setForegroundWindow(name).catch((error: Object) => {
+    if (tries < 3) {
+      setTimeout(() => focusApplication(name, tries + 1), (tries + 1) * 1000);
+    } else {
+      logger.error(`Failed to set ${name} as foreground window, ${error.message}`);
+      logger.errorStack(error);
+    }
+  });
+}
+
 function handleZoomEvents(key: string) {
   if (key === 'CallDisconnect') {
     focusApplication('chrome');
