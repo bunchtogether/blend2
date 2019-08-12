@@ -7,7 +7,6 @@ const { getCapabilitiesRouter } = require('../src/routers/api/capabilities');
 const { getLogRouter } = require('../src/routers/log');
 const getZoomRoomRouter = require('../src/routers/api/zoom-room');
 const { default: ZoomRoomClient } = require('../vendor/client/src/zoom-room.js');
-const { isAvailable } = require('../src/zoom');
 
 jest.setTimeout(30000);
 
@@ -37,10 +36,6 @@ describe('Zoom Rooms', () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     await shutdownZoomRoomRouter();
     await stopHttpServer();
-  });
-
-  test('Checks if Zoom Rooms is available.', async () => {
-    expect(typeof (await isAvailable())).toBe('boolean');
   });
 
   test('To throw on an unsupported command', async () => {
