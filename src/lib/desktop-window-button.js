@@ -2,7 +2,6 @@
 
 const path = require('path');
 const os = require('os');
-const openDesktopWindowButton = require('@bunchtogether/desktop-window-button');
 const logger = require('./logger')('Desktop Window Button');
 
 const platform = os.platform();
@@ -14,6 +13,7 @@ let showBandButton = (onClick: Function, x?: number, y?: number) => logger.warn(
 let hideBandButton = () => logger.warn(`hideBandButton is not available on ${platform}`);
 
 if (platform === 'win32') {
+  const openDesktopWindowButton = require('@bunchtogether/desktop-window-button'); // eslint-disable-line global-require
   showBandButton = async (onClick: Function, x?: number = 20, y?: number = 100) => {
     hideBandButton();
     closeBandButton = await openDesktopWindowButton(bandSrc, x, y, onClick || (() => {}), 'top right');
