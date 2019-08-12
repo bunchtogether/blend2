@@ -1,6 +1,5 @@
 // @flow
 
-// const superagent = require('superagent');
 const expect = require('expect');
 const getExpressApp = require('../src/server/express-app');
 const startHttpServer = require('../src/server/http-server');
@@ -30,6 +29,7 @@ describe('Zoom Rooms', () => {
     app.use('/api/1.0/zoom-room', zoomRoomRouter);
     zoomRoom = new ZoomRoomClient(PASSCODE);
     await zoomRoom.ready;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
   afterAll(async () => {
@@ -40,16 +40,15 @@ describe('Zoom Rooms', () => {
   });
 
   test('Checks if Zoom Rooms is available.', async () => {
-    console.log(await isAvailable());
+    expect(typeof (await isAvailable())).toBe('boolean');
   });
 
-  test.skip('To throw on an unsupported command', async () => {
+  test('To throw on an unsupported command', async () => {
     await expect(zoomRoom.zcommand.dial.phoneCallOut({ number: '+123' })).rejects.toThrow('Bad Request');
-    // await zoomRoom.zcommand.dial.phoneCallOut({ number:"+123" });
   });
 
   test('To dial a number', async () => {
     await zoomRoom.zcommand.dial.phoneCallOut({ number: '8503217070' });
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 });

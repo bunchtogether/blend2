@@ -42,6 +42,6 @@ update-vm.sh
 *installers*
 
 .eslintcache
-db.sqlite
+*.sqlite
 *audit.json
 # *.dll

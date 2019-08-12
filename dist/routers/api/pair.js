@@ -52,7 +52,8 @@ module.exports.getPairRouter = (Device       ) => {
     }
 
     try {
-      const adapterInstance = new Adapter(data);
+      const device = await Device.findByPk(Device.id);
+      const adapterInstance = new Adapter(data, device);
       await adapters.setActiveAdapter(adapterInstance);
       await adapterInstance.initialize();
       res.sendStatus(200);
