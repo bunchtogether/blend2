@@ -54,8 +54,9 @@ module.exports = () => {
     zoomRoomsControlSystem.on('close', handleClose);
     try {
       await zoomRoomsControlSystem.connect();
+      logger.error('Connected to Zoom Room Control System');
     } catch (error) {
-      logger.error('Unable to connect to Zoom Room');
+      logger.error('Unable to connect to Zoom Room Control System');
       throw error;
     }
     zrcs = zoomRoomsControlSystem;
@@ -103,11 +104,6 @@ module.exports = () => {
             logger.errorStack(error);
           });
         }
-      } else if (key === 'CallDisconnectResult') {
-        switchToBand().catch((error) => {
-          logger.error('Switch to Band failed');
-          logger.errorStack(error);
-        });
       }
       if (ws.readyState !== 1) {
         logger.error(`Cannot send message to socket ID ${socketId}, ready state is ${ws.readyState}`);
@@ -121,7 +117,6 @@ module.exports = () => {
     };
 
     const handleClose = () => {
-      logger.info('Zoom Room Control System closed');
       ws.close(1000, 'Zoom Room Control System closed');
     };
 
@@ -129,7 +124,9 @@ module.exports = () => {
 
     try {
       zoomRoomsControlSystem = await connectToZoom(passcode);
+      await zoomRoomsControlSystem.zstatus.numberOfScreens();
     } catch (error) {
+      logger.errorStack(error);
       ws.close(1001, 'Zoom Room Control System error');
       return;
     }
@@ -139,6 +136,14 @@ module.exports = () => {
     zoomRoomsControlSystem.on('zCommand', handleCommand);
     zoomRoomsControlSystem.on('error', handleError);
     zoomRoomsControlSystem.on('close', handleClose);
+
+    try {
+      await zoomRoomsControlSystem.zstatus.numberOfScreens();
+    } catch (error) {
+      logger.errorStack(error);
+      ws.close(1001, 'Zoom Room Control System error');
+      return;
+    }
 
     const socketId = randomInteger();
     sockets.set(socketId, ws);
