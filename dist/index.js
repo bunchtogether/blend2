@@ -1,28 +1,33 @@
 //      
 
-const logger = require('./lib/logger')('CLI');
-
+const os = require('os');
+const path = require('path');
+const fs = require('fs-extra');
 const getExpressApp = require('./express-app');
 const startHttpServer = require('./http-server');
 const getRouters = require('./routers');
 const { switchToBand } = require('./lib/window-control');
-const initDatabase = require('./database');
-const { initModels } = require('./models');
+const getLevelDb = require('./database');
 const { initAdapter, closeAdapter } = require('./adapters');
-const { API_PORT, DATABASE_CONNECTION } = require('./constants');
+const { API_PORT } = require('./constants');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 const { version } = require('../package.json');
+const logger = require('./lib/logger')('CLI');
 
 let exitCode = 0;
 
 const start = async ()               => {
-  const db = await initDatabase(DATABASE_CONNECTION);
-  const { Device } = await initModels(db);
-  await initAdapter(Device);
+  const dataPath = path.join(os.homedir(), '.blend');
+  const levelDbPath = path.join(dataPath, 'leveldb');
+  await fs.ensureDir(dataPath);
+  await fs.ensureDir(levelDbPath);
+
+  const [levelDb, closeLevelDb] = await getLevelDb(levelDbPath);
+  await initAdapter(levelDb);
 
   const app = getExpressApp();
   const stopHttpServer = await startHttpServer(app, API_PORT);
-  const [routers, shutdownRouters] = getRouters(Device);
+  const [routers, shutdownRouters] = getRouters(levelDb);
   app.use(routers);
 
   // Create tables in database
@@ -67,6 +72,12 @@ const start = async ()               => {
       await stopHttpServer();
     } catch (error) {
       logger.error('Error shutting down HTTP server');
+      logger.errorStack(error);
+    }
+    try {
+      await closeLevelDb();
+    } catch (error) {
+      logger.error('Error closing Level database');
       logger.errorStack(error);
     }
     logger.info(`Shut down Blend ${version}`);

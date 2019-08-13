@@ -9,11 +9,11 @@ const { getLogsRouter } = require('./logs');
 const { getCapabilitiesRouter } = require('./capabilities');
 const adapterMiddleware = require('../middleware/adapter');
 
-function getApiRouters(Device       ) {
+function getApiRouters(levelDb       ) {
   const routers = express.Router({ mergeParams: true });
 
   routers.use('/capabilities', getCapabilitiesRouter());
-  routers.use('/pair', getPairRouter(Device));
+  routers.use('/pair', getPairRouter(levelDb));
   routers.use('/device', adapterMiddleware, getDeviceRouter());
   const [zoomRoomRouter, shutdownZoomRoomsRouter] = getZoomRoomRouter();
   routers.use('/zoom-room', zoomRoomRouter);
