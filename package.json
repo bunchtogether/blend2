@@ -11,7 +11,7 @@
     "build": "yarn build:src-www && yarn build:src",
     "flow-typed": "./node_modules/.bin/flow-typed install -o",
     "test": "yarn lint && yarn test:js",
-    "test:js": "cross-env NODE_ENV=test jest --runInBand tests",
+    "test:js": "cross-env NODE_ENV=test jest --runInBand /Users/johnwehr/Projects/bunch/blend2/tests/stream.test.js",
     "lint": "npm run lint:js && npm run lint:flow",
     "lint:js": "eslint -c ./.eslintrc --no-eslintrc --cache --fix .",
     "lint:flow": "flow --show-all-errors",
