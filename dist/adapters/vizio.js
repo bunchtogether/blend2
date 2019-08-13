@@ -3,7 +3,7 @@
                                              
 
 const Smartcast = require('vizio-smart-cast');
-const { TYPE_VIZIO } = require('../constants');
+const { TYPE_VIZIO, LEVEL_DB_DEVICE } = require('../constants');
 const AbstractAdapter = require('./adapter');
 const logger = require('../lib/logger')('Vizio');
 
@@ -41,7 +41,7 @@ class VizioAdapter extends AbstractAdapter {
     return devices;
   }
 
-  constructor(data          , device        ) {
+  constructor(data          , levelDb        ) {
     if (!data || !data.ip) {
       logger.error('Can not instantiate. Missing required parameter ip');
       throw new Error('Can not instantiate. Missing required parameter ip');
@@ -53,7 +53,7 @@ class VizioAdapter extends AbstractAdapter {
     this.model = data.model;
     this.ready = !!data.ready;
     this.vizio = new Smartcast(data.ip, data.authToken);
-    this.device = device;
+    this.levelDb = levelDb;
   }
 
   initialize() {
@@ -69,7 +69,7 @@ class VizioAdapter extends AbstractAdapter {
     const { ITEM: { AUTH_TOKEN } } = result;
     if (AUTH_TOKEN) {
       this.ready = true;
-      await this.device.update({
+      await this.levelDb.put(LEVEL_DB_DEVICE, {
         type: TYPE_VIZIO,
         data: {
           ip: this.ip,
@@ -147,7 +147,7 @@ class VizioAdapter extends AbstractAdapter {
                 
                  
                 
-                 
+                  
 }
 
 module.exports = VizioAdapter;

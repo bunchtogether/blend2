@@ -1,10 +1,11 @@
 //      
 
 const { Router } = require('express');
+const { LEVEL_DB_DEVICE } = require('../../constants');
 const adapters = require('../../adapters');
 const logger = require('../../lib/logger')('Pair API');
 
-module.exports.getPairRouter = (Device       ) => {
+module.exports.getPairRouter = (levelDb       ) => {
   logger.info('Attaching pair router');
 
   const router = Router({ mergeParams: true });
@@ -52,8 +53,7 @@ module.exports.getPairRouter = (Device       ) => {
     }
 
     try {
-      const device = await Device.findByPk(Device.id);
-      const adapterInstance = new Adapter(data, device);
+      const adapterInstance = new Adapter(data, levelDb);
       await adapters.setActiveAdapter(adapterInstance);
       await adapterInstance.initialize();
       res.sendStatus(200);
@@ -106,8 +106,7 @@ module.exports.getPairRouter = (Device       ) => {
   });
 
   router.post('/remove', async (req                 , res                  ) => {
-    const device = await Device.findByPk(Device.id);
-    await device.update({
+    await levelDb.put(LEVEL_DB_DEVICE, {
       type: null,
       data: null,
     });
