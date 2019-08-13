@@ -4,8 +4,11 @@
 .*/dist/.*.flow
 .*/dist-www/.*.flow
 .*/src-www/.*
-.*/node_modules/.*/test/*
-.*/node_modules/.*/tests/*
+.*/node_modules/documentation/*
+.*/node_modules/eslint*
+.*/node_modules/.*test*
+.*/vendor/.*test*
+.*/vendor/.*node_modules*
 
 [include]
 

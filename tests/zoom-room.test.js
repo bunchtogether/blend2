@@ -1,6 +1,5 @@
 // @flow
 
-// const superagent = require('superagent');
 const expect = require('expect');
 const getExpressApp = require('../src/server/express-app');
 const startHttpServer = require('../src/server/http-server');
@@ -8,7 +7,6 @@ const { getCapabilitiesRouter } = require('../src/routers/api/capabilities');
 const { getLogRouter } = require('../src/routers/log');
 const getZoomRoomRouter = require('../src/routers/api/zoom-room');
 const { default: ZoomRoomClient } = require('../vendor/client/src/zoom-room.js');
-const { isAvailable } = require('../src/zoom');
 
 jest.setTimeout(30000);
 
@@ -30,6 +28,7 @@ describe('Zoom Rooms', () => {
     app.use('/api/1.0/zoom-room', zoomRoomRouter);
     zoomRoom = new ZoomRoomClient(PASSCODE);
     await zoomRoom.ready;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 
   afterAll(async () => {
@@ -39,17 +38,12 @@ describe('Zoom Rooms', () => {
     await stopHttpServer();
   });
 
-  test('Checks if Zoom Rooms is available.', async () => {
-    console.log(await isAvailable());
-  });
-
-  test.skip('To throw on an unsupported command', async () => {
+  test('To throw on an unsupported command', async () => {
     await expect(zoomRoom.zcommand.dial.phoneCallOut({ number: '+123' })).rejects.toThrow('Bad Request');
-    // await zoomRoom.zcommand.dial.phoneCallOut({ number:"+123" });
   });
 
   test('To dial a number', async () => {
     await zoomRoom.zcommand.dial.phoneCallOut({ number: '8503217070' });
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   });
 });

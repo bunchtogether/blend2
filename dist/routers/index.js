@@ -13,6 +13,7 @@ module.exports = (Device       ) => {
   routers.use(getStreamRouter());
   routers.use(getMulticastAssistRouter());
   routers.use(getLogRouter());
+  routers.use('/static', express.static(path.join(process.cwd(), 'static')));
   routers.use('/api/1.0/stream/:url', express.static(path.join(process.cwd(), 'dist-www')));
   routers.use('/api/1.0/ffmpeg/:args', express.static(path.join(process.cwd(), 'dist-www')));
   routers.use(['/remote*', '/stream*', '/'], express.static(path.join(process.cwd(), 'dist-www')));

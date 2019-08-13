@@ -1,10 +1,33 @@
 // @flow
 
 const { Router } = require('express');
+const find = require('find-process');
 const adapters = require('../../adapters');
-const bluescape = require('../../bluescape');
-const zoom = require('../../zoom');
 const logger = require('../../lib/logger')('Capabilities API');
+
+let bluescapeDetected = false;
+let zoomRoomsDetected = false;
+
+const checkIfBluescapeIsAvailable = async () => {
+  if (bluescapeDetected) {
+    return true;
+  }
+  const result = await find('name', 'tsx_winmaster', true);
+  bluescapeDetected = Array.isArray(result) && result.length > 0;
+  return bluescapeDetected;
+};
+
+const checkIfZoomRoomIsAvailable = async () => {
+  if (zoomRoomsDetected) {
+    return true;
+  }
+  const result = await find('name', 'ZoomRooms', true);
+  zoomRoomsDetected = Array.isArray(result) && result.length > 0;
+  return zoomRoomsDetected;
+};
+
+checkIfBluescapeIsAvailable();
+checkIfZoomRoomIsAvailable();
 
 module.exports.getCapabilitiesRouter = () => {
   logger.info('Attaching capabilities router');
@@ -15,8 +38,8 @@ module.exports.getCapabilitiesRouter = () => {
     try {
       const [activeAdapter, isBluescapeAvailable, isZoomRoomAvailable] = await Promise.all([
         adapters.getActiveAdapter(),
-        bluescape.isAvailable(),
-        zoom.isAvailable()
+        checkIfBluescapeIsAvailable(),
+        checkIfZoomRoomIsAvailable(),
       ]);
       res.status(200).send({
         isServerAvailable: true,
