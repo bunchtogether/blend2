@@ -688,13 +688,15 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@bunchtogether/desktop-window-button@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@bunchtogether/desktop-window-button/-/desktop-window-button-1.0.5.tgz#49019798a9c49d180c1473d91fa0a77fa4816f57"
-  integrity sha512-r7dC8sIXoQdrrEGyv3C+JruKc3Ln+zNT5xln0PFLdZqli5aAwDd2JxelggfwZGlQSMcb+49Suau8tvz6ePzbLQ==
+"@bunchtogether/desktop-window-button@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@bunchtogether/desktop-window-button/-/desktop-window-button-1.0.8.tgz#8b7e86438ff7aca10f12c9601a322beb33e75561"
+  integrity sha512-m6yEucNosALzkY9/Pskoxme4EPVP9WrV+sYUsYAGWrGhP7T6DWSMCA6PEREqJSGLMCgK9EKBqV5wwNIvjdewQQ==
   dependencies:
-    "@bunchtogether/picture-in-picture" "^1.0.5"
+    "@bunchtogether/exit-handler" "^1.0.0"
+    "@bunchtogether/picture-in-picture" "^1.0.8"
     fs-extra "^8.1.0"
+    lru-cache "^5.1.1"
     node-sdl2 "^2.1.2"
     ref "^1.3.5"
     sdl2-image "^2.0.3"
@@ -711,19 +713,19 @@
   dependencies:
     which "^1.3.1"
 
-"@bunchtogether/picture-in-picture@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@bunchtogether/picture-in-picture/-/picture-in-picture-1.0.5.tgz#b4a82621ee91c4c78d36a92cb3b19b266aa9fa9c"
-  integrity sha512-78PUKywYdO36j54/QsUYUTuqxrDiSkSolA9EB9vhQDkB9hClLil4Ym7Gi2R+lhTtc3wTMCoa9xwbKuHDNBzwCw==
+"@bunchtogether/picture-in-picture@^1.0.8":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@bunchtogether/picture-in-picture/-/picture-in-picture-1.0.8.tgz#ea62a81bc61d9a3a15cfa4650e3ac1dd87bb8a7c"
+  integrity sha512-bz+oIl6WdFaU6tR68VlOF02kpcjvUdtshHr1xpM1E+hCK5Hj8V5Npm3z7S/51YhGnhh8EYOiXHvvdLJBNHPixQ==
   dependencies:
-    "@bunchtogether/exit-handler" "^1.0.0"
     ffi "^2.3.0"
+    lru-cache "^5.1.1"
     node-osascript "^2.1.0"
     ref "^1.3.5"
     ref-struct "^1.1.0"
 
 "@bunchtogether/zoom-rooms-control-system@file:./vendor/zoom-rooms-control-system":
-  version "1.0.1"
+  version "1.0.2"
   dependencies:
     ssh2 "^0.8.4"
     ssh2-streams "^0.4.4"
@@ -3977,10 +3979,10 @@ flatted@^2.0.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-2.0.1.tgz#69e57caa8f0eacbc281d2e2cb458d46fdb449e08"
   integrity sha512-a1hQMktqW9Nmqr5aktAux3JMNqaucxGcjtjWnZLHX7yyPCmlSV3M54nGYbqT8K+0GhF3NBgmJCc3ma+WOgX8Jg==
 
-flow-bin@^0.102.0:
-  version "0.102.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.102.0.tgz#3d5de44bcc26d26585e932b3201988b766f9b380"
-  integrity sha512-mYon6noeLO0Q5SbiWULLQeM1L96iuXnRtYMd47j3bEWXAwUW9EnwNWcn+cZg/jC/Dg4Wj/jnkdTDEuFtbeu1ww==
+flow-bin@^0.105.0:
+  version "0.105.1"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.105.1.tgz#5ce4515b583e5fa6ea1b82bc849c354271f5b88d"
+  integrity sha512-wRI5ogu/+85fgftljAOtnDBx9+2JHToyq2XifzoMmXc5mmB9OE7osukzwi2PuOoEKtq9fu+APRD+MqbEJ8bUwQ==
 
 flow-remove-types@^1.2.1, flow-remove-types@^1.2.3:
   version "1.2.3"

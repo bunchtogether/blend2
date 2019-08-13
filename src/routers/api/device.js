@@ -50,8 +50,8 @@ module.exports.getDeviceRouter = () => {
     }
 
     try {
-      const vol = await req.adapter.setSource(source);
-      res.status(200).send({ source: vol });
+      const src = await req.adapter.setSource(source);
+      res.status(200).send({ source: src });
     } catch (error) {
       logger.error('Error setting source');
       logger.errorStack(error);
