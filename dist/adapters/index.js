@@ -13,10 +13,10 @@ const adapters = {
 let activeAdapter = null;
 let initPromise;
 
-const _initAdapter = async (Device       ) => { // eslint-disable-line no-underscore-dangle
+const _initAdapter = async (levelDb       ) => { // eslint-disable-line no-underscore-dangle
   logger.info('Initializing adapters');
   try {
-    const device = await Device.findByPk(Device.id);
+    const device = await levelDb.get(constants.LEVEL_DB_DEVICE);
     if (device && device.data && device.type) {
       const Adapter = adapters[device.type];
       const adapterInstance = new Adapter({ ...device.data, ready: true }, device);
@@ -28,9 +28,9 @@ const _initAdapter = async (Device       ) => { // eslint-disable-line no-unders
   }
 };
 
-const initAdapter = (Device       ) => {
+const initAdapter = (levelDb       ) => {
   if (!initPromise) {
-    initPromise = _initAdapter(Device);
+    initPromise = _initAdapter(levelDb);
   }
   return initPromise;
 };

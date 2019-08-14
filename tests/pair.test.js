@@ -1,10 +1,12 @@
 // @flow
 
+const os = require('os');
+const path = require('path');
+const fs = require('fs-extra');
 const superagent = require('superagent');
 const expect = require('expect');
 const uuid = require('uuid');
-const initDatabase = require('../src/database');
-const { initModels } = require('../src/models');
+const getLevelDb = require('../src/database');
 const getExpressApp = require('../src/server/express-app');
 const startHttpServer = require('../src/server/http-server');
 const { getPairRouter } = require('../src/routers/api/pair');
@@ -13,10 +15,9 @@ const constants = require('../src/constants');
 
 jest.setTimeout(30000);
 
-
 let stopHttpServer;
+let closeDatabase;
 const PORT = 61340;
-const DATABASE_CONNECTION = 'sqlite://db.test.sqlite';
 
 const testDevice = {
   path: uuid.v4(),
@@ -24,16 +25,21 @@ const testDevice = {
 
 describe('Pair', () => {
   beforeAll(async () => {
-    const db = await initDatabase(DATABASE_CONNECTION);
-    const { Device } = await initModels(db);
+    const dataPath = path.join(os.homedir(), '.blend');
+    const levelDbPath = path.join(dataPath, 'leveldb-test');
+    await fs.ensureDir(dataPath);
+    await fs.ensureDir(levelDbPath);
+    const [levelDb, closeLevelDb] = await getLevelDb(levelDbPath);
+    closeDatabase = closeLevelDb;
     const app = getExpressApp();
     stopHttpServer = await startHttpServer(app, PORT);
     app.use(getLogRouter());
-    app.use('/api/1.0/pair', getPairRouter(Device));
+    app.use('/api/1.0/pair', getPairRouter(levelDb));
   });
 
   afterAll(async () => {
     await stopHttpServer();
+    await closeDatabase();
   });
 
   test('Should discover devices available for pairing.', async () => {
