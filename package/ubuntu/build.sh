@@ -47,7 +47,6 @@ scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER
 scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../vendor/zoom-rooms-control-system ubuntu@$BUILDER_IP_ADDRESS:~/build/vendor/zoom-rooms-control-system
 scp -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../package.json ubuntu@$BUILDER_IP_ADDRESS:~/build/package.json
 
-scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ./deps ubuntu@$BUILDER_IP_ADDRESS:~/build/deps
 scp -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ./create-package.sh ubuntu@$BUILDER_IP_ADDRESS:~/create-package.sh
 ssh -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -p $BUILDER_PORT ubuntu@$BUILDER_IP_ADDRESS "chmod 777 ~/create-package.sh; cd ~/; ./create-package.sh;"
 scp -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ubuntu@$BUILDER_IP_ADDRESS:~/blend.$BLEND_VERSION.deb ../../installers

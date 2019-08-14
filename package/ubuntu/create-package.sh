@@ -43,13 +43,13 @@ Maintainer: @wehriam
 Priority: optional
 Version: $BLEND_VERSION
 Description: Blend
+Depends: libsdl2-2.0-0 (>= 2.0.4), libsdl2-image-2.0-0 (>= 2.0.1), libsndio6.1 (>= 1.1.0-2)
 EOF
 
 mkdir -p blend/etc/blend
 
 cp ~/build/blend ~/blend/etc/blend/
 cp -r ~/build/dist-www ~/blend/etc/blend/dist-www
-cp -r ~/build/deps ~/blend/etc/blend/deps
 cp ~/build/node_modules/@serialport/bindings/build/Release/bindings.node ~/blend/etc/blend/bindings.node
 cp ~/build/node_modules/sqlite3/lib/binding/node-v64-linux-x64/node_sqlite3.node ~/blend/etc/blend/node_sqlite3.node
 cp ~/build/node_modules/ffi/build/Release/ffi_bindings.node ~/blend/etc/blend/ffi_bindings.node
@@ -113,14 +113,23 @@ chmod 755 blend/DEBIAN/preinst
 
 cat <<EOF >> blend/DEBIAN/postinst
 #!/bin/bash
-
-# Install depedencies
-dpkg -i /etc/blend/deps/*.deb
-
 sudo cp /etc/blend/blend.service /etc/systemd/system/blend.service
 if [ -d "/blend" ]; then
     sed -i "s/.*BLEND_OUTPUT_PATH.*/BLEND_OUTPUT_PATH=\/blend/g" /etc/blend/blend.defaults
 fi
+
+# Check if libSDL2.so and libSDL2-image.so is available
+if [ -f "/usr/lib/x86_64-linux-gnu/libSDL2-2.0.so.0" ]; then
+    if ! [ -f "/usr/lib/x86_64-linux-gnu/libSDL2.so" ]; then
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libSDL2-2.0.so.0 /usr/lib/x86_64-linux-gnu/libSDL2.so
+    fi
+fi
+if [ -f "/usr/lib/x86_64-linux-gnu/libSDL2_image-2.0.so.0" ]; then
+    if ! [ -f "/usr/lib/x86_64-linux-gnu/libSDL2_image.so" ]; then
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libSDL2_image-2.0.so.0 /usr/lib/x86_64-linux-gnu/libSDL2_image.so
+    fi
+fi
+
 sudo systemctl -q enable blend
 sudo systemctl -q start blend
 EOF
