@@ -6,7 +6,6 @@ const fs = require('fs-extra');
 const getExpressApp = require('./express-app');
 const startHttpServer = require('./http-server');
 const getRouters = require('./routers');
-const { switchToBand } = require('./lib/window-control');
 const getLevelDb = require('./database');
 const { initAdapter, closeAdapter } = require('./adapters');
 const { API_PORT } = require('./constants');
@@ -14,7 +13,19 @@ const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = requ
 const { version } = require('../package.json');
 const logger = require('./lib/logger')('CLI');
 
+let switchToBandFn = null;
+if (os.platform() === 'win32') {
+  const { switchToBand } = require('./lib/window-control'); // eslint-disable-line global-require
+  switchToBandFn = switchToBand;
+}
+
 let exitCode = 0;
+
+const triggerSwitchToBand = async ()               => {
+  if (os.platform() === 'win32' && switchToBandFn !== null) {
+    await switchToBandFn();
+  }
+};
 
 const start = async ()               => {
   const dataPath = path.join(os.homedir(), '.blend');
@@ -92,7 +103,7 @@ const start = async ()               => {
     }
   });
 
-  await switchToBand();
+  await triggerSwitchToBand();
 
   logger.info('Started');
 };
