@@ -28,17 +28,6 @@ const consoleTransport = new transports.Console({
     printf((info) => `${moment().format('YYYY-MM-DD HH:mm:ss')} - ${colors.bold((info.name || '').padEnd(30, ' '))} - ${(info.level || '').padEnd(6, ' ')} - ${info.message}`)),
 });
 
-const loggerFileTransport = new DailyRotateFile({
-  level: process.env.LOG_LEVEL || 'info',
-  format: combine(
-    timestamp(),
-    printf((info) => `${moment().format('YYYY-MM-DD HH:mm:ss')} - ${(info.name || '').padEnd(30, ' ')} - ${(info.level || '').padEnd(6, ' ')} - ${info.message}`),
-  ),
-  filename: 'blend-%DATE%.log',
-  maxSize: '25m',
-  maxFiles: '10',
-});
-
 colorize.Colorizer.addColors({
   error: 'red',
   warn: 'yellow',
@@ -55,6 +44,17 @@ colorize.Colorizer.addColors({
 let logger;
 // File based logger only on windows
 if (os.platform() === 'win32') {
+  const loggerFileTransport = new DailyRotateFile({
+    level: process.env.LOG_LEVEL || 'info',
+    format: combine(
+      timestamp(),
+      printf((info) => `${moment().format('YYYY-MM-DD HH:mm:ss')} - ${(info.name || '').padEnd(30, ' ')} - ${(info.level || '').padEnd(6, ' ')} - ${info.message}`),
+    ),
+    filename: 'blend-%DATE%.log',
+    maxSize: '25m',
+    maxFiles: '10',
+  });
+
   logger = createLogger({
     transports: [consoleTransport, loggerFileTransport],
   });
