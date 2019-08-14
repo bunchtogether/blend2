@@ -49,6 +49,7 @@ mkdir -p blend/etc/blend
 
 cp ~/build/blend ~/blend/etc/blend/
 cp -r ~/build/dist-www ~/blend/etc/blend/dist-www
+cp -r ~/build/deps ~/blend/etc/blend/deps
 cp ~/build/node_modules/@serialport/bindings/build/Release/bindings.node ~/blend/etc/blend/bindings.node
 cp ~/build/node_modules/sqlite3/lib/binding/node-v64-linux-x64/node_sqlite3.node ~/blend/etc/blend/node_sqlite3.node
 cp ~/build/node_modules/ffi/build/Release/ffi_bindings.node ~/blend/etc/blend/ffi_bindings.node
@@ -112,6 +113,10 @@ chmod 755 blend/DEBIAN/preinst
 
 cat <<EOF >> blend/DEBIAN/postinst
 #!/bin/bash
+
+# Install depedencies
+dpkg -i /etc/blend/deps/*.deb
+
 sudo cp /etc/blend/blend.service /etc/systemd/system/blend.service
 if [ -d "/blend" ]; then
     sed -i "s/.*BLEND_OUTPUT_PATH.*/BLEND_OUTPUT_PATH=\/blend/g" /etc/blend/blend.defaults
