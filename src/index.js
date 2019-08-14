@@ -1,11 +1,10 @@
 // @flow
 
+const os = require('os');
 const logger = require('./lib/logger')('CLI');
-
 const getExpressApp = require('./express-app');
 const startHttpServer = require('./http-server');
 const getRouters = require('./routers');
-const { switchToBand } = require('./lib/window-control');
 const initDatabase = require('./database');
 const { initModels } = require('./models');
 const { initAdapter, closeAdapter } = require('./adapters');
@@ -13,7 +12,19 @@ const { API_PORT, DATABASE_CONNECTION } = require('./constants');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 const { version } = require('../package.json');
 
+let switchToBandFn = null;
+if (os.platform() === 'win32') {
+  const { switchToBand } = require('./lib/window-control'); // eslint-disable-line global-require
+  switchToBandFn = switchToBand;
+}
+
 let exitCode = 0;
+
+const triggerSwitchToBand = async ():Promise<void> => {
+  if (os.platform() === 'win32' && switchToBandFn !== null) {
+    await switchToBandFn();
+  }
+};
 
 const start = async ():Promise<void> => {
   const db = await initDatabase(DATABASE_CONNECTION);
@@ -81,7 +92,7 @@ const start = async ():Promise<void> => {
     }
   });
 
-  await switchToBand();
+  await triggerSwitchToBand();
 
   logger.info('Started');
 };
