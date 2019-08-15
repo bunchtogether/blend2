@@ -14,6 +14,7 @@ const PORT = 61340;
 
 describe('Bluescape', () => {
   const ip = '192.168.1.1';
+  const ip2 = '192.168.1.2';
   beforeAll(async () => {
     const app = getExpressApp();
     stopHttpServer = await startHttpServer(app, PORT);
@@ -35,9 +36,14 @@ describe('Bluescape', () => {
     expect(response.status).toBe(200);
   });
 
+  test('Should update hardware IP address.', async () => {
+    const response = await superagent.post('http://127.0.0.1:61340/api/1.0/setup/ip').send({ ip: ip2 });
+    expect(response.status).toBe(200);
+  });
+
   test('Should get hardware IP address.', async () => {
     const response = await superagent.get('http://127.0.0.1:61340/api/1.0/setup/ip');
-    expect(response.body.ip).toEqual(ip);
+    expect(response.body.ip).toEqual(ip2);
   });
 });
 

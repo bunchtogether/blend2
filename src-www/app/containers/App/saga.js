@@ -163,6 +163,7 @@ function* getDeviceIpSaga(action: ActionType): Saga<*> {
     if (result && result.body) {
       yield put({ type: constants.GET_DEVICE_IP_RESULT, value: result.body });
     }
+    console.log('result in get: ', result)
   } catch (error) {
     yield put({ type: constants.GET_DEVICE_IP_ERROR, value: error });
   }
@@ -172,7 +173,7 @@ function* setDeviceIpSaga(action: ActionType): Saga<*> {
   try {
     const result = yield call(() => superagent.post(`${BASE_API_URL}/setup/ip`).send({ ip: action.value }));
     if (result && result.status === 200) {
-      yield put({ type: constants.SET_DEVICE_IP_RESULT, value: result.body });
+      yield put({ type: constants.SET_DEVICE_IP_RESULT, value: { ip: action.value } });
     }
   } catch (error) {
     yield put({ type: constants.SET_DEVICE_IP_ERROR, value: error });

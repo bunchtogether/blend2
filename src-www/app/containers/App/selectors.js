@@ -83,3 +83,8 @@ export const availableLogsSelector = createSelector<StateType, *, *, *>(
   appState,
   (state) => state.get('availableLogs'),
 );
+
+export const deviceIpSelector = createSelector<StateType, *, *, *>(
+  appState,
+  (state) => state.getIn(['deviceIp', 'ip']),
+);
