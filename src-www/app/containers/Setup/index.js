@@ -14,10 +14,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Navigation from 'components/Navigation';
 import Content from 'components/Content';
 import Header from 'components/Header';
-import { getDeviceIp, setDeviceIp } from 'containers/App/actions';
+import { getDeviceIp, setDeviceIp, navigateRemote } from 'containers/App/actions';
+import { deviceIpSelector } from 'containers/App/selectors';
 
 const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
   container: {
@@ -59,6 +61,7 @@ type Props = {
   dispatch: Function,
   getDeviceIp: Function,
   setDeviceIp: Function,
+  navigateRemote: Function,
 };
 
 type State = {
@@ -79,6 +82,18 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
       ip4: '',
       error: false,
     };
+  }
+
+  componentDidMount() {
+    if (this.props.deviceIp) {
+      this.props.navigateRemote();
+    }
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.deviceIp !== this.props.deviceIp && this.props.deviceIp) {
+      this.props.navigateRemote();
+    }
   }
 
   validate = () => {
@@ -108,7 +123,15 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, deviceIp } = this.props;
+    console.log('device ip: ', deviceIp)
+    if (deviceIp === null) {
+      return (
+        <div className={classes.container}>
+          <CircularProgress />
+        </div>
+      )
+    }
     return (
       <React.Fragment>
         <Helmet>
@@ -172,7 +195,9 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
 }
 
 
-const withConnect = connect(() => null, (dispatch: Function): Object => bindActionCreators({ setDeviceIp, getDeviceIp }, dispatch));
+const withConnect = connect((state: StateType) => ({
+  deviceIp: deviceIpSelector(state),
+}), (dispatch: Function): Object => bindActionCreators({ setDeviceIp, getDeviceIp, navigateRemote }, dispatch));
 
 export default compose(
   withStyles(styles),

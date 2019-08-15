@@ -16,6 +16,7 @@ const initialState = fromJS({
   pairDeviceSuccess: null,
   remoteError: '',
   availableLogs: List(),
+  deviceIp: fromJS({ ip: null }),
 });
 
 export default (state: AppStateType = initialState, action: ActionType) => {
@@ -73,6 +74,14 @@ export default (state: AppStateType = initialState, action: ActionType) => {
       return state.set('remoteError', action.value);
     case constants.SET_SOURCE_ERROR:
       return state.set('remoteError', action.value);
+    case constants.GET_DEVICE_IP_RESULT:
+      return state.set('deviceIp', fromJS(action.value));
+    case constants.SET_DEVICE_IP_RESULT:
+      return state.set('deviceIp', fromJS(action.value));
+    case constants.GET_DEVICE_IP_ERROR:
+      return state.set('deviceIp', fromJS({ ip: '' }));
+    case constants.SET_DEVICE_IP_ERROR:
+      return state.set('deviceIp', fromJS({ ip: '' }));
 
     // LOG FILES
     case constants.GET_LOGS_SUCCESS:
