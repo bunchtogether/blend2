@@ -4,7 +4,7 @@ import type { Saga } from 'redux-saga';
 import { push } from 'connected-react-router';
 import { select, put, takeLatest, call, throttle } from 'redux-saga/effects';
 import superagent from 'superagent';
-import { setDiscoveredDevices, getPairedDevice, resetPairing } from 'containers/App/actions';
+import { setDiscoveredDevices, getPairedDevice, resetPairing, navigateSetup } from 'containers/App/actions';
 import * as constants from './constants';
 
 const PROJECT_PROTOCOL = process.env.BLEND_PROTOCOL || window.location.protocol.replace(':', '');
@@ -161,9 +161,11 @@ function* getDeviceIpSaga(action: ActionType): Saga<*> {
   try {
     const result = yield call(() => superagent.get(`${BASE_API_URL}/setup/ip`));
     if (result && result.body) {
+      if (result.body.ip === '') {
+        yield put(navigateSetup());
+      }
       yield put({ type: constants.GET_DEVICE_IP_RESULT, value: result.body });
     }
-    console.log('result in get: ', result)
   } catch (error) {
     yield put({ type: constants.GET_DEVICE_IP_ERROR, value: error });
   }

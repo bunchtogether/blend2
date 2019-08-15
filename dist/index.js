@@ -92,7 +92,7 @@ const start = async ()               => {
     }
   });
 
-  if(os.platform() === 'win32') {
+  if (os.platform() === 'win32') {
     await switchToBand();
   }
 

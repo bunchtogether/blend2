@@ -9,7 +9,6 @@ import { navigateRemote, navigateSetup } from 'containers/App/actions';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
-import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
 import { green, blue, orange } from '@material-ui/core/colors';
 import LogoSrc from '../../static/blend-white.svg';
 
@@ -80,13 +79,6 @@ export default class Navigation extends React.Component<Props, State> {
             icon={<SettingsRemoteIcon />}
             action={navigateRemote}
             color={blue[700]}
-          />
-          <NavigationItem
-            pathnames={['/setup']}
-            label='Setup'
-            icon={<SettingsEthernet />}
-            action={navigateSetup}
-            color={orange[500]}
           />
           <DialogStream
             open={streamDialogOpen}
