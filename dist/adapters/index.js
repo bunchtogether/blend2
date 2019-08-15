@@ -2,12 +2,14 @@
 
 const VizioAdapter = require('./vizio');
 const SamsungAdapter = require('./samsung');
+const NecAdapter = require('./nec');
 const constants = require('../constants');
 const logger = require('../lib/logger')('Adapters');
 
 const adapters = {
   [constants.TYPE_VIZIO]: VizioAdapter,
   [constants.TYPE_SAMSUNG]: SamsungAdapter,
+  [constants.TYPE_NEC]: NecAdapter,
 };
 
 let activeAdapter = null;

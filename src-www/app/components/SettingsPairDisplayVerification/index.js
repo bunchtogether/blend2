@@ -6,7 +6,7 @@ import { compose, bindActionCreators } from 'redux';
 import { withStyles } from '@material-ui/core/styles';
 import Progress from 'components/Progress';
 import VerificationVizio from 'components/VerificationVizio';
-import VerificationSamsung from 'components/VerificationSamsung';
+import VerificationRS232 from 'components/VerificationRS232';
 import { pairDevice } from 'containers/App/actions';
 import { startPairingSuccessSelector, discoveryDeviceTypeSelector } from 'containers/App/selectors';
 import * as constants from '../../constants';
@@ -38,7 +38,9 @@ class SettingsPairVerification extends React.PureComponent<Props> {
       case constants.TYPE_VIZIO:
         return <VerificationVizio handleSubmit={this.handleSubmit} />;
       case constants.TYPE_SAMSUNG:
-        return <VerificationSamsung handleSubmit={this.handleSubmit} />;
+        return <VerificationRS232 handleSubmit={this.handleSubmit} />;
+      case constants.TYPE_NEC:
+        return <VerificationRS232 handleSubmit={this.handleSubmit} />;
       default:
         return null;
     }

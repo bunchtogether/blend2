@@ -99,6 +99,7 @@
     "@bunchtogether/ffmpeg-static": "^1.1.0",
     "@bunchtogether/picture-in-picture": "^1.0.8",
     "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
+    "@serialport/parser-delimiter": "^2.0.2",
     "bl": "^3.0.0",
     "body-parser": "^1.18.3",
     "broadcast-address": "^1.0.2",

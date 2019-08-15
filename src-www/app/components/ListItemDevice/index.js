@@ -38,6 +38,13 @@ class ListItemDevice extends React.PureComponent<Props> {
             secondary={`${device.manufacturer ? device.path : ''}`}
           />
         );
+      case constants.TYPE_NEC:
+        return (
+          <ListItemText
+            primary={`${device.manufacturer || device.path}`}
+            secondary={`${device.manufacturer ? device.path : ''}`}
+          />
+        );
       default:
         return null;
     }
