@@ -164,13 +164,20 @@ export function generateLogs(): ActionType {
 export function getDeviceIp(): ActionType {
   return {
     type: constants.GET_DEVICE_IP,
-    value: null
+    value: null,
   };
 }
 
 export function setDeviceIp(ip: string): ActionType {
   return {
     type: constants.SET_DEVICE_IP,
+    value: ip,
+  };
+}
+
+export function triggerDeviceUpdate(ip: string): ActionType {
+  return {
+    type: constants.TRIGGER_DEVICE_UPDATE,
     value: ip,
   };
 }

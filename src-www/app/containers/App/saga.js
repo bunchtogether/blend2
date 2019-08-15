@@ -157,7 +157,7 @@ function* navigate(pathname: string, action: ActionType): Saga<*> {
   }
 }
 
-function* getDeviceIpSaga(action: ActionType): Saga<*> {
+function* getDeviceIpSaga(): Saga<*> {
   try {
     const result = yield call(() => superagent.get(`${BASE_API_URL}/setup/ip`));
     if (result && result.body) {
@@ -173,12 +173,23 @@ function* getDeviceIpSaga(action: ActionType): Saga<*> {
 
 function* setDeviceIpSaga(action: ActionType): Saga<*> {
   try {
-    const result = yield call(() => superagent.post(`${BASE_API_URL}/setup/ip`).send({ ip: action.value }));
+    const result = yield call(() => superagent.put(`${BASE_API_URL}/setup/ip`).send({ ip: action.value }));
     if (result && result.status === 200) {
       yield put({ type: constants.SET_DEVICE_IP_RESULT, value: { ip: action.value } });
     }
   } catch (error) {
     yield put({ type: constants.SET_DEVICE_IP_ERROR, value: error });
+  }
+}
+
+function* deviceUpdateSaga(): Saga<*> {
+  try {
+    const result = yield call(() => superagent.post(`${BASE_API_URL}/setup/update-device`));
+    if (result && result.status === 200) {
+      yield put({ type: constants.TRIGGER_DEVICE_UPDATE_RESULT, value: 'success' });
+    }
+  } catch (error) {
+    yield put({ type: constants.TRIGGER_DEVICE_UPDATE_ERROR, value: error });
   }
 }
 
@@ -203,8 +214,9 @@ export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.NAVIGATE_REMOTE, navigate, '/remote');
   yield takeLatest(constants.NAVIGATE_SETUP, navigate, '/setup');
   // SETUP
-  yield takeLatest(constants.GET_DEVICE_IP, getDeviceIpSaga),
-  yield takeLatest(constants.SET_DEVICE_IP, setDeviceIpSaga),
+  yield takeLatest(constants.GET_DEVICE_IP, getDeviceIpSaga);
+  yield takeLatest(constants.SET_DEVICE_IP, setDeviceIpSaga);
+  yield takeLatest(constants.TRIGGER_DEVICE_UPDATE, deviceUpdateSaga);
   yield call(setupSaga);
 }
 
