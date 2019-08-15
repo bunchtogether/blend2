@@ -1,5 +1,6 @@
 #!/bin/bash
 
+BLEND_INSTALLTION_DIR="/etc/blend"
 LOGS_DIR_NAME_SUFFIX=$(date +%s)
 LOGS_DIR_NAME="/tmp/logs_$LOGS_DIR_NAME_SUFFIX"
 ZIP_ARCHIVE_NAME="logs_$LOGS_DIR_NAME_SUFFIX.zip"
@@ -9,6 +10,9 @@ fi
 ZIP_PATH="/tmp/$ZIP_ARCHIVE_NAME"
 
 [ ! -d $LOGS_DIR_NAME ] && mkdir -p $LOGS_DIR_NAME
+
+# Blend metadata
+[ -f $BLEND_INSTALLTION_DIR/VERSION ] && cp $BLEND_INSTALLTION_DIR/VERSION $LOGS_DIR_NAME/VERSION
 
 # Blend logs
 journalctl -u blend > $LOGS_DIR_NAME/blend.log
