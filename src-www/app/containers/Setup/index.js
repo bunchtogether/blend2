@@ -124,7 +124,6 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
 
   render() {
     const { classes, deviceIp } = this.props;
-    console.log('device ip: ', deviceIp)
     if (deviceIp === null) {
       return (
         <div className={classes.container}>
