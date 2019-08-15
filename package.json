@@ -56,12 +56,12 @@
   "pkg": {
     "scripts": [
       "dist/**/*.js",
-      "static/**/*",
       "node_modules/sdl2-image/lib/image.js",
       "node_modules/leveldown/prebuilds/linux-x64"
     ],
     "assets": [
-      "dist-www/static/**/*"
+      "dist-www/static/**/*",
+      "static/**/*"
     ]
   },
   "devDependencies": {
