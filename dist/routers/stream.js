@@ -4,6 +4,7 @@ const { Router } = require('express');
 const { ffmpegPath } = require('@bunchtogether/ffmpeg-static');
 const { spawn } = require('child_process');
 const fs = require('fs-extra');
+const { URL } = require('url');
 const dgram = require('dgram');
 const os = require('os');
 const ps = require('ps-node');
@@ -27,6 +28,15 @@ const BLEND_BOX_DELIMETER = Buffer.from([0x73, 0x6B, 0x69, 0x70]);
 let broadcastSocket = null;
 let broadcastAddresses = [];
 let broadcastAddressesInterval;
+
+const addStreamUrlParameters = module.exports.addStreamUrlParameters = (url       ) => {
+  const parsed = new URL(url);
+  if (parsed.protocol === 'udp:') {
+    parsed.searchParams.append('fifo_size', '50000000');
+    parsed.searchParams.append('overrun_nonfatal', '1');
+  }
+  return parsed.toString();
+};
 
 const getBroadcastAddresses = () => {
   broadcastAddresses = [];
@@ -160,7 +170,7 @@ const getThumbnail = async (streamUrl       , thumbnailPath       ) => {
   let exists = await fs.exists(thumbnailPath);
   if (exists) {
     const stats = await fs.stat(thumbnailPath);
-    if (new Date() - new Date(stats.ctime) < 3600000) {
+    if (new Date() - new Date(stats.ctime) < 86400000) {
       return;
     }
   }
@@ -240,7 +250,7 @@ const startStream = async (socketId       , url       ) => {
     '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
     '-copyts',
-    '-i', url,
+    '-i', addStreamUrlParameters(url),
     '-c:a', 'aac',
     '-af', 'aresample=async=176000',
     '-c:v', 'copy',
@@ -517,21 +527,21 @@ module.exports.getStreamRouter = () => {
     sockets.set(socketId, ws);
     logger.info(`Opened socket ID ${socketId} for stream ${req.url}`);
 
-    let hearteatTimeout;
+    let heartbeatTimeout;
     ws.on('message', (event) => {
       const blendBoxIndex = event.indexOf(BLEND_BOX_DELIMETER);
       if (blendBoxIndex === 4) {
         broadcastBlendBox(event.slice(0, 40));
       }
-      clearTimeout(hearteatTimeout);
-      hearteatTimeout = setTimeout(() => {
+      clearTimeout(heartbeatTimeout);
+      heartbeatTimeout = setTimeout(() => {
         logger.warn(`Terminating socket ID ${socketId} for stream ${req.url} after heartbeat timeout`);
         ws.terminate();
       }, 6000);
     });
 
     ws.on('close', () => {
-      clearTimeout(hearteatTimeout);
+      clearTimeout(heartbeatTimeout);
       try {
         logger.info(`Closed socket ${socketId}`);
         sockets.delete(socketId);

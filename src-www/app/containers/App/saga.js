@@ -13,6 +13,7 @@ const PROJECT_PORT = process.env.BLEND_PORT || window.location.port;
 const BASE_API_URL = `${PROJECT_PROTOCOL}://${PROJECT_HOST}:${PROJECT_PORT}/api/1.0`;
 
 function* setupSaga(): Saga<*> {
+  yield* getDeviceIpSaga();
   yield put(getPairedDevice());
 }
 
@@ -156,6 +157,29 @@ function* navigate(pathname: string, action: ActionType): Saga<*> {
   }
 }
 
+function* getDeviceIpSaga(action: ActionType): Saga<*> {
+  try {
+    const result = yield call(() => superagent.get(`${BASE_API_URL}/setup/ip`));
+    if (result && result.body) {
+      yield put({ type: constants.GET_DEVICE_IP_RESULT, value: result.body });
+    }
+  } catch (error) {
+    yield put({ type: constants.GET_DEVICE_IP_ERROR, value: error });
+  }
+}
+
+function* setDeviceIpSaga(action: ActionType): Saga<*> {
+  try {
+    const result = yield call(() => superagent.post(`${BASE_API_URL}/setup/ip`).send({ ip: action.value }));
+    if (result && result.status === 200) {
+      yield put({ type: constants.SET_DEVICE_IP_RESULT, value: result.body });
+    }
+  } catch (error) {
+    yield put({ type: constants.SET_DEVICE_IP_ERROR, value: error });
+  }
+}
+
+
 export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.SEARCH, searchSaga);
   // DEVICE
@@ -174,7 +198,10 @@ export default function* defaultSaga(): Saga<*> {
   // NAVIGATION
   yield takeLatest(constants.NAVIGATE_STREAM, navigate, '/stream');
   yield takeLatest(constants.NAVIGATE_REMOTE, navigate, '/remote');
+  yield takeLatest(constants.NAVIGATE_SETUP, navigate, '/setup');
   // SETUP
+  yield takeLatest(constants.GET_DEVICE_IP, getDeviceIpSaga),
+  yield takeLatest(constants.SET_DEVICE_IP, setDeviceIpSaga),
   yield call(setupSaga);
 }
 

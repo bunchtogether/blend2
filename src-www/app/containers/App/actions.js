@@ -60,6 +60,13 @@ export function navigateRemote(): ActionType {
   };
 }
 
+export function navigateSetup(): ActionType {
+  return {
+    type: constants.NAVIGATE_SETUP,
+    value: null,
+  };
+}
+
 export function setPower(power: boolean): ActionType {
   return {
     type: constants.SET_POWER,
@@ -146,9 +153,24 @@ export function getLogs(): ActionType {
     value: null,
   };
 }
+
 export function generateLogs(): ActionType {
   return {
     type: constants.GENERATE_LOGS,
     value: null,
+  };
+}
+
+export function getDeviceIp(): ActionType {
+  return {
+    type: constants.GET_DEVICE_IP,
+    value: null
+  };
+}
+
+export function setDeviceIp(ip: string): ActionType {
+  return {
+    type: constants.SET_DEVICE_IP,
+    value: ip,
   };
 }

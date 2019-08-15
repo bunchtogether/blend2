@@ -17,6 +17,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import Stream from 'containers/Stream';
 import Remote from 'containers/Remote';
+import Setup from 'containers/Setup';
 import Player from 'components/Player';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Notifications from 'components/Notifications';
@@ -28,11 +29,11 @@ export default function App() {
       <CssBaseline />
       <Notifications />
       <Switch>
-
         <Route exact path='/' component={() => <Redirect exact push from='' to='/remote' />} />
         <Route exact path='/stream' component={Stream} />
         <Route exact path='/stream/:url' component={Stream} />
         <Route exact path='/remote' component={Remote} />
+        <Route exact path='/setup' component={Setup} />
         <Route exact path='/api/1.0/stream/:url' component={Player} />
         <Route exact path='/api/1.0/ffmpeg/:args' component={Player} />
         <Route component={NotFoundPage} />
