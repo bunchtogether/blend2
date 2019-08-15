@@ -92,7 +92,9 @@ const start = async ():Promise<void> => {
     }
   });
 
-  await switchToBand();
+  if(os.platform() === 'win32') {
+    await switchToBand();
+  }
 
   logger.info('Started');
 };
