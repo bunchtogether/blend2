@@ -50,9 +50,12 @@ mkdir -p blend/etc/blend
 
 cp ~/build/blend ~/blend/etc/blend/
 cp -r ~/build/dist-www ~/blend/etc/blend/dist-www
+cp -r ~/build/static ~/blend/etc/blend/static
 cp ~/build/node_modules/@serialport/bindings/build/Release/bindings.node ~/blend/etc/blend/bindings.node
 cp ~/build/node_modules/sqlite3/lib/binding/node-v64-linux-x64/node_sqlite3.node ~/blend/etc/blend/node_sqlite3.node
 cp ~/build/node_modules/ffi/build/Release/ffi_bindings.node ~/blend/etc/blend/ffi_bindings.node
+cp ~/build/node_modules/leveldown/prebuilds/linux-x64/node.napi.musl.node ~/blend/etc/blend/node.napi.musl.node
+cp ~/build/node_modules/leveldown/prebuilds/linux-x64/node.napi.node ~/blend/etc/blend/node.napi.node
 cp ~/build/node_modules/ref/build/Release/binding.node ~/blend/etc/blend/binding.node
 cp ~/build/dist/sample.mp4 ~/blend/etc/blend/sample.mp4
 cp ~/build/node_modules/@bunchtogether/ffmpeg-static/bin/linux/x64/ffmpeg ~/blend/etc/blend/ffmpeg
