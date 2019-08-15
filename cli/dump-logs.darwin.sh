@@ -54,4 +54,5 @@ if [ $(which zip) ]; then
     zip $ZIP_PATH -r $LOGS_DIR_NAME
 fi
 
+rm -rf $LOGS_DIR_NAME
 echo $ZIP_PATH
