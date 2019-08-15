@@ -32,18 +32,23 @@ describe('Bluescape', () => {
   });
 
   test('Should set hardware IP address.', async () => {
-    const response = await superagent.post('http://127.0.0.1:61340/api/1.0/setup/ip').send({ ip });
+    const response = await superagent.put('http://127.0.0.1:61340/api/1.0/setup/ip').send({ ip });
     expect(response.status).toBe(200);
   });
 
   test('Should update hardware IP address.', async () => {
-    const response = await superagent.post('http://127.0.0.1:61340/api/1.0/setup/ip').send({ ip: ip2 });
+    const response = await superagent.put('http://127.0.0.1:61340/api/1.0/setup/ip').send({ ip: ip2 });
     expect(response.status).toBe(200);
   });
 
   test('Should get hardware IP address.', async () => {
     const response = await superagent.get('http://127.0.0.1:61340/api/1.0/setup/ip');
     expect(response.body.ip).toEqual(ip2);
+  });
+
+  test('Should trigger hardware update.', async () => {
+    const response = await superagent.post('http://127.0.0.1:61340/api/1.0/setup/update-device');
+    expect(response.status).toBe(200);
   });
 });
 

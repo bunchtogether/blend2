@@ -15,10 +15,8 @@ import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Navigation from 'components/Navigation';
-import Content from 'components/Content';
 import Header from 'components/Header';
-import { getDeviceIp, setDeviceIp, navigateRemote } from 'containers/App/actions';
+import { setDeviceIp, navigateRemote } from 'containers/App/actions';
 import { deviceIpSelector } from 'containers/App/selectors';
 
 const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
@@ -58,10 +56,10 @@ const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
 });
 
 type Props = {
-  dispatch: Function,
-  getDeviceIp: Function,
   setDeviceIp: Function,
   navigateRemote: Function,
+  deviceIp: string,
+  classes: Object,
 };
 
 type State = {
@@ -112,7 +110,7 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
     }
     return true;
   }
-  
+
   handleSubmit = () => {
     const { ip1, ip2, ip3, ip4 } = this.state;
     if (this.validate()) {
@@ -129,7 +127,7 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
         <div className={classes.container}>
           <CircularProgress />
         </div>
-      )
+      );
     }
     return (
       <React.Fragment>
@@ -196,7 +194,7 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
 
 const withConnect = connect((state: StateType) => ({
   deviceIp: deviceIpSelector(state),
-}), (dispatch: Function): Object => bindActionCreators({ setDeviceIp, getDeviceIp, navigateRemote }, dispatch));
+}), (dispatch: Function): Object => bindActionCreators({ setDeviceIp, navigateRemote }, dispatch));
 
 export default compose(
   withStyles(styles),

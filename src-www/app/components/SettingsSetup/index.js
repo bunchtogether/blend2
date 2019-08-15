@@ -3,12 +3,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
-import { List } from 'immutable';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { setDeviceIp, getDeviceIp } from 'containers/App/actions';
+import { setDeviceIp, triggerDeviceUpdate } from 'containers/App/actions';
 import { deviceIpSelector } from 'containers/App/selectors';
 
 const styles = (theme: Object) => ({
@@ -34,8 +33,16 @@ const styles = (theme: Object) => ({
     marginRight: theme.spacing(1),
     fontSize: 40,
   },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
   button: {
     width: 100,
+    marginTop: theme.spacing(1),
+    marginLeft: theme.spacing(1),
+  },
+  updateButton: {
     marginTop: theme.spacing(1),
   },
   marginTop: {
@@ -49,8 +56,8 @@ const styles = (theme: Object) => ({
 type Props = {
   classes: Object,
   deviceIp: string | null,
+  triggerDeviceUpdate: Function,
   setDeviceIp: Function,
-  getDeviceIp: Function,
 };
 
 type State = {
@@ -59,6 +66,8 @@ type State = {
   ip3: string,
   ip4: string,
   error: boolean,
+  updateLoading: boolean,
+  dirty: boolean,
 };
 
 class SettingsSetup extends React.Component<Props, State> {
@@ -68,6 +77,8 @@ class SettingsSetup extends React.Component<Props, State> {
     ip3: '',
     ip4: '',
     error: false,
+    updateLoading: false,
+    dirty: false,
   };
 
   componentDidMount() {
@@ -78,7 +89,7 @@ class SettingsSetup extends React.Component<Props, State> {
 
   componentDidUpdate(prevProps: Props) {
     if (prevProps.deviceIp !== this.props.deviceIp && this.props.deviceIp) {
-      this.handleSetIp(this.props.deviceIp)
+      this.handleSetIp(this.props.deviceIp);
     }
   }
 
@@ -104,18 +115,23 @@ class SettingsSetup extends React.Component<Props, State> {
     this.setState({ ip1, ip2, ip3, ip4 });
   }
 
+  handleTriggerUpdate = () => {
+    this.setState({ updateLoading: true });
+    this.props.triggerDeviceUpdate();
+  }
+
   handleSubmit = () => {
     const { ip1, ip2, ip3, ip4 } = this.state;
     if (this.validate()) {
       this.props.setDeviceIp(`${ip1}.${ip2}.${ip3}.${ip4}`);
+      this.setState({ dirty: false });
     } else {
       this.setState({ error: true });
     }
   }
 
   render() {
-    const { classes, availableLogs } = this.props;
-    const logFiles = List.isList(availableLogs) ? availableLogs.toJS() : [];
+    const { classes } = this.props;
     return (
       <div className={classes.container}>
         <Typography className={classes.marginTop}>Update the static IP address of this device</Typography>
@@ -128,7 +144,7 @@ class SettingsSetup extends React.Component<Props, State> {
             className={classes.textField}
             value={this.state.ip1}
             placeholder="192"
-            onChange={(event: Object) => this.setState({ ip1: event.target.value, error: false })}
+            onChange={(event: Object) => this.setState({ ip1: event.target.value, error: false, dirty: true })}
             error={this.state.error}
           />
           <Typography className={classes.ipDot}>.</Typography>
@@ -139,7 +155,7 @@ class SettingsSetup extends React.Component<Props, State> {
             placeholder="168"
             value={this.state.ip2}
             className={classes.textField}
-            onChange={(event: Object) => this.setState({ ip2: event.target.value, error: false })}
+            onChange={(event: Object) => this.setState({ ip2: event.target.value, error: false, dirty: true })}
             error={this.state.error}
           />
           <Typography className={classes.ipDot}>.</Typography>
@@ -150,7 +166,7 @@ class SettingsSetup extends React.Component<Props, State> {
             placeholder="1"
             value={this.state.ip3}
             className={classes.textField}
-            onChange={(event: Object) => this.setState({ ip3: event.target.value, error: false })}
+            onChange={(event: Object) => this.setState({ ip3: event.target.value, error: false, dirty: true })}
             error={this.state.error}
           />
           <Typography className={classes.ipDot}>.</Typography>
@@ -161,14 +177,32 @@ class SettingsSetup extends React.Component<Props, State> {
             placeholder="1"
             value={this.state.ip4}
             className={classes.textField}
-            onChange={(event: Object) => this.setState({ ip4: event.target.value, error: false })}
+            onChange={(event: Object) => this.setState({ ip4: event.target.value, error: false, dirty: true })}
             error={this.state.error}
           />
         </div>
         {this.state.error ? <Typography className={classes.error}>Enter a complete IP address</Typography> : null}
-        <Button className={classes.button} variant='contained' color='primary' onClick={this.handleSubmit}>
-          Submit
-        </Button>
+        {this.state.updateLoading ? <Typography>Fetching updates from server...</Typography> : null}
+        <div className={classes.buttonContainer}>
+          <Button
+            className={classes.updateButton}
+            variant='contained'
+            color='primary'
+            onClick={this.handleTriggerUpdate}
+            disabled={this.state.dirty}
+          >
+            Check for updates
+          </Button>
+          <Button
+            className={classes.button}
+            variant='contained'
+            color='secondary'
+            onClick={this.handleSubmit}
+            disabled={this.state.updateLoading}
+          >
+            Submit
+          </Button>
+        </div>
       </div>
     );
   }
@@ -177,7 +211,7 @@ class SettingsSetup extends React.Component<Props, State> {
 
 const withConnect = connect((state: StateType) => ({
   deviceIp: deviceIpSelector(state),
-}), (dispatch: Function): Object => bindActionCreators({ setDeviceIp }, dispatch));
+}), (dispatch: Function): Object => bindActionCreators({ setDeviceIp, triggerDeviceUpdate }, dispatch));
 
 export default compose(
   withStyles(styles),

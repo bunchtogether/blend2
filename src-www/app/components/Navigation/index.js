@@ -5,11 +5,11 @@ import NavigationBase from 'components/NavigationBase';
 import NavigationItem from 'components/NavigationItem';
 import DialogSettings from 'components/DialogSettings';
 import DialogStream from 'components/DialogStream';
-import { navigateRemote, navigateSetup } from 'containers/App/actions';
+import { navigateRemote } from 'containers/App/actions';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
-import { green, blue, orange } from '@material-ui/core/colors';
+import { green, blue } from '@material-ui/core/colors';
 import LogoSrc from '../../static/blend-white.svg';
 
 type Props = {
