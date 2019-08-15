@@ -21,6 +21,7 @@ export const CLEAR_SEARCH = 'web/App/CLEAR_SEARCH';
 
 export const NAVIGATE_STREAM = 'web/App/NAVIGATE_STREAM';
 export const NAVIGATE_REMOTE = 'web/App/NAVIGATE_REMOTE';
+export const NAVIGATE_SETUP = 'web/App/NAVIGATE_SETUP';
 
 export const SET_POWER = 'web/App/SET_POWER';
 export const SET_POWER_SUCCESS = 'web/App/SET_POWER_SUCCESS';
@@ -58,3 +59,10 @@ export const GET_LOGS_ERROR = 'web/App/GET_LOGS_ERROR';
 export const GENERATE_LOGS = 'web/App/GENERATE_LOGS';
 export const GENERATE_LOGS_SUCCESS = 'web/App/GENERATE_LOGS_SUCCESS';
 export const GENERATE_LOGS_ERROR = 'web/App/GENERATE_LOGS_ERROR';
+
+export const SET_DEVICE_IP = 'web/App/SET_DEVICE_IP';
+export const SET_DEVICE_IP_RESULT = 'web/App/SET_DEVICE_IP_RESULT';
+export const SET_DEVICE_IP_ERROR = 'web/App/SET_DEVICE_IP_ERROR';
+export const GET_DEVICE_IP = 'web/App/GET_DEVICE_IP';
+export const GET_DEVICE_IP_RESULT = 'web/App/GET_DEVICE_IP_RESULT';
+export const GET_DEVICE_IP_ERROR = 'web/App/GET_DEVICE_IP_ERROR';

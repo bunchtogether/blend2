@@ -5,11 +5,12 @@ import NavigationBase from 'components/NavigationBase';
 import NavigationItem from 'components/NavigationItem';
 import DialogSettings from 'components/DialogSettings';
 import DialogStream from 'components/DialogStream';
-import { navigateRemote } from 'containers/App/actions';
+import { navigateRemote, navigateSetup } from 'containers/App/actions';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
-import { green, blue } from '@material-ui/core/colors';
+import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
+import { green, blue, orange } from '@material-ui/core/colors';
 import LogoSrc from '../../static/blend-white.svg';
 
 type Props = {
@@ -79,6 +80,13 @@ export default class Navigation extends React.Component<Props, State> {
             icon={<SettingsRemoteIcon />}
             action={navigateRemote}
             color={blue[700]}
+          />
+          <NavigationItem
+            pathnames={['/setup']}
+            label='Setup'
+            icon={<SettingsEthernet />}
+            action={navigateSetup}
+            color={orange[500]}
           />
           <DialogStream
             open={streamDialogOpen}
