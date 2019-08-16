@@ -3,10 +3,9 @@
                               
                   
                                  
+                                                                  
                                              
                                              
-                                             
-                              
                           
                       
  
@@ -25,7 +24,7 @@ class AbstractAdapter {
     throw new Error('Method pair is not implemented.');
   }
 
-  setPower(power         )                   { // eslint-disable-line no-unused-vars
+  setPower(power         , forceWrite         )                   { // eslint-disable-line no-unused-vars
     throw new Error('Method setPower is not implemented.');
   }
 
@@ -35,10 +34,6 @@ class AbstractAdapter {
 
   setSource(source        )                  { // eslint-disable-line no-unused-vars
     throw new Error('Method setSource is not implemented.');
-  }
-
-  toggleMute()                { // eslint-disable-line no-unused-vars
-    throw new Error('Method toggleMute is not implemented.');
   }
 
   getDevice()             { // eslint-disable-line no-unused-vars

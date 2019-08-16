@@ -116,8 +116,8 @@ class SamsungAdapter extends AbstractAdapter {
       logger.error('Error initializing adapter');
       logger.errorStack(error);
     };
-    this.togglePower(true).catch(logError);
-    setTimeout(() => this.togglePower(true).catch(logError), 15000);
+    this.setPower(false, true).catch(logError);
+    setTimeout(() => this.setPower(true, true).catch(logError), 15000);
   }
 
   async pair() {
@@ -132,15 +132,11 @@ class SamsungAdapter extends AbstractAdapter {
     return deviceUpdate;
   }
 
-  async togglePower(forceWrite          = false) {
-    await this.write('082200000000D6', forceWrite);
-  }
-
-  async setPower(power         ) {
+  async setPower(power         , forceWrite          = false) {
     if (power) {
-      await this.write('082200000002D4');
+      await this.write('082200000002D4', forceWrite);
     } else {
-      await this.write('082200000001D5');
+      await this.write('082200000001D5', forceWrite);
     }
     return power;
   }
@@ -158,10 +154,6 @@ class SamsungAdapter extends AbstractAdapter {
     }
     await this.write(code);
     return source;
-  }
-
-  async toggleMute() {
-    await this.write('082202000000D4');
   }
 
   getDevice() {
