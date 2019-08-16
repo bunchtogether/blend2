@@ -8,7 +8,7 @@ const getExpressApp = require('../src/server/express-app');
 const startHttpServer = require('../src/server/http-server');
 const { getSetupRouter } = require('../src/routers/api/setup');
 
-const fileName = 'hardware_setup_ip.json';
+const fileName = 'config.json';
 let stopHttpServer;
 const PORT = 61340;
 

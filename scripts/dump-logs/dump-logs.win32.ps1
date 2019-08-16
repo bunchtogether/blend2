@@ -50,4 +50,4 @@ Compress-Archive -Path "$LOGS_DIR_NAME\*" -CompressionLevel Fastest -Destination
 
 # Remove
 Remove-Item -Path "$LOGS_DIR_NAME" -Recurse
-Write-Host "$ZIP_PATH"
+Write-Host "FILENAME:$ZIP_PATH"
