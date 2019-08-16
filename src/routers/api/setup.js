@@ -3,31 +3,42 @@
 const { Router } = require('express');
 const path = require('path');
 const fs = require('fs-extra');
-const exec = require('child_process').exec;
 const logger = require('../../lib/logger')('Setup API');
+const { triggerUpdate } = require('../../lib/update');
+const { CONFIG_FILE } = require('../../constants');
 
-const fileName = 'hardware_setup_ip.json';
+const getConfigPath = function ():string {
+  return path.resolve(CONFIG_FILE); // returns config.json located in exec dir
+};
 
-async function triggerUpdateScript() {
-  await new Promise((resolve, reject) => {
-    try {
-      exec('/bin/sh /home/ubuntu/script.sh', (err, stdout, stderr) => { // eslint-disable-line
-        if (err) {
-          reject(err);
-        }
-        if (stdout) {
-          resolve(stdout);
-        }
-        if (stderr) {
-          reject(stderr);
-        }
-      });
-    } catch (error) {
-      logger.errorStack(error);
-      reject(error);
+const readConfig = async ():Promise<Object> => {
+  const configFile = getConfigPath();
+  try {
+    const fileExists = await fs.pathExists(configFile);
+    if (!fileExists) {
+      logger.error(`${CONFIG_FILE} does not exist at ${configFile}`);
+      throw new Error(`${CONFIG_FILE} does not exist at ${configFile}`);
     }
-  });
-}
+    return fs.readJSON(configFile);
+  } catch (error) {
+    logger.error(`Failed to read ${configFile}, error: ${error.message}`);
+    logger.errorStack(error);
+    throw error;
+  }
+};
+
+const updateConfig = async (updatedConfig: Object):Promise<void> => {
+  const configFile = getConfigPath();
+  try {
+    const configContent = await readConfig();
+    const updatedConfigContent = Object.assign({}, configContent, updatedConfig);
+    await fs.outputJSON(configFile, updatedConfigContent);
+  } catch (error) {
+    logger.error(`Failed to update ${configFile}, Error: ${error.message}`);
+    logger.errorStack(error);
+    throw error;
+  }
+};
 
 module.exports.getSetupRouter = () => {
   logger.info('Attaching setup router');
@@ -36,15 +47,14 @@ module.exports.getSetupRouter = () => {
 
   router.get('/ip', async (req: express$Request, res: express$Response) => {
     try {
-      const exists = await fs.pathExists(path.resolve(__dirname, `../../../${fileName}`));
-      if (!exists) {
-        return res.send({ ip: '', message: 'Hardware setup ip does not exist' });
+      const configContent = await readConfig();
+      if (Object.keys(configContent).includes('ip')) {
+        return res.send({ ip: configContent.ip });
       }
-      const result = await fs.readJSON(path.resolve(__dirname, `../../../${fileName}`));
-      return res.send(result);
+      return res.status(400).send({ ip: '', message: 'Hardware setup ip does not exist' });
     } catch (error) {
-      logger.warn('Unable to get device IP address');
-      logger.warn(error);
+      logger.error(`Unable to get device IP address, Error: ${error.message}`);
+      logger.errorStack(error);
       return res.status(400).send({ error: 'Unable to get device IP address' });
     }
   });
@@ -55,23 +65,23 @@ module.exports.getSetupRouter = () => {
       return res.status(400).send({ error: 'Missing required parameter: ip' });
     }
     try {
-      await fs.outputJSON(path.resolve(__dirname, `../../../${fileName}`), { ip });
-      await triggerUpdateScript();
+      await updateConfig({ ip });
+      await triggerUpdate();
       return res.sendStatus(200);
     } catch (error) {
-      logger.warn('Unable to save device IP address');
-      logger.warn(error);
+      logger.warn(`Unable to save device IP address, Error: ${error.message}`);
+      logger.errorStack(error);
       return res.status(400).send({ error: 'Unable to save device IP address' });
     }
   });
 
   router.post('/update-device', async (req: express$Request, res: express$Response) => {
     try {
-      await triggerUpdateScript();
+      await triggerUpdate();
       return res.sendStatus(200);
     } catch (error) {
-      logger.warn('Unable to trigger device update');
-      logger.warn(error);
+      logger.error(`Unable to trigger device update, Error: ${error.message}`);
+      logger.errorStack(error);
       return res.status(400).send({ error: 'Unable to trigger device update' });
     }
   });
