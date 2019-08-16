@@ -284,6 +284,7 @@ const startStream = async (socketId       , url       ) => {
     }
   });
   const handleStart = (start       ) => {
+    logger.info(`Found start ${start}, sending free box`);
     const freeBox = Buffer.alloc(20);
     freeBox.set([0x00, 0x00, 0x00, 0x14, 0x66, 0x72, 0x65, 0x65], 0);
     freeBox.set([0x3E, 0x3E], 8);
