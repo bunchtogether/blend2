@@ -111,8 +111,8 @@ class NecAdapter extends AbstractAdapter {
       logger.error('Error initializing adapter');
       logger.errorStack(error);
     };
-    this.setPower(false).catch(logError);
-    setTimeout(() => this.setPower(true).catch(logError), 15000);
+    this.setPower(false, true).catch(logError);
+    setTimeout(() => this.setPower(true, true).catch(logError), 15000);
   }
 
   async pair() {
@@ -127,17 +127,11 @@ class NecAdapter extends AbstractAdapter {
     return deviceUpdate;
   }
 
-  // TODO
-  async togglePower(forceWrite          = false) {
-    console.log(forceWrite);
-    // await this.write('082200000000D6', forceWrite);
-  }
-
-  async setPower(power         ) {
+  async setPower(power         , forceWrite          = false) {
     if (power) {
-      await this.write(generateCode('302A30413043024332303344363030303103'));
+      await this.write(generateCode('302A30413043024332303344363030303103'), forceWrite);
     } else {
-      await this.write(generateCode('302A30413043024332303344363030303403'));
+      await this.write(generateCode('302A30413043024332303344363030303403'), forceWrite);
     }
     return power;
   }
@@ -156,14 +150,6 @@ class NecAdapter extends AbstractAdapter {
     }
     await this.write(code);
     return source;
-  }
-
-  // TODO
-  async toggleMute() {
-    console.log('toggling');
-    await this.write(generateCode('302A30433036023030384403'));
-    const message = await this.waitForMessage();
-    console.log('message', message);
   }
 
   getDevice() {
