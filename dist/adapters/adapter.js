@@ -3,7 +3,7 @@
                               
                   
                                  
-                                                                  
+                                             
                                              
                                              
                           
@@ -24,7 +24,7 @@ class AbstractAdapter {
     throw new Error('Method pair is not implemented.');
   }
 
-  setPower(power         , forceWrite         )                   { // eslint-disable-line no-unused-vars
+  setPower(power         )                   { // eslint-disable-line no-unused-vars
     throw new Error('Method setPower is not implemented.');
   }
 
