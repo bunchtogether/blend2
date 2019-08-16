@@ -54,7 +54,7 @@ class GridDisplayTypes extends React.Component<Props, State> {
     const { classes } = this.props;
     return (
       <div className={classes.container}>
-        <Typography>Please make sure the cable is connected to <b>{PORT_NAMES[displayType]}</b> port on your {DISPLAY_NAMES[displayType]} device</Typography>
+        <Typography>Please make sure your device is on and the cable is connected to <b>{PORT_NAMES[displayType]}</b> port on your {DISPLAY_NAMES[displayType]} device</Typography>
         <Button
           className={classes.button}
           variant='contained'

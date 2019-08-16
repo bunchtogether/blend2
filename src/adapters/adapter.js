@@ -3,7 +3,7 @@
 export interface AdapterType {
   initialize(): *,
   pair(data: Object): Promise<*>,
-  setPower(power: boolean, forceWrite: boolean): Promise<boolean>,
+  setPower(power: boolean): Promise<boolean>,
   setVolume(volume: number): Promise<number>,
   setSource(source: string): Promise<string>,
   getDevice(): Promise<*>,
@@ -24,7 +24,7 @@ class AbstractAdapter {
     throw new Error('Method pair is not implemented.');
   }
 
-  setPower(power: boolean, forceWrite: boolean): Promise<boolean> { // eslint-disable-line no-unused-vars
+  setPower(power: boolean): Promise<boolean> { // eslint-disable-line no-unused-vars
     throw new Error('Method setPower is not implemented.');
   }
 

@@ -15,6 +15,7 @@ type DataType = {
 };
 
 const sources = {
+  TV: generateCode('302A3045304102303036303030304103'),
   VGA: generateCode('302A3045304102303036303030303103'),
   'HDMI-1': generateCode('302A3045304102303036303030313103'),
   'HDMI-2': generateCode('302A3045304102303036303030313203'),
@@ -106,13 +107,9 @@ class NecAdapter extends AbstractAdapter {
     });
   }
 
-  initialize() {
-    const logError = (error) => {
-      logger.error('Error initializing adapter');
-      logger.errorStack(error);
-    };
-    this.setPower(false, true).catch(logError);
-    setTimeout(() => this.setPower(true, true).catch(logError), 15000);
+  async initialize() {
+    await this.write(generateCode('302A30433036023030363203'), true);
+    await this.waitForMessage();
   }
 
   async pair() {
@@ -127,11 +124,11 @@ class NecAdapter extends AbstractAdapter {
     return deviceUpdate;
   }
 
-  async setPower(power: boolean, forceWrite: boolean = false) {
+  async setPower(power: boolean) {
     if (power) {
-      await this.write(generateCode('302A30413043024332303344363030303103'), forceWrite);
+      await this.write(generateCode('302A30413043024332303344363030303103'));
     } else {
-      await this.write(generateCode('302A30413043024332303344363030303403'), forceWrite);
+      await this.write(generateCode('302A30413043024332303344363030303403'));
     }
     return power;
   }
@@ -179,7 +176,7 @@ class NecAdapter extends AbstractAdapter {
     }
   }
 
-  waitForMessage(type?:string, duration?: number = 5000):Promise<Object> {
+  waitForMessage(duration?: number = 5000):Promise<Object> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         this.parser.removeListener('error', handleError);
@@ -187,12 +184,10 @@ class NecAdapter extends AbstractAdapter {
         reject(new Error('Timeout while waiting for message'));
       }, duration);
       const handleMessage = (message: Buffer) => {
-        // if (!type || tk === type) {
         clearTimeout(timeout);
         this.parser.removeListener('error', handleError);
         this.parser.removeListener('data', handleMessage);
         resolve([...message].map((n) => toHex(n)));
-        // }
       };
       const handleError = (error) => {
         clearTimeout(timeout);
