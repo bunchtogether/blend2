@@ -86,6 +86,17 @@ function* unpairDeviceSaga(): Saga<*> {
   }
 }
 
+function* pairDiscoverSaga(): Saga<*> {
+  try {
+    yield call(() => superagent.post(`${BASE_API_URL}/pair/pair-discover`));
+    yield put(resetPairing());
+    yield put(getPairedDevice());
+    yield put({ type: constants.PAIR_DISCOVER_SUCCESS, value: null });
+  } catch (error) {
+    yield put({ type: constants.PAIR_DISCOVER_ERROR, value: error });
+  }
+}
+
 function* discoverDevicesSaga(action: ActionType): Saga<*> {
   try {
     const { body: { devices } } = yield call(() => superagent.post(`${BASE_API_URL}/pair/discover`).send({ type: action.value }));
@@ -168,6 +179,7 @@ export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.DISCOVER_DEVICES, discoverDevicesSaga);
   yield takeLatest(constants.START_PAIRING, startPairingSaga);
   yield takeLatest(constants.PAIR_DEVICE, pairDeviceSaga);
+  yield takeLatest(constants.PAIR_DISCOVER, pairDiscoverSaga);
   // LOGS
   yield takeLatest(constants.GET_LOGS, getLogsSaga);
   yield takeLatest(constants.GENERATE_LOGS, generateLogsSaga);

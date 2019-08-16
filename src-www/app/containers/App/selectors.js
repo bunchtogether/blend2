@@ -44,6 +44,11 @@ export const deviceLoadedSelector = createSelector<StateType, *, *, *>(
   (state) => state.get('deviceLoaded'),
 );
 
+export const pairDiscoverSelector = createSelector<StateType, *, *, *>(
+  appState,
+  (state) => state.get('pairDiscover'),
+);
+
 export const pairedDeviceSelector = createSelector<StateType, *, *, *>(
   appState,
   (state) => state.get('pairedDevice'),
