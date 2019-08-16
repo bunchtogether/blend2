@@ -24,7 +24,7 @@ const logger = require('./logger')('Updater');
 
 const triggerUpdate = async ():Promise<void> => {
   logger.error('Triggering update');
-  throw new Error('triggerUpdate not implemented yet');
+  // throw new Error('triggerUpdate not implemented yet');
 };
 
 module.exports = {
