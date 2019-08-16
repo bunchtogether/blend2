@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import GridItemDisplayType from 'components/GridItemDisplayType';
 import { discoverDevices } from 'containers/App/actions';
-import * as constants from '../../constants';
+import { TYPE_VIZIO, DISPLAYS, PORT_NAMES, DISPLAY_NAMES } from '../../constants';
 
 const styles = (theme: Object) => ({
   container: {
@@ -38,8 +38,6 @@ type State = {
   displayType: ?string,
 };
 
-const DISPLAYS = [constants.TYPE_SAMSUNG, constants.TYPE_VIZIO];
-
 class GridDisplayTypes extends React.Component<Props, State> {
   state = {
     displayType: null,
@@ -52,26 +50,31 @@ class GridDisplayTypes extends React.Component<Props, State> {
     this.props.discoverDevices(type);
   }
 
+  renderCheck(displayType: string) {
+    const { classes } = this.props;
+    return (
+      <div className={classes.container}>
+        <Typography>Please make sure your device is on and the cable is connected to <b>{PORT_NAMES[displayType]}</b> port on your {DISPLAY_NAMES[displayType]} device</Typography>
+        <Button
+          className={classes.button}
+          variant='contained'
+          color='secondary'
+          onClick={() => this.handleSelect(displayType)}
+        >
+          Continue
+        </Button>
+        <Button className={classes.backButton} onClick={() => this.setState({ displayType: null })}>
+          Back
+        </Button>
+      </div>
+    );
+  }
+
   render() {
     const { classes } = this.props;
     const { displayType } = this.state;
-    if (displayType === constants.TYPE_SAMSUNG) {
-      return (
-        <div className={classes.container}>
-          <Typography>Please make sure the cable is connected to <b>EX-LINK</b> port on you Samsung device</Typography>
-          <Button
-            className={classes.button}
-            variant='contained'
-            color='secondary'
-            onClick={() => this.handleSelect(constants.TYPE_SAMSUNG)}
-          >
-            Continue
-          </Button>
-          <Button className={classes.backButton} onClick={() => this.setState({ displayType: null })}>
-            Back
-          </Button>
-        </div>
-      );
+    if (displayType) {
+      return this.renderCheck(displayType);
     }
 
     return (
@@ -83,7 +86,7 @@ class GridDisplayTypes extends React.Component<Props, State> {
               key={type}
               type={type}
               onClick={() => {
-                if (type === constants.TYPE_VIZIO) {
+                if (type === TYPE_VIZIO) {
                   this.handleSelect(type);
                 } else {
                   this.setState({ displayType: type });

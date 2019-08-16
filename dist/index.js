@@ -102,7 +102,13 @@ const start = async ()               => {
     }
   });
 
+<<<<<<< HEAD
   await triggerSwitchToBand();
+=======
+  if (os.platform() === 'win32') {
+    await switchToBand();
+  }
+>>>>>>> 107f6e7f328cc554f34d8af33ddac298ee9df0e7
 
   logger.info('Started');
 };

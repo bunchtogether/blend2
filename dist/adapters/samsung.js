@@ -3,6 +3,7 @@
                                              
 
 const SerialPort = require('serialport');
+const ByteLength = require('@serialport/parser-byte-length');
 const { TYPE_SAMSUNG, LEVEL_DB_DEVICE } = require('../constants');
 const AbstractAdapter = require('./adapter');
 const manufacturers = require('../manufacturers');
@@ -49,7 +50,7 @@ const addCheckSum = function (hexCode        ) {
 (x                ) => (x             ); // eslint-disable-line no-unused-expressions
 class SamsungAdapter extends AbstractAdapter {
   static async discover()             {
-    const list = await new Promise((resolve, reject) => SerialPort.list().then(resolve).catch(reject));
+    const list = await SerialPort.list();
     return list.filter((port        ) => manufacturers.some((manufacturer        ) => port.manufacturer && port.manufacturer.indexOf(manufacturer) !== -1)).map((port        ) => ({
       path: port.comName,
       type: TYPE_SAMSUNG, // eslint-disable-line no-param-reassign
@@ -76,6 +77,7 @@ class SamsungAdapter extends AbstractAdapter {
     this.port.on('error', () => {
       this.ready = false;
     });
+    this.parser = this.port.pipe(new ByteLength({ length: 3 }));
   }
 
   async write(command        , forceWrite          = false) {
@@ -111,13 +113,11 @@ class SamsungAdapter extends AbstractAdapter {
     });
   }
 
-  initialize() {
-    const logError = (error) => {
-      logger.error('Error initializing adapter');
-      logger.errorStack(error);
-    };
-    this.togglePower(true).catch(logError);
-    setTimeout(() => this.togglePower(true).catch(logError), 15000);
+  async initialize() {
+    await this.write('082202000000D4', true); // toggle mute
+    await this.waitForMessage();
+    await this.write('082202000000D4', true); // toggle mute
+    await this.waitForMessage();
   }
 
   async pair() {
@@ -130,10 +130,6 @@ class SamsungAdapter extends AbstractAdapter {
     await this.levelDb.put(LEVEL_DB_DEVICE, deviceUpdate);
     this.ready = true;
     return deviceUpdate;
-  }
-
-  async togglePower(forceWrite          = false) {
-    await this.write('082200000000D6', forceWrite);
   }
 
   async setPower(power         ) {
@@ -158,10 +154,6 @@ class SamsungAdapter extends AbstractAdapter {
     }
     await this.write(code);
     return source;
-  }
-
-  async toggleMute() {
-    await this.write('082202000000D4');
   }
 
   getDevice() {
@@ -191,10 +183,40 @@ class SamsungAdapter extends AbstractAdapter {
     }
   }
 
+  waitForMessage(duration          = 5000)                 {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        this.parser.removeListener('error', handleError);
+        this.parser.removeListener('data', handleMessage);
+        reject(new Error('Timeout while waiting for message'));
+      }, duration);
+      const handleMessage = (messageBuffer        ) => {
+        clearTimeout(timeout);
+        this.parser.removeListener('error', handleError);
+        this.parser.removeListener('data', handleMessage);
+        const message = [...messageBuffer].map((n) => toHex(n));
+        if (message[0] === '03' && message[1] === '0C' && message[2] === 'F1') {
+          resolve();
+        } else {
+          reject();
+        }
+      };
+      const handleError = (error) => {
+        clearTimeout(timeout);
+        this.parser.removeListener('error', handleError);
+        this.parser.removeListener('data', handleMessage);
+        reject(error);
+      };
+      this.parser.on('data', handleMessage);
+      this.parser.on('error', handleError);
+    });
+  }
+
                  
                
                   
                
+                 
 }
 
 module.exports = SamsungAdapter;
