@@ -12,6 +12,7 @@ import { Helmet } from 'react-helmet';
 import { withStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import SettingsLogs from 'components/SettingsLogs';
+import SettingsSetup from 'components/SettingsSetup';
 import SettingsPairDisplay from 'components/SettingsPairDisplay';
 
 const styles = (theme: Object) => ({
@@ -89,7 +90,8 @@ type State = {
 
 const DISPLAY = 'Display';
 const LOGS = 'Logs';
-const SECTIONS = [DISPLAY, LOGS];
+const SETUP = 'Setup';
+const SECTIONS = [DISPLAY, LOGS, SETUP];
 
 const BLEND_VERSION = process.env.BLEND_VERSION || 'X.X.X';
 
@@ -111,6 +113,8 @@ export class DialogSettings extends React.PureComponent<Props, State> { // eslin
         return <SettingsPairDisplay />;
       case LOGS:
         return <SettingsLogs />;
+      case SETUP:
+        return <SettingsSetup />;
       default:
         return null;
     }

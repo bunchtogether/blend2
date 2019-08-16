@@ -1,46 +1,55 @@
 #!/bin/bash
 
-# Cleanup Remove any zip filder older than a day
-find /tmp -type f -mtime +1 -name 'logs_*zip' -delete
-
-ZIP_ID=$(date +%s)
-mkdir -p /tmp/$ZIP_ID
-
-export OUTPUT_FILE_NAME="$ZIP_ID.zip"
+LOGS_DIR_NAME_SUFFIX=$(date +%s)
+LOGS_DIR_NAME="/tmp/logs_$LOGS_DIR_NAME_SUFFIX"
+ZIP_ARCHIVE_NAME="logs_$LOGS_DIR_NAME_SUFFIX.zip"
 if [ "$#" -eq 1 ]; then
-    export OUTPUT_FILE_NAME=$1
+    ZIP_ARCHIVE_NAME=$1
 fi
+ZIP_PATH="/tmp/$ZIP_ARCHIVE_NAME"
 
-# Dump Version Info
-if [ -x "$(which version)" ]; then
-    version -r >> /tmp/$ZIP_ID/version
+[ ! -d $LOGS_DIR_NAME ] && mkdir -p $LOGS_DIR_NAME
+
+# Blend logs
+journalctl -u blend > $LOGS_DIR_NAME/blend.log
+
+# System logs
+[ ! -d $LOGS_DIR_NAME/system_logs ] && mkdir -p $LOGS_DIR_NAME/system_logs
+cp -r /var/log/* $LOGS_DIR_NAME/system_logs
+
+# Network Config
+if [ $(which ip) ]; then
+    ip addr >> $LOGS_DIR_NAME/network_interfaces
 fi
-
-# application logs
-mkdir /tmp/$ZIP_ID/application_logs
-cp -r $PWD/*.log /tmp/$ZIP_ID/application_logs
-
-# /var/logs
-mkdir /tmp/$ZIP_ID/system_logs
-cp -r /var/log/* /tmp/$ZIP_ID/system_logs
-
-# ifconfig
-ip addr >> /tmp/$ZIP_ID/network_interfaces
 
 # Open ports
-lsof -P -n -l -iUDP >>  /tmp/$ZIP_ID/udp_ports.log
-lsof -P -n -l -i -sTCP:LISTEN >>  /tmp/$ZIP_ID/tcp_ports.log
+if [ $(which lsof) ]; then
+    lsof -i -P -n -l > $LOGS_DIR_NAME/network_connections.log
+    lsof -P -n -l -iUDP > $LOGS_DIR_NAME/udp_ports.log
+    lsof -P -n -l -i -sTCP:LISTEN > $LOGS_DIR_NAME/tcp_ports.log
+fi
 
-# Disk usage
-echo -e "\nlsblk\n*****\n" >> /tmp/$ZIP_ID/disk.log
-lsblk >> /tmp/$ZIP_ID/disk.log
-echo -e "\n\ndf -h\n*****\n" >> /tmp/$ZIP_ID/disk.log
-df -h >> /tmp/$ZIP_ID/disk.log
+# Disk
+if [ $(which lsblk) ];then
+    echo -e "\nlsblk\n*****\n" >> $LOGS_DIR_NAME/disk.log
+    lsblk >> $LOGS_DIR_NAME/disk.log
+fi
+if [ $(which df) ];then
+    echo -e "\n\ndf -h\n*****\n" >> $LOGS_DIR_NAME/disk.log
+    df -h >> $LOGS_DIR_NAME/disk.log
+fi
 
-# CPU Info
-top -b -n 1 >> /tmp/$ZIP_ID/process.log
-cat /proc/loadavg >> /tmp/$ZIP_ID/loadavg
+# Session Info
+[ $(which last) ] && last >> $LOGS_DIR_NAME/session.log
 
-$(cd /tmp/$ZIP_ID && zip -r -q "/tmp/$OUTPUT_FILE_NAME" *)
-rm -rf /tmp/$ZIP_ID
-echo /tmp/$OUTPUT_FILE_NAME
+# Process list
+[ $(which top) ] && top -b -n 1 > $LOGS_DIR_NAME/process.log
+
+[ -f /proc/loadavg ] && cat /proc/loadavg > $LOGS_DIR_NAME/loadavg
+
+# Archive logs
+if [ $(which zip) ]; then
+    zip $ZIP_PATH -r $LOGS_DIR_NAME
+fi
+
+echo $ZIP_PATH

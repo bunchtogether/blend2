@@ -20,7 +20,6 @@ if (os.platform() === 'win32') {
 }
 
 let exitCode = 0;
-
 const triggerSwitchToBand = async ():Promise<void> => {
   if (os.platform() === 'win32' && switchToBandFn !== null) {
     await switchToBandFn();
