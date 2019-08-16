@@ -6,7 +6,7 @@ const SerialPort = require('serialport');
 const ByteLength = require('@serialport/parser-byte-length');
 const { TYPE_SAMSUNG, LEVEL_DB_DEVICE } = require('../constants');
 const AbstractAdapter = require('./adapter');
-const manufacturers = require('../manufacturers');
+const rs232 = require('./lib/rs232');
 const logger = require('../lib/logger')('Samsung Adapter');
 
 type DataType = {
@@ -50,10 +50,10 @@ const addCheckSum = function (hexCode: string) {
 (x: SamsungAdapter) => (x: AdapterType); // eslint-disable-line no-unused-expressions
 class SamsungAdapter extends AbstractAdapter {
   static async discover(): Promise<*> {
-    const list = await SerialPort.list();
-    return list.filter((port: Object) => manufacturers.some((manufacturer: string) => port.manufacturer && port.manufacturer.indexOf(manufacturer) !== -1)).map((port: Object) => ({
+    const ports = await rs232.discover();
+    return ports.map((port: Object) => ({
       path: port.comName,
-      type: TYPE_SAMSUNG, // eslint-disable-line no-param-reassign
+      type: TYPE_SAMSUNG,
     }));
   }
 
@@ -68,14 +68,17 @@ class SamsungAdapter extends AbstractAdapter {
     this.ready = !!data.ready;
     this.port = new SerialPort(data.path, (error) => {
       if (error) {
-        this.ready = false;
+        this.close();
       }
     });
     this.port.on('close', () => {
-      this.ready = false;
+      this.close();
     });
     this.port.on('error', () => {
-      this.ready = false;
+      this.close();
+    });
+    this.openPromise = new Promise((resolve: Function) => {
+      this.port.on('open', resolve);
     });
     this.parser = this.port.pipe(new ByteLength({ length: 3 }));
   }
@@ -85,6 +88,7 @@ class SamsungAdapter extends AbstractAdapter {
     if (!this.ready && !forceWrite) {
       throw connectionError;
     }
+    await this.openPromise;
     await new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => reject(connectionError), 2000);
       this.port.drain((error) => {
@@ -170,6 +174,7 @@ class SamsungAdapter extends AbstractAdapter {
   }
 
   async close() {
+    this.ready = false;
     if (this.port.isOpen) {
       await new Promise((resolve, reject) => {
         this.port.close((err) => {
@@ -183,7 +188,8 @@ class SamsungAdapter extends AbstractAdapter {
     }
   }
 
-  waitForMessage(duration?: number = 5000):Promise<Object> {
+  async waitForMessage(duration?: number = 3000):Promise<Object> {
+    await this.openPromise;
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         this.parser.removeListener('error', handleError);
@@ -217,6 +223,7 @@ class SamsungAdapter extends AbstractAdapter {
   levelDb: Object;
   port: Object;
   parser: Object;
+  openPromise: Promise<*>;
 }
 
 module.exports = SamsungAdapter;

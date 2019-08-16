@@ -6,7 +6,7 @@ const SerialPort = require('serialport');
 const Delimiter = require('@serialport/parser-delimiter');
 const { TYPE_NEC, LEVEL_DB_DEVICE } = require('../constants');
 const AbstractAdapter = require('./adapter');
-const manufacturers = require('../manufacturers');
+const rs232 = require('./lib/rs232');
 const logger = require('../lib/logger')('Nec Adapter');
 
                  
@@ -44,10 +44,10 @@ function generateCode(command        ) {
 (x            ) => (x             ); // eslint-disable-line no-unused-expressions
 class NecAdapter extends AbstractAdapter {
   static async discover()             {
-    const list = await SerialPort.list();
-    return list.filter((port        ) => manufacturers.some((manufacturer        ) => port.manufacturer && port.manufacturer.indexOf(manufacturer) !== -1)).map((port        ) => ({
+    const ports = await rs232.discover();
+    return ports.map((port        ) => ({
       path: port.comName,
-      type: TYPE_NEC, // eslint-disable-line no-param-reassign
+      type: TYPE_NEC,
     }));
   }
 
@@ -62,14 +62,17 @@ class NecAdapter extends AbstractAdapter {
     this.ready = !!data.ready;
     this.port = new SerialPort(data.path, (error) => {
       if (error) {
-        this.ready = false;
+        this.close();
       }
     });
     this.port.on('close', () => {
-      this.ready = false;
+      this.close();
     });
     this.port.on('error', () => {
-      this.ready = false;
+      this.close();
+    });
+    this.openPromise = new Promise((resolve          ) => {
+      this.port.on('open', resolve);
     });
     this.parser = this.port.pipe(new Delimiter({ delimiter: Buffer.from([0x0D]) }));
   }
@@ -79,6 +82,7 @@ class NecAdapter extends AbstractAdapter {
     if (!this.ready && !forceWrite) {
       throw connectionError;
     }
+    await this.openPromise;
     await new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => reject(connectionError), 2000);
       this.port.drain((error) => {
@@ -163,6 +167,7 @@ class NecAdapter extends AbstractAdapter {
   }
 
   async close() {
+    this.ready = false;
     if (this.port.isOpen) {
       await new Promise((resolve, reject) => {
         this.port.close((err) => {
@@ -176,7 +181,8 @@ class NecAdapter extends AbstractAdapter {
     }
   }
 
-  waitForMessage(duration          = 5000)                 {
+  async waitForMessage(duration          = 3000)                 {
+    await this.openPromise;
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         this.parser.removeListener('error', handleError);
@@ -205,6 +211,7 @@ class NecAdapter extends AbstractAdapter {
                   
                
                  
+                          
 }
 
 module.exports = NecAdapter;

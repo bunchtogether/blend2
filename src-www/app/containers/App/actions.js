@@ -88,6 +88,13 @@ export function toggleMute(): ActionType {
   };
 }
 
+export function pairDiscover(): ActionType {
+  return {
+    type: constants.PAIR_DISCOVER,
+    value: null,
+  };
+}
+
 export function getPairedDevice(): ActionType {
   return {
     type: constants.GET_PAIRED_DEVICE,

@@ -14,6 +14,7 @@ const initialState = fromJS({
   discoveredDevices: null,
   startPairingSuccess: null,
   pairDeviceSuccess: null,
+  pairDiscover: null,
   remoteError: '',
   availableLogs: List(),
 });
@@ -31,6 +32,12 @@ export default (state: AppStateType = initialState, action: ActionType) => {
       return state.set('searchQuery', action.value);
     case constants.CLEAR_SEARCH:
       return state.set('searchQuery', '');
+    case constants.PAIR_DISCOVER:
+      return state.set('pairDiscover', null);
+    case constants.PAIR_DISCOVER_SUCCESS:
+      return state.set('pairDiscover', true);
+    case constants.PAIR_DISCOVER_ERROR:
+      return state.set('pairDiscover', false);
     case constants.GET_PAIRED_DEVICE_SUCCESS:
       return state.set('pairedDevice', action.value).set('deviceLoaded', true);
     case constants.GET_PAIRED_DEVICE_ERROR:
