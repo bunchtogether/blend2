@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BLEND_INSTALLTION_DIR="/usr/local/blend"
+BLEND_INSTALLTION_DIR="/etc/blend"
 LOGS_DIR_NAME_SUFFIX=$(date +%s)
 LOGS_DIR_NAME="/tmp/logs_$LOGS_DIR_NAME_SUFFIX"
 ZIP_ARCHIVE_NAME="logs_$LOGS_DIR_NAME_SUFFIX.zip"
@@ -15,26 +15,28 @@ ZIP_PATH="/tmp/$ZIP_ARCHIVE_NAME"
 [ -f $BLEND_INSTALLTION_DIR/VERSION ] && cp $BLEND_INSTALLTION_DIR/VERSION $LOGS_DIR_NAME/VERSION
 
 # Blend logs
-cp /usr/local/blend/blend.log $LOGS_DIR_NAME/blend.log
+journalctl -u blend > $LOGS_DIR_NAME/blend.log
 
 # System logs
 [ ! -d $LOGS_DIR_NAME/system_logs ] && mkdir -p $LOGS_DIR_NAME/system_logs
 cp -r /var/log/* $LOGS_DIR_NAME/system_logs
 
 # Network Config
-if [ $(which ifconfig) ]; then
-    ifconfig >> $LOGS_DIR_NAME/network_interfaces
+if [ $(which ip) ]; then
+    ip addr >> $LOGS_DIR_NAME/network_interfaces
 fi
 
 # Open ports
 if [ $(which lsof) ]; then
-    lsof -i -P -n > $LOGS_DIR_NAME/network_connections.log
+    lsof -i -P -n -l > $LOGS_DIR_NAME/network_connections.log
+    lsof -P -n -l -iUDP > $LOGS_DIR_NAME/udp_ports.log
+    lsof -P -n -l -i -sTCP:LISTEN > $LOGS_DIR_NAME/tcp_ports.log
 fi
 
 # Disk
-if [ $(which diskutil) ];then
-    echo -e "\diskutil\n*****\n" >> $LOGS_DIR_NAME/disk.log
-    diskutil list >> $LOGS_DIR_NAME/disk.log
+if [ $(which lsblk) ];then
+    echo -e "\nlsblk\n*****\n" >> $LOGS_DIR_NAME/disk.log
+    lsblk >> $LOGS_DIR_NAME/disk.log
 fi
 if [ $(which df) ];then
     echo -e "\n\ndf -h\n*****\n" >> $LOGS_DIR_NAME/disk.log
@@ -45,9 +47,9 @@ fi
 [ $(which last) ] && last >> $LOGS_DIR_NAME/session.log
 
 # Process list
-[ $(which top) ] && top -f -l 1 >> $LOGS_DIR_NAME/process.log
+[ $(which top) ] && top -b -n 1 > $LOGS_DIR_NAME/process.log
 
-[ $(which sysctl) ] && sysctl -n vm.loadavg >> $LOGS_DIR_NAME/loadavg
+[ -f /proc/loadavg ] && cat /proc/loadavg > $LOGS_DIR_NAME/loadavg
 
 # Archive logs
 if [ $(which zip) ]; then
@@ -55,4 +57,4 @@ if [ $(which zip) ]; then
 fi
 
 rm -rf $LOGS_DIR_NAME
-echo $ZIP_PATH
+echo "FILENAME:$ZIP_PATH"

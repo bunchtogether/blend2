@@ -1,6 +1,7 @@
 // @flow
 
 const os = require('os');
+const path = require('path');
 const LRU = require('lru-cache');
 const { spawn } = require('child_process');
 const { checkFileExists } = require('./utils');
@@ -29,6 +30,19 @@ const checkLogs = async function (filename: string): Promise<boolean> {
   }
 };
 
+const generateLogsScript = function ():string {
+  const logScriptsDir = path.resolve('scripts/dump-logs');
+  const platform = os.platform();
+  if (platform === 'darwin') {
+    return path.resolve(logScriptsDir, 'dump-logs.darwin.sh');
+  } else if (platform === 'win32') {
+    return path.resolve(logScriptsDir, 'dump-logs.win32.ps1');
+  } else if (platform === 'linux') {
+    return path.resolve(logScriptsDir, 'dump-logs.linux.sh');
+  }
+  throw new Error(`Log generator script not found, platform ${platform} not supported`);
+};
+
 const generateLogs = async function (): Promise<string> {
   const filename = `logs_${Math.floor(Date.now() / 1000)}.zip`;
   const currLogs = availableLogs();
@@ -36,19 +50,23 @@ const generateLogs = async function (): Promise<string> {
   if (Array.isArray(zipInProgress) && zipInProgress.length > 0) {
     return zipInProgress[0].filename;
   }
-  logMap.set(`${filename}`, { timestamp: Date.now(), available: false, filepath: `/tmp/${filename}` });
+  logMap.set(`${filename}`, { timestamp: Date.now(), available: false, filepath: null });
 
   try {
     let dumpLogs;
+    const logGeneratorScript = generateLogsScript();
     if (os.platform() === 'win32') {
-      dumpLogs = spawn('powershell.exe', [`${__dirname}\..\cli\dump-logs.ps1`, filename]); // eslint-disable-line no-useless-escape
+      dumpLogs = spawn('powershell.exe', ['-ExecutionPolicy', 'Bypass', '-File', logGeneratorScript, filename]);
     } else {
-      dumpLogs = spawn('bash', [`${__dirname}/../cli/dump-logs`, filename]);
+      dumpLogs = spawn('bash', [logGeneratorScript, filename]);
     }
     dumpLogs.stdout.on('data', (data) => {
-      const filepath = data.toString().trim();
-      logMap.set(filename, { timestamp: Date.now(), available: true, filepath });
-      logger.info(`Generated ${filename} located at ${data}`);
+      const rawData = data.toString().trim();
+      if (rawData.includes('FILENAME:')) {
+        const filepath = rawData.replace('FILENAME:', '').trim();
+        logMap.set(filename, { timestamp: Date.now(), available: true, filepath });
+        logger.info(`Generated ${filename} located at ${filepath}`);
+      }
     });
 
     dumpLogs.on('close', (code) => {
