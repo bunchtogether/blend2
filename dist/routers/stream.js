@@ -61,9 +61,11 @@ getBroadcastAddresses();
 
 const broadcastBlendBox = (blendBox       ) => {
   if (!broadcastSocket) {
+    logger.warn('Not broadcasting blend box; no broadcast socket');
     return;
   }
   for (const address of broadcastAddresses) {
+    logger.info(`Broadcasting blend box to ${address}`);
     broadcastSocket.send(blendBox, 0, 40, API_PORT, address);
   }
 };
@@ -284,7 +286,7 @@ const startStream = async (socketId       , url       ) => {
     }
   });
   const handleStart = (start       ) => {
-    logger.info(`Found start ${start}, sending free box`);
+    processLogger.info(`Sending start message of ${start} to socket ID ${socketId}`);
     const freeBox = Buffer.alloc(20);
     freeBox.set([0x00, 0x00, 0x00, 0x14, 0x66, 0x72, 0x65, 0x65], 0);
     freeBox.set([0x3E, 0x3E], 8);
@@ -316,8 +318,10 @@ const startStream = async (socketId       , url       ) => {
     }
   }, 10000);
   const handleBroadcastMessage = (message, rinfo) => {
+    logger.info('Received broadcast message');
     const blendBoxIndex = message.indexOf(BLEND_BOX_DELIMETER);
     if (blendBoxIndex !== 4) {
+      logger.warn('Blend box index did not match');
       return;
     }
     syncPeers[`${rinfo.address}:${rinfo.port}`] = Date.now();
@@ -530,8 +534,10 @@ module.exports.getStreamRouter = () => {
 
     let heartbeatTimeout;
     ws.on('message', (event) => {
+      logger.info('Received sync message from websocket');
       const blendBoxIndex = event.indexOf(BLEND_BOX_DELIMETER);
       if (blendBoxIndex === 4) {
+        logger.info('Broadcasting Blend box');
         broadcastBlendBox(event.slice(0, 40));
       }
       clearTimeout(heartbeatTimeout);
@@ -569,7 +575,7 @@ module.exports.getStreamRouter = () => {
     }
 
     if (!sockets.has(socketId)) {
-      logger.error(`Not starting  stream for ${url}, socket closed`);
+      logger.error(`Not starting stream for ${url}, socket closed`);
       return;
     }
 
