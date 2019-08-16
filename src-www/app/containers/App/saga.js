@@ -4,7 +4,7 @@ import type { Saga } from 'redux-saga';
 import { push } from 'connected-react-router';
 import { select, put, takeLatest, call, throttle } from 'redux-saga/effects';
 import superagent from 'superagent';
-import { setDiscoveredDevices, getPairedDevice, resetPairing } from 'containers/App/actions';
+import { setDiscoveredDevices, getPairedDevice, resetPairing, navigateSetup } from 'containers/App/actions';
 import * as constants from './constants';
 
 const PROJECT_PROTOCOL = process.env.BLEND_PROTOCOL || window.location.protocol.replace(':', '');
@@ -13,6 +13,7 @@ const PROJECT_PORT = process.env.BLEND_PORT || window.location.port;
 const BASE_API_URL = `${PROJECT_PROTOCOL}://${PROJECT_HOST}:${PROJECT_PORT}/api/1.0`;
 
 function* setupSaga(): Saga<*> {
+  yield* getDeviceIpSaga();
   yield put(getPairedDevice());
 }
 
@@ -156,6 +157,43 @@ function* navigate(pathname: string, action: ActionType): Saga<*> {
   }
 }
 
+function* getDeviceIpSaga(): Saga<*> {
+  try {
+    const result = yield call(() => superagent.get(`${BASE_API_URL}/setup/ip`));
+    if (result && result.body) {
+      if (result.body.ip === '') {
+        yield put(navigateSetup());
+      }
+      yield put({ type: constants.GET_DEVICE_IP_RESULT, value: result.body });
+    }
+  } catch (error) {
+    yield put({ type: constants.GET_DEVICE_IP_ERROR, value: error });
+  }
+}
+
+function* setDeviceIpSaga(action: ActionType): Saga<*> {
+  try {
+    const result = yield call(() => superagent.put(`${BASE_API_URL}/setup/ip`).send({ ip: action.value }));
+    if (result && result.status === 200) {
+      yield put({ type: constants.SET_DEVICE_IP_RESULT, value: { ip: action.value } });
+    }
+  } catch (error) {
+    yield put({ type: constants.SET_DEVICE_IP_ERROR, value: error });
+  }
+}
+
+function* deviceUpdateSaga(): Saga<*> {
+  try {
+    const result = yield call(() => superagent.post(`${BASE_API_URL}/setup/update-device`));
+    if (result && result.status === 200) {
+      yield put({ type: constants.TRIGGER_DEVICE_UPDATE_RESULT, value: 'success' });
+    }
+  } catch (error) {
+    yield put({ type: constants.TRIGGER_DEVICE_UPDATE_ERROR, value: error });
+  }
+}
+
+
 export default function* defaultSaga(): Saga<*> {
   yield takeLatest(constants.SEARCH, searchSaga);
   // DEVICE
@@ -174,7 +212,11 @@ export default function* defaultSaga(): Saga<*> {
   // NAVIGATION
   yield takeLatest(constants.NAVIGATE_STREAM, navigate, '/stream');
   yield takeLatest(constants.NAVIGATE_REMOTE, navigate, '/remote');
+  yield takeLatest(constants.NAVIGATE_SETUP, navigate, '/setup');
   // SETUP
+  yield takeLatest(constants.GET_DEVICE_IP, getDeviceIpSaga);
+  yield takeLatest(constants.SET_DEVICE_IP, setDeviceIpSaga);
+  yield takeLatest(constants.TRIGGER_DEVICE_UPDATE, deviceUpdateSaga);
   yield call(setupSaga);
 }
 
