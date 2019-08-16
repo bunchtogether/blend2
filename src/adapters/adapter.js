@@ -6,7 +6,6 @@ export interface AdapterType {
   setPower(power: boolean): Promise<boolean>,
   setVolume(volume: number): Promise<number>,
   setSource(source: string): Promise<string>,
-  toggleMute(): Promise<void>,
   getDevice(): Promise<*>,
   close(): Promise<*>,
 }
@@ -35,10 +34,6 @@ class AbstractAdapter {
 
   setSource(source: string): Promise<string> { // eslint-disable-line no-unused-vars
     throw new Error('Method setSource is not implemented.');
-  }
-
-  toggleMute(): Promise<void> { // eslint-disable-line no-unused-vars
-    throw new Error('Method toggleMute is not implemented.');
   }
 
   getDevice(): Promise<*> { // eslint-disable-line no-unused-vars

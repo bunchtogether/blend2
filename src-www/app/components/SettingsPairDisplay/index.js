@@ -43,15 +43,37 @@ type Props = {
 
 type State = {
   activeStep: number,
+  showPairedDevice: boolean,
+  resetting: boolean,
 };
 
 class SettingsDisplay extends React.Component<Props, State> {
+  static getDerivedStateFromProps(props: Props, state: State) {
+    if (state.resetting) {
+      return {
+        resetting: false,
+      };
+    }
+    if (props.pairedDevice && state.activeStep === 0) {
+      return {
+        showPairedDevice: true,
+      };
+    }
+    return null;
+  }
+
   state = {
     activeStep: 0,
+    showPairedDevice: false,
+    resetting: false,
   };
 
-  componentDidMount() {
-    this.reset();
+  componentDidUpdate() {
+    const { pairedDevice } = this.props;
+    const { activeStep } = this.state;
+    if (activeStep === 3 && pairedDevice) {
+      setTimeout(() => this.setState({ showPairedDevice: true }), 2000);
+    }
   }
 
   componentWillUnmount() {
@@ -59,7 +81,7 @@ class SettingsDisplay extends React.Component<Props, State> {
   }
 
   reset = () => {
-    this.setState({ activeStep: 0 });
+    this.setState({ activeStep: 0, showPairedDevice: false, resetting: true });
     this.props.resetPairing();
   }
 
@@ -101,8 +123,8 @@ class SettingsDisplay extends React.Component<Props, State> {
 
   render() {
     const { classes, pairedDevice } = this.props;
-    const { activeStep } = this.state;
-    if (pairedDevice) {
+    const { activeStep, showPairedDevice } = this.state;
+    if (showPairedDevice && pairedDevice) {
       return (
         <div>
           <Typography className={classes.title} variant='h6'>Paired display</Typography>

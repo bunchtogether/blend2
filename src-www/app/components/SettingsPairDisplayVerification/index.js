@@ -5,16 +5,20 @@ import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 import { withStyles } from '@material-ui/core/styles';
 import Progress from 'components/Progress';
+import Typography from '@material-ui/core/Typography';
 import VerificationVizio from 'components/VerificationVizio';
-import VerificationSamsung from 'components/VerificationSamsung';
 import { pairDevice } from 'containers/App/actions';
 import { startPairingSuccessSelector, discoveryDeviceTypeSelector } from 'containers/App/selectors';
 import * as constants from '../../constants';
 
-const styles = () => ({
+const styles = (theme: Object) => ({
+  error: {
+    color: theme.palette.error[500],
+  },
 });
 
 type Props = {
+  classes: Object,
   pairDevice: Function,
   onClick?: Function,
   startPairingSuccess: ?boolean,
@@ -30,15 +34,22 @@ class SettingsPairVerification extends React.PureComponent<Props> {
   }
 
   render() {
-    const { startPairingSuccess, discoveryDeviceType } = this.props;
-    if (!startPairingSuccess) {
+    const { classes, startPairingSuccess, discoveryDeviceType } = this.props;
+    if (startPairingSuccess === null) {
       return <Progress title='Initializing pairing' />;
+    }
+    if (!startPairingSuccess) {
+      return <Typography className={classes.error}>{`Failed to pair ${constants.DISPLAY_NAMES[discoveryDeviceType]} device`}</Typography>;
     }
     switch (discoveryDeviceType) {
       case constants.TYPE_VIZIO:
         return <VerificationVizio handleSubmit={this.handleSubmit} />;
       case constants.TYPE_SAMSUNG:
-        return <VerificationSamsung handleSubmit={this.handleSubmit} />;
+        this.handleSubmit({});
+        return null;
+      case constants.TYPE_NEC:
+        this.handleSubmit({});
+        return null;
       default:
         return null;
     }

@@ -6,7 +6,6 @@
                                              
                                              
                                              
-                              
                           
                       
  
@@ -35,10 +34,6 @@ class AbstractAdapter {
 
   setSource(source        )                  { // eslint-disable-line no-unused-vars
     throw new Error('Method setSource is not implemented.');
-  }
-
-  toggleMute()                { // eslint-disable-line no-unused-vars
-    throw new Error('Method toggleMute is not implemented.');
   }
 
   getDevice()             { // eslint-disable-line no-unused-vars

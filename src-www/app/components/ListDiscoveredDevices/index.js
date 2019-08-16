@@ -11,7 +11,7 @@ import List from '@material-ui/core/List';
 import ListItemDevice from 'components/ListItemDevice';
 import Progress from 'components/Progress';
 import { startPairing } from 'containers/App/actions';
-import { capitalize } from '../../utils';
+import { DISPLAY_NAMES } from '../../constants';
 
 const styles = (theme: Object) => ({
   progressContainer: {
@@ -52,10 +52,10 @@ class ListDiscoveredDevices extends React.PureComponent<Props> {
   render() {
     const { classes, discoveredDevices, discoveryDeviceType } = this.props;
     if (!discoveredDevices) {
-      return <Progress title={`Searching for ${capitalize(discoveryDeviceType)} displays`} />;
+      return <Progress title={`Searching for ${DISPLAY_NAMES[discoveryDeviceType]} displays`} />;
     }
     if (discoveredDevices.size === 0) {
-      return <Typography className={classes.error}>{`No ${capitalize(discoveryDeviceType)} displays found`}</Typography>;
+      return <Typography className={classes.error}>{`No ${DISPLAY_NAMES[discoveryDeviceType]} displays found`}</Typography>;
     }
     return (
       <List>
