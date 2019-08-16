@@ -167,6 +167,9 @@ function* getDeviceIpSaga(): Saga<*> {
       yield put({ type: constants.GET_DEVICE_IP_RESULT, value: result.body });
     }
   } catch (error) {
+    if (error.response.body.ip === '') {
+      yield put(navigateSetup());
+    }
     yield put({ type: constants.GET_DEVICE_IP_ERROR, value: error });
   }
 }
