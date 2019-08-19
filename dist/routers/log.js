@@ -4,7 +4,6 @@ const { Router } = require('express');
 const makeLogger = require('../lib/logger');
 
 const logger = makeLogger('Log Router API');
-const loggers = {};
 
 module.exports.getLogRouter = () => {
   logger.info('Attaching /api/1.0/log');
@@ -30,24 +29,20 @@ module.exports.getLogRouter = () => {
       res.status(400).send('Missing required body parameter "value"');
       return;
     }
-    let browserLogger = loggers[name];
-    if (!browserLogger) {
-      browserLogger = makeLogger(name);
-      loggers[name] = browserLogger;
-    }
+    const browserLogger = makeLogger(name);
     let logFunc;
     switch (level) {
       case 'debug':
-        logFunc = browserLogger.debug;
+        logFunc = browserLogger.debug.bind(browserLogger);
         break;
       case 'info':
-        logFunc = browserLogger.info;
+        logFunc = browserLogger.info.bind(browserLogger);
         break;
       case 'warn':
-        logFunc = browserLogger.warn;
+        logFunc = browserLogger.warn.bind(browserLogger);
         break;
       case 'error':
-        logFunc = browserLogger.error;
+        logFunc = browserLogger.error.bind(browserLogger);
         break;
       default:
         throw new Error(`Unknown log level ${level}`);
