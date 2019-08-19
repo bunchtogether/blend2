@@ -126,7 +126,6 @@ class Player extends React.PureComponent<Props> {
 
   render() {
     const { classes } = this.props;
-    console.log(this.props);
     return (
       <div className={classes.container}>
         <video
