@@ -13,7 +13,7 @@ import Progress from 'components/Progress';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItemDevice from 'components/ListItemDevice';
-import { resetPairing, unpairDevice } from 'containers/App/actions';
+import { resetPairing, unpairDevice, pairDiscover } from 'containers/App/actions';
 import { pairDeviceSuccessSelector, discoveryDeviceTypeSelector, pairedDeviceSelector, discoveredDevicesSelector } from 'containers/App/selectors';
 import { capitalize } from '../../utils';
 
@@ -35,6 +35,7 @@ type Props = {
   classes: Object,
   resetPairing: Function,
   unpairDevice: Function,
+  pairDiscover: Function,
   pairDeviceSuccess: ?boolean,
   discoveryDeviceType: string,
   pairedDevice: Object,
@@ -45,6 +46,7 @@ type State = {
   activeStep: number,
   showPairedDevice: boolean,
   resetting: boolean,
+  pairDiscovery: boolean,
 };
 
 class SettingsDisplay extends React.Component<Props, State> {
@@ -54,9 +56,11 @@ class SettingsDisplay extends React.Component<Props, State> {
         resetting: false,
       };
     }
-    if (props.pairedDevice && state.activeStep === 0) {
+    if (props.pairedDevice && state.activeStep === 0 && !state.pairDiscovery) {
       return {
         showPairedDevice: true,
+        activeStep: 0,
+        pairDiscovery: false,
       };
     }
     return null;
@@ -66,12 +70,13 @@ class SettingsDisplay extends React.Component<Props, State> {
     activeStep: 0,
     showPairedDevice: false,
     resetting: false,
+    pairDiscovery: false,
   };
 
   componentDidUpdate() {
     const { pairedDevice } = this.props;
-    const { activeStep } = this.state;
-    if (activeStep === 3 && pairedDevice) {
+    const { activeStep, pairDiscovery } = this.state;
+    if (pairedDevice && (activeStep === 3 || pairDiscovery)) {
       setTimeout(() => this.setState({ showPairedDevice: true }), 2000);
     }
   }
@@ -85,6 +90,11 @@ class SettingsDisplay extends React.Component<Props, State> {
     this.props.resetPairing();
   }
 
+  handleAutoDetect = () => {
+    this.setState({ pairDiscovery: true });
+    this.props.pairDiscover();
+  }
+
   handleNextStep = () => {
     const { activeStep } = this.state;
     this.setState({ activeStep: activeStep + 1 });
@@ -94,9 +104,9 @@ class SettingsDisplay extends React.Component<Props, State> {
     const { discoveredDevices } = this.props;
     const { activeStep } = this.state;
     if (activeStep === 2 && ImmutableList.isList(discoveredDevices) && discoveredDevices.size === 1) {
-      this.setState({ activeStep: 0 });
+      this.setState({ activeStep: 0, pairDiscovery: false });
     } else {
-      this.setState({ activeStep: activeStep > 0 ? activeStep - 1 : 0 });
+      this.setState({ activeStep: activeStep > 0 ? activeStep - 1 : 0, pairDiscovery: false });
     }
   }
 
@@ -111,7 +121,13 @@ class SettingsDisplay extends React.Component<Props, State> {
   renderStepContent(activeStep: number) {
     switch (activeStep) {
       case 0:
-        return <GridDisplayTypes onClick={this.handleNextStep} />;
+        return (
+          <GridDisplayTypes
+            onClick={this.handleNextStep}
+            pairDiscovery={this.state.pairDiscovery}
+            onAutoDetect={this.handleAutoDetect}
+          />
+        );
       case 1:
         return <ListDiscoveredDevices onClick={this.handleNextStep} />;
       case 2:
@@ -150,7 +166,7 @@ class SettingsDisplay extends React.Component<Props, State> {
       <div>
         <Typography className={classes.title} variant='h6'>Pair new display</Typography>
         {this.renderStepContent(activeStep)}
-        {activeStep > 0 && activeStep < 3 ? (
+        {activeStep > 0 && activeStep < 3 || this.state.pairDiscovery ? (
           <Button className={classes.backButton} onClick={this.handlePreviousStep}>
             Back
           </Button>
@@ -166,7 +182,7 @@ const withConnect = connect((state: StateType) => ({
   discoveryDeviceType: discoveryDeviceTypeSelector(state),
   pairedDevice: pairedDeviceSelector(state),
   discoveredDevices: discoveredDevicesSelector(state),
-}), (dispatch: Function): Object => bindActionCreators({ resetPairing, unpairDevice }, dispatch));
+}), (dispatch: Function): Object => bindActionCreators({ resetPairing, unpairDevice, pairDiscover }, dispatch));
 
 export default compose(
   withStyles(styles),

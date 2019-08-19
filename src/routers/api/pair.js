@@ -114,5 +114,16 @@ module.exports.getPairRouter = (levelDb:Object) => {
     res.sendStatus(200);
   });
 
+  router.post('/pair-discover', async (req: express$Request, res: express$Response) => {
+    try {
+      await adapters.discover(levelDb);
+      res.sendStatus(200);
+    } catch (error) {
+      logger.error('Error on pair-discovery');
+      logger.errorStack(error);
+      res.sendStatus(400);
+    }
+  });
+
   return router;
 };
