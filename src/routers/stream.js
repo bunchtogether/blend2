@@ -438,6 +438,7 @@ module.exports.shutdownStreamRouter = async () => {
   clearInterval(broadcastAddressesInterval);
   if (broadcastSocket) {
     const bs = broadcastSocket;
+    broadcastSocket = null;
     await new Promise((resolve, reject) => {
       const handleError = (error) => {
         bs.removeListener('error', handleError);
