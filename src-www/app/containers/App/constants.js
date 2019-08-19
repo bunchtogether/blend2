@@ -69,6 +69,7 @@ export const SET_DEVICE_IP_ERROR = 'web/App/SET_DEVICE_IP_ERROR';
 export const GET_DEVICE_IP = 'web/App/GET_DEVICE_IP';
 export const GET_DEVICE_IP_RESULT = 'web/App/GET_DEVICE_IP_RESULT';
 export const GET_DEVICE_IP_ERROR = 'web/App/GET_DEVICE_IP_ERROR';
+export const SKIP_DEVICE_IP = 'web/App/SKIP_DEVICE_IP';
 
 export const TRIGGER_DEVICE_UPDATE = 'web/App/TRIGGER_DEVICE_UPDATE';
 export const TRIGGER_DEVICE_UPDATE_RESULT = 'web/App/TRIGGER_DEVICE_UPDATE_RESULT';
