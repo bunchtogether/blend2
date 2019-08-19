@@ -26,7 +26,8 @@ const logger = makeLogger('Stream Router API');
 const BLEND_BOX_DELIMETER = Buffer.from([0x73, 0x6B, 0x69, 0x70]);
 
 let broadcastSocket = null;
-let broadcastAddresses = [];
+let broadcastAddresses = new Set();
+let broadcastInterfaces = new Set();
 let broadcastAddressesInterval;
 
 const addStreamUrlParameters = module.exports.addStreamUrlParameters = (url       ) => {
@@ -39,7 +40,8 @@ const addStreamUrlParameters = module.exports.addStreamUrlParameters = (url     
 };
 
 const getBroadcastAddresses = () => {
-  broadcastAddresses = [];
+  broadcastAddresses = new Set();
+  broadcastInterfaces = new Set();
   const networkInterfaces = os.networkInterfaces();
   for (const iface of Object.keys(networkInterfaces)) {
     if (networkInterfaces[iface] && networkInterfaces[iface].length > 0) {
@@ -49,7 +51,10 @@ const getBroadcastAddresses = () => {
     }
     try {
       const address = broadcastAddress(iface);
-      broadcastAddresses.push(address);
+      broadcastAddresses.add(address);
+      for(const { address: ifaceAddress } of networkInterfaces[iface]) {
+        broadcastInterfaces.add(ifaceAddress);
+      }
       logger.info(`Found broadcast addresses ${address} for interface ${iface}`);
     } catch (error) {
       logger.warn(`Unable to get broadcast address for interface ${iface}`);
@@ -286,9 +291,8 @@ const startStream = async (socketId       , url       ) => {
     }
   });
   const handleStart = (start       ) => {
-    processLogger.info(`Sending start message of ${start} to socket ID ${socketId}`);
-    const freeBox = Buffer.alloc(20);
-    freeBox.set([0x00, 0x00, 0x00, 0x14, 0x66, 0x72, 0x65, 0x65], 0);
+    const freeBox = Buffer.alloc(18);
+    freeBox.set([0x00, 0x00, 0x00, 0x12, 0x66, 0x72, 0x65, 0x65], 0);
     freeBox.set([0x3E, 0x3E], 8);
     freeBox.writeDoubleBE(start, 10);
     const ws = sockets.get(socketId);
@@ -303,6 +307,7 @@ const startStream = async (socketId       , url       ) => {
       return;
     }
     ws.send(freeBox, { compress: false, binary: true });
+    processLogger.info(`Sent start message of ${start} to socket ID ${socketId}`);
   };
   const syncPeers = {};
   const syncPeerReportingInterval = setInterval(() => {
@@ -318,10 +323,14 @@ const startStream = async (socketId       , url       ) => {
     }
   }, 10000);
   const handleBroadcastMessage = (message, rinfo) => {
-    logger.info('Received broadcast message');
+    logger.info(`Received broadcast message from ${rinfo.address}:${rinfo.port}`);
     const blendBoxIndex = message.indexOf(BLEND_BOX_DELIMETER);
     if (blendBoxIndex !== 4) {
       logger.warn('Blend box index did not match');
+      return;
+    }
+    if(broadcastInterfaces.has(rinfo.address)) {
+      logger.warn('Ignoring local Blend box');
       return;
     }
     syncPeers[`${rinfo.address}:${rinfo.port}`] = Date.now();
