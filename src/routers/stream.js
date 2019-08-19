@@ -70,7 +70,6 @@ const broadcastBlendBox = (blendBox:Buffer) => {
     return;
   }
   for (const address of broadcastAddresses) {
-    logger.info(`Broadcasting blend box to ${address}`);
     broadcastSocket.send(blendBox, 0, 40, API_PORT, address);
   }
 };
@@ -254,6 +253,7 @@ const startStream = async (socketId:number, url:string) => {
   logger.info(`Sending ${url} to ${socketId}`);
   const args = [
     '-nostats',
+    '-loglevel', 'debug',
     '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
     '-copyts',
@@ -329,7 +329,6 @@ const startStream = async (socketId:number, url:string) => {
       return;
     }
     if(broadcastInterfaces.has(rinfo.address)) {
-      logger.warn('Ignoring local Blend box');
       return;
     }
     syncPeers[`${rinfo.address}:${rinfo.port}`] = Date.now();
@@ -544,7 +543,6 @@ module.exports.getStreamRouter = () => {
     ws.on('message', (event) => {
       const blendBoxIndex = event.indexOf(BLEND_BOX_DELIMETER);
       if (blendBoxIndex === 4) {
-        logger.info('Broadcasting Blend box');
         broadcastBlendBox(event.slice(0, 40));
       }
       clearTimeout(heartbeatTimeout);
