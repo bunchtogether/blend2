@@ -89,6 +89,8 @@ export default (state: AppStateType = initialState, action: ActionType) => {
       return state.set('deviceIp', fromJS({ ip: '' }));
     case constants.SET_DEVICE_IP_ERROR:
       return state.set('deviceIp', fromJS({ ip: '' }));
+    case constants.SKIP_DEVICE_IP:
+      return state.set('deviceIp', fromJS({ ip: '0.0.0.0' }));
 
     // LOG FILES
     case constants.GET_LOGS_SUCCESS:

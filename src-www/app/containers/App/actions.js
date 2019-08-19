@@ -182,6 +182,13 @@ export function setDeviceIp(ip: string): ActionType {
   };
 }
 
+export function skipDeviceIp(): ActionType {
+  return {
+    type: constants.SKIP_DEVICE_IP,
+    value: null,
+  };
+}
+
 export function triggerDeviceUpdate(ip: string): ActionType {
   return {
     type: constants.TRIGGER_DEVICE_UPDATE,
