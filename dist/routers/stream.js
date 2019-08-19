@@ -290,25 +290,6 @@ const startStream = async (socketId       , url       ) => {
       processLogger.error(error.message);
     }
   });
-  const handleStart = (start       ) => {
-    const freeBox = Buffer.alloc(18);
-    freeBox.set([0x00, 0x00, 0x00, 0x12, 0x66, 0x72, 0x65, 0x65], 0);
-    freeBox.set([0x3E, 0x3E], 8);
-    freeBox.writeDoubleBE(start, 10);
-    const ws = sockets.get(socketId);
-    if (!ws) {
-      mainProcess.stdout.removeListener('data', stdOutDataHandler);
-      processLogger.error(`Cannot send start message to socket ID ${socketId}, socket does not exist`);
-      return;
-    }
-    if (ws.readyState !== 1) {
-      mainProcess.stdout.removeListener('data', stdOutDataHandler);
-      processLogger.error(`Cannot send start message to socket ID ${socketId}, ready state is ${ws.readyState}`);
-      return;
-    }
-    ws.send(freeBox, { compress: false, binary: true });
-    processLogger.info(`Sent start message of ${start} to socket ID ${socketId}`);
-  };
   const syncPeers = {};
   const syncPeerReportingInterval = setInterval(() => {
     const cutoff = Date.now() - 20000;
@@ -352,9 +333,28 @@ const startStream = async (socketId       , url       ) => {
       logger.errorStack(error);
     }
   };
-  if (broadcastSocket) {
-    broadcastSocket.on('message', handleBroadcastMessage);
-  }
+  const handleStart = (start       ) => {
+    const freeBox = Buffer.alloc(18);
+    freeBox.set([0x00, 0x00, 0x00, 0x12, 0x66, 0x72, 0x65, 0x65], 0);
+    freeBox.set([0x3E, 0x3E], 8);
+    freeBox.writeDoubleBE(start, 10);
+    const ws = sockets.get(socketId);
+    if (!ws) {
+      mainProcess.stdout.removeListener('data', stdOutDataHandler);
+      processLogger.error(`Cannot send start message to socket ID ${socketId}, socket does not exist`);
+      return;
+    }
+    if (ws.readyState !== 1) {
+      mainProcess.stdout.removeListener('data', stdOutDataHandler);
+      processLogger.error(`Cannot send start message to socket ID ${socketId}, ready state is ${ws.readyState}`);
+      return;
+    }
+    ws.send(freeBox, { compress: false, binary: true });
+    processLogger.info(`Sent start message of ${start} to socket ID ${socketId}`);
+    if (broadcastSocket) {
+      broadcastSocket.on('message', handleBroadcastMessage);
+    }
+  };
   mainProcess.once('close', (code) => {
     if (broadcastSocket) {
       broadcastSocket.removeListener('message', handleBroadcastMessage);
