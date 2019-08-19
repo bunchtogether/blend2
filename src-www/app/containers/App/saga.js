@@ -169,16 +169,17 @@ function* navigate(pathname: string, action: ActionType): Saga<*> {
 }
 
 function* getDeviceIpSaga(): Saga<*> {
+  const skipIpSetup = window.localStorage.getItem('skipIpSetup');
   try {
     const result = yield call(() => superagent.get(`${BASE_API_URL}/setup/ip`));
     if (result && result.body) {
-      if (result.body.ip === '') {
+      if (result.body.ip === '' && !skipIpSetup) {
         yield put(navigateSetup());
       }
       yield put({ type: constants.GET_DEVICE_IP_RESULT, value: result.body });
     }
   } catch (error) {
-    if (error.response.body.ip === '') {
+    if (error.response.body.ip === '' && !skipIpSetup) {
       yield put(navigateSetup());
     }
     yield put({ type: constants.GET_DEVICE_IP_ERROR, value: error });
@@ -194,6 +195,10 @@ function* setDeviceIpSaga(action: ActionType): Saga<*> {
   } catch (error) {
     yield put({ type: constants.SET_DEVICE_IP_ERROR, value: error });
   }
+}
+
+function* skipDeviceIpSaga(action: ActionType): Saga<*> {
+  window.localStorage.setItem('skipIpSetup', true);
 }
 
 function* deviceUpdateSaga(): Saga<*> {
@@ -231,6 +236,7 @@ export default function* defaultSaga(): Saga<*> {
   // SETUP
   yield takeLatest(constants.GET_DEVICE_IP, getDeviceIpSaga);
   yield takeLatest(constants.SET_DEVICE_IP, setDeviceIpSaga);
+  yield takeLatest(constants.SKIP_DEVICE_IP, skipDeviceIpSaga);
   yield takeLatest(constants.TRIGGER_DEVICE_UPDATE, deviceUpdateSaga);
   yield call(setupSaga);
 }
