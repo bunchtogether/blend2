@@ -259,7 +259,7 @@ const startStream = async (socketId:number, url:string) => {
     '-copyts',
     '-i', addStreamUrlParameters(url),
     '-c:a', 'aac',
-    '-af', 'aresample=async=176000',
+    '-af', 'aresample=async=176000:min_comp=0.0001',
     '-c:v', 'copy',
     '-f', 'mp4',
     '-write_prft', 'wallclock',
