@@ -16,7 +16,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Header from 'components/Header';
-import { setDeviceIp, navigateRemote } from 'containers/App/actions';
+import { setDeviceIp, navigateRemote, skipDeviceIp } from 'containers/App/actions';
 import { deviceIpSelector } from 'containers/App/selectors';
 
 const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
@@ -45,13 +45,21 @@ const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
   },
   button: {
     width: 100,
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(3),
+    backgroundColor: theme.palette.secondary.light,
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.main,
+    }
   },
   marginTop: {
     marginTop: theme.spacing(1),
   },
   error: {
     color: 'red',
+  },
+  skipButton: {
+    position: 'absolute',
+    bottom: theme.spacing(3),
   },
 });
 
@@ -109,6 +117,11 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
       return false;
     }
     return true;
+  }
+
+  handleSkip = () => {
+    this.props.skipDeviceIp();
+    this.props.navigateRemote();
   }
 
   handleSubmit = () => {
@@ -185,6 +198,9 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
           <Button className={classes.button} onClick={this.handleSubmit}>
             Submit
           </Button>
+          <Button className={classes.skipButton} onClick={this.handleSkip}>
+            Skip This Step
+          </Button>
         </div>
       </React.Fragment>
     );
@@ -194,7 +210,7 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
 
 const withConnect = connect((state: StateType) => ({
   deviceIp: deviceIpSelector(state),
-}), (dispatch: Function): Object => bindActionCreators({ setDeviceIp, navigateRemote }, dispatch));
+}), (dispatch: Function): Object => bindActionCreators({ setDeviceIp, navigateRemote, skipDeviceIp }, dispatch));
 
 export default compose(
   withStyles(styles),

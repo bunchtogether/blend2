@@ -95,6 +95,13 @@ export function toggleMute(): ActionType {
   };
 }
 
+export function pairDiscover(): ActionType {
+  return {
+    type: constants.PAIR_DISCOVER,
+    value: null,
+  };
+}
+
 export function getPairedDevice(): ActionType {
   return {
     type: constants.GET_PAIRED_DEVICE,
@@ -172,6 +179,13 @@ export function setDeviceIp(ip: string): ActionType {
   return {
     type: constants.SET_DEVICE_IP,
     value: ip,
+  };
+}
+
+export function skipDeviceIp(): ActionType {
+  return {
+    type: constants.SKIP_DEVICE_IP,
+    value: null,
   };
 }
 
