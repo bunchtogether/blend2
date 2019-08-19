@@ -107,7 +107,7 @@ const start = async ()               => {
   logger.info('Started');
 };
 
-addPostShutdownHandler(async () => {
+addPostShutdownHandler(() => {
   process.exit(exitCode);
 });
 
