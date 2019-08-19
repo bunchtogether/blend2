@@ -323,7 +323,6 @@ const startStream = async (socketId:number, url:string) => {
     }
   }, 10000);
   const handleBroadcastMessage = (message, rinfo) => {
-    logger.info(`Received broadcast message from ${rinfo.address}:${rinfo.port}`);
     const blendBoxIndex = message.indexOf(BLEND_BOX_DELIMETER);
     if (blendBoxIndex !== 4) {
       logger.warn('Blend box index did not match');
@@ -543,7 +542,6 @@ module.exports.getStreamRouter = () => {
 
     let heartbeatTimeout;
     ws.on('message', (event) => {
-      logger.info('Received sync message from websocket');
       const blendBoxIndex = event.indexOf(BLEND_BOX_DELIMETER);
       if (blendBoxIndex === 4) {
         logger.info('Broadcasting Blend box');
