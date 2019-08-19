@@ -32,6 +32,7 @@ const styles = (theme: Object) => ({
     marginLeft: theme.spacing(4),
   },
   progress: {
+    marginTop: theme.spacing(4),
     marginBottom: theme.spacing(4),
     marginRight: theme.spacing(4),
     marginLeft: theme.spacing(4),
