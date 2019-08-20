@@ -26,7 +26,7 @@ const styles = (theme: Object) => ({
     marginBottom: theme.spacing(2),
   },
   textField: {
-    width: 100,
+    width: 80,
   },
   ipDot: {
     marginLeft: theme.spacing(1),
@@ -41,6 +41,10 @@ const styles = (theme: Object) => ({
     width: 100,
     marginTop: theme.spacing(1),
     marginLeft: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.light,
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.main,
+    }
   },
   updateButton: {
     marginTop: theme.spacing(1),
@@ -69,6 +73,8 @@ type State = {
   updateLoading: boolean,
   dirty: boolean,
 };
+
+const IP_MAX_LENGTH = 3;
 
 class SettingsSetup extends React.Component<Props, State> {
   state = {
@@ -110,6 +116,21 @@ class SettingsSetup extends React.Component<Props, State> {
     return true;
   }
 
+  handleChange = (event: Event) => {
+    console.log("event.target: ", event.target.value.length)
+    if (event.target.value.length <= IP_MAX_LENGTH) {
+      console.log("setting state: ")
+      this.setState({ [event.target.id]: event.target.value, error: false })
+    }
+    if (event.target.value && event.target.value.length === IP_MAX_LENGTH) {
+      const ipCount = parseInt(event.target.id[2], 10);
+      if (ipCount < 4) {
+        const nextElement = document.getElementById(`ip${ipCount + 1}`);
+        nextElement.focus();
+      }
+    }
+  }
+
   handleSetIp = (ip: string) => {
     const [ip1, ip2, ip3, ip4] = ip.split('.');
     this.setState({ ip1, ip2, ip3, ip4 });
@@ -134,7 +155,7 @@ class SettingsSetup extends React.Component<Props, State> {
     const { classes } = this.props;
     return (
       <div className={classes.container}>
-        <Typography className={classes.marginTop}>Update the static IP address of this device</Typography>
+        <Typography className={classes.marginTop}>Update the IP address of the hardware management server</Typography>
         <div className={classes.textFieldContainer}>
           <TextField
             variant="outlined"
@@ -144,8 +165,13 @@ class SettingsSetup extends React.Component<Props, State> {
             className={classes.textField}
             value={this.state.ip1}
             placeholder="192"
-            onChange={(event: Object) => this.setState({ ip1: event.target.value, error: false, dirty: true })}
+            onChange={this.handleChange}
             error={this.state.error}
+            inputProps={{
+              style: {
+                textAlign: 'center',
+              },
+            }}
           />
           <Typography className={classes.ipDot}>.</Typography>
           <TextField
@@ -155,8 +181,13 @@ class SettingsSetup extends React.Component<Props, State> {
             placeholder="168"
             value={this.state.ip2}
             className={classes.textField}
-            onChange={(event: Object) => this.setState({ ip2: event.target.value, error: false, dirty: true })}
+            onChange={this.handleChange}
             error={this.state.error}
+            inputProps={{
+              style: {
+                textAlign: 'center',
+              },
+            }}
           />
           <Typography className={classes.ipDot}>.</Typography>
           <TextField
@@ -166,8 +197,13 @@ class SettingsSetup extends React.Component<Props, State> {
             placeholder="1"
             value={this.state.ip3}
             className={classes.textField}
-            onChange={(event: Object) => this.setState({ ip3: event.target.value, error: false, dirty: true })}
+            onChange={this.handleChange}
             error={this.state.error}
+            inputProps={{
+              style: {
+                textAlign: 'center',
+              },
+            }}
           />
           <Typography className={classes.ipDot}>.</Typography>
           <TextField
@@ -177,8 +213,13 @@ class SettingsSetup extends React.Component<Props, State> {
             placeholder="1"
             value={this.state.ip4}
             className={classes.textField}
-            onChange={(event: Object) => this.setState({ ip4: event.target.value, error: false, dirty: true })}
+            onChange={this.handleChange}
             error={this.state.error}
+            inputProps={{
+              style: {
+                textAlign: 'center',
+              },
+            }}
           />
         </div>
         {this.state.error ? <Typography className={classes.error}>Enter a complete IP address</Typography> : null}
@@ -200,7 +241,7 @@ class SettingsSetup extends React.Component<Props, State> {
             onClick={this.handleSubmit}
             disabled={this.state.updateLoading}
           >
-            Submit
+            Save
           </Button>
         </div>
       </div>

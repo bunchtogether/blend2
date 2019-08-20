@@ -13,10 +13,10 @@ const muiTheme = createMuiTheme({
       contrastText: 'rgba(255, 255, 255, 1)',
     },
     secondary: {
-      light: cyan[300], // '#63a4f1',
-      main: cyan[500], // '#1976d2',
-      dark: cyan[700], // '#004ba0',
-      contrastText: 'rgba(255, 255, 255, 1)',
+      light: '#FF63FF',
+      main: '#FF00FF',
+      dark: '#c700cb',
+      contrastText: 'rgba(0, 0, 0, 1)',
     },
     background: {
       default: '#f4f4f9',
