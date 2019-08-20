@@ -36,7 +36,7 @@ const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
     marginBottom: theme.spacing(2),
   },
   textField: {
-    width: 100,
+    width: 80,
   },
   ipDot: {
     marginLeft: theme.spacing(1),
@@ -51,15 +51,35 @@ const styles = (theme:Object) => ({ // eslint-disable-line no-unused-vars
       backgroundColor: theme.palette.secondary.main,
     }
   },
-  marginTop: {
+  title: {
     marginTop: theme.spacing(1),
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2),
   },
   error: {
     color: 'red',
   },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  orText: {
+    marginBottom: theme.spacing(5),
+    marginTop: theme.spacing(5),
+  },
   skipButton: {
-    position: 'absolute',
-    bottom: theme.spacing(3),
+    marginBottom: theme.spacing(2),
+  },
+  dismissButtonContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dismissText: {
+    fontSize: 12,
   },
 });
 
@@ -77,6 +97,8 @@ type State = {
   ip4: string,
   error: boolean,
 };
+
+const IP_MAX_LENGTH = 3;
 
 export class Setup extends React.PureComponent<Props, State> { // eslint-disable-line react/prefer-stateless-function
   constructor(props: Props) {
@@ -119,6 +141,21 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
     return true;
   }
 
+  handleChange = (event: Event) => {
+    console.log("event.target: ", event.target.value.length)
+    if (event.target.value.length <= IP_MAX_LENGTH) {
+      console.log("setting state: ")
+      this.setState({ [event.target.id]: event.target.value, error: false })
+    }
+    if (event.target.value && event.target.value.length === IP_MAX_LENGTH) {
+      const ipCount = parseInt(event.target.id[2], 10);
+      if (ipCount < 4) {
+        const nextElement = document.getElementById(`ip${ipCount + 1}`);
+        nextElement.focus();
+      }
+    }
+  }
+
   handleSkip = () => {
     this.props.skipDeviceIp();
     this.props.navigateRemote();
@@ -150,57 +187,86 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
         </Helmet>
         <Header showSearch={false} />
         <div className={classes.container}>
-          <Typography variant='h4'>Device Initialization</Typography>
-          <Typography className={classes.marginTop}>Set the static IP address of this device</Typography>
+          <Typography className={classes.title} variant="h6">Device Initialization: Enter the IP address of the hardware management server</Typography>
           <div className={classes.textFieldContainer}>
             <TextField
               variant="outlined"
               autoFocus
               name="ip1"
               id="ip1"
+              value={this.state.ip1}
               className={classes.textField}
               placeholder="192"
-              onChange={(event: Object) => this.setState({ ip1: event.target.value, error: false })}
+              onChange={this.handleChange}
               error={this.state.error}
+              inputProps={{
+                style: {
+                  textAlign: 'center',
+                },
+              }}
             />
             <Typography className={classes.ipDot}>.</Typography>
             <TextField
               variant="outlined"
               name="ip2"
               id="ip2"
+              value={this.state.ip2}
               placeholder="168"
               className={classes.textField}
-              onChange={(event: Object) => this.setState({ ip2: event.target.value, error: false })}
+              onChange={this.handleChange}
               error={this.state.error}
+              inputProps={{
+                style: {
+                  textAlign: 'center',
+                },
+              }}
             />
             <Typography className={classes.ipDot}>.</Typography>
             <TextField
               variant="outlined"
               name="ip3"
               id="ip3"
+              value={this.state.ip3}
               placeholder="1"
               className={classes.textField}
-              onChange={(event: Object) => this.setState({ ip3: event.target.value, error: false })}
+              onChange={this.handleChange}
               error={this.state.error}
+              inputProps={{
+                style: {
+                  textAlign: 'center',
+                },
+              }}
             />
             <Typography className={classes.ipDot}>.</Typography>
             <TextField
               variant="outlined"
               name="ip4"
               id="ip4"
+              value={this.state.ip4}
               placeholder="1"
               className={classes.textField}
-              onChange={(event: Object) => this.setState({ ip4: event.target.value, error: false })}
+              onChange={this.handleChange}
               error={this.state.error}
+              inputProps={{
+                style: {
+                  textAlign: 'center',
+                },
+              }}
             />
           </div>
           {this.state.error ? <Typography className={classes.error}>Enter a complete IP address</Typography> : null}
-          <Button className={classes.button} onClick={this.handleSubmit}>
-            Submit
-          </Button>
-          <Button className={classes.skipButton} onClick={this.handleSkip}>
-            Skip This Step
-          </Button>
+          <div className={classes.buttonContainer}>
+            <Button className={classes.button} onClick={this.handleSubmit}>
+              Save
+            </Button>
+            <Typography className={classes.orText}>- or -</Typography>
+            <div className={classes.dismissButtonContainer}>
+              <Button className={classes.skipButton} onClick={this.handleSkip}>
+                Dismiss
+              </Button>
+              <Typography className={classes.dismissText}>You can enter and edit the address at a later time in settings</Typography>
+            </div>
+          </div>
         </div>
       </React.Fragment>
     );
