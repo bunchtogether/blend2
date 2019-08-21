@@ -34,8 +34,8 @@ module.exports = async function (app        , port       ) {
     addExpressWs(app, httpsServer, { wsOptions: {
       perMessageDeflate: false,
       clientTracking: true,
-      maxpayload: 1024 * 1024 * 2048
-    }});
+      maxpayload: 1024 * 1024 * 2048,
+    } });
     logger.info(`Started listening on https://127.0.0.1:${port + 1}`);
   } else {
     await new Promise((resolve, reject) => {
@@ -49,8 +49,8 @@ module.exports = async function (app        , port       ) {
     addExpressWs(app, httpServer, { wsOptions: {
       perMessageDeflate: false,
       clientTracking: true,
-      maxpayload: 1024 * 1024 * 2048
-    }});
+      maxpayload: 1024 * 1024 * 2048,
+    } });
     logger.info(`Started listening on http://127.0.0.1:${port}`);
   }
   const stopHttpServer = async function () {

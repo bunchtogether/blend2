@@ -52,7 +52,7 @@ const getBroadcastAddresses = () => {
     try {
       const address = broadcastAddress(iface);
       broadcastAddresses.add(address);
-      for(const { address: ifaceAddress } of networkInterfaces[iface]) {
+      for (const { address: ifaceAddress } of networkInterfaces[iface]) {
         broadcastInterfaces.add(ifaceAddress);
       }
       logger.info(`Found broadcast addresses ${address} for interface ${iface}`);
@@ -257,6 +257,7 @@ const startStream = async (socketId       , url       ) => {
     '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
     '-copyts',
+    '-max_delay', '0',
     '-i', addStreamUrlParameters(url),
     '-c:a', 'aac',
     '-af', 'aresample=async=176000:min_comp=0.0001',
@@ -309,7 +310,7 @@ const startStream = async (socketId       , url       ) => {
       logger.warn('Blend box index did not match');
       return;
     }
-    if(broadcastInterfaces.has(rinfo.address)) {
+    if (broadcastInterfaces.has(rinfo.address)) {
       return;
     }
     syncPeers[`${rinfo.address}:${rinfo.port}`] = Date.now();

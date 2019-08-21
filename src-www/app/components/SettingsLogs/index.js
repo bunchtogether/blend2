@@ -36,6 +36,10 @@ const styles = (theme: Object) => ({
   },
   button: {
     marginRight: theme.spacing(2),
+    backgroundColor: theme.palette.secondary.light,
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.main,
+    }
   },
 });
 
