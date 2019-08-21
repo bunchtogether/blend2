@@ -121,6 +121,10 @@ if [ -d "/blend" ]; then
     sed -i "s/.*BLEND_OUTPUT_PATH.*/BLEND_OUTPUT_PATH=\/blend/g" /etc/blend/blend.defaults
 fi
 
+if [ ! -f /etc/blend/config.json ]; then
+    echo "{ \"ip\": \"\" }" > /etc/blend/config.json
+fi
+
 # Check if libSDL2.so and libSDL2-image.so is available
 if [ -f "/usr/lib/x86_64-linux-gnu/libSDL2-2.0.so.0" ]; then
     if ! [ -f "/usr/lib/x86_64-linux-gnu/libSDL2.so" ]; then
