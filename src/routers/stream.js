@@ -257,6 +257,7 @@ const startStream = async (socketId:number, url:string) => {
     '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
     '-copyts',
+    '-max_delay', '0',
     '-i', addStreamUrlParameters(url),
     '-c:a', 'aac',
     '-af', 'aresample=async=176000:min_comp=0.0001',
