@@ -30,6 +30,10 @@ const styles = (theme: Object) => ({
   },
   autoDetect: {
     marginBottom: theme.spacing(2),
+    backgroundColor: theme.palette.secondary.light,
+    '&:hover': {
+      backgroundColor: theme.palette.secondary.main,
+    },
   },
   success: {
     color: theme.palette.success[500],
@@ -108,7 +112,7 @@ class GridDisplayTypes extends React.Component<Props, State> {
         <Button
           onClick={this.props.onAutoDetect}
           variant='contained'
-          color='primary'
+          color='secondary'
           className={classes.autoDetect}
         >
             Auto Detect
