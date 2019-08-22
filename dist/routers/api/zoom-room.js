@@ -34,20 +34,20 @@ module.exports = () => {
     const handleError = (error) => {
       logger.error('Zoom Room Control System error');
       logger.errorStack(error);
-      zoomRoomsControlSystem.removeListeners('zConfiguration');
-      zoomRoomsControlSystem.removeListeners('zStatus');
-      zoomRoomsControlSystem.removeListeners('zCommand');
-      zoomRoomsControlSystem.removeListeners('error');
-      zoomRoomsControlSystem.removeListeners('close');
+      zoomRoomsControlSystem.removeAllListeners('zConfiguration');
+      zoomRoomsControlSystem.removeAllListeners('zStatus');
+      zoomRoomsControlSystem.removeAllListeners('zCommand');
+      zoomRoomsControlSystem.removeAllListeners('error');
+      zoomRoomsControlSystem.removeAllListeners('close');
       zrcs = null;
     };
     const handleClose = () => {
       logger.info('Zoom Room Control System closed');
-      zoomRoomsControlSystem.removeListeners('zConfiguration');
-      zoomRoomsControlSystem.removeListeners('zStatus');
-      zoomRoomsControlSystem.removeListeners('zCommand');
-      zoomRoomsControlSystem.removeListeners('error');
-      zoomRoomsControlSystem.removeListeners('close');
+      zoomRoomsControlSystem.removeAllListeners('zConfiguration');
+      zoomRoomsControlSystem.removeAllListeners('zStatus');
+      zoomRoomsControlSystem.removeAllListeners('zCommand');
+      zoomRoomsControlSystem.removeAllListeners('error');
+      zoomRoomsControlSystem.removeAllListeners('close');
       zrcs = null;
     };
     zoomRoomsControlSystem.on('error', handleError);
