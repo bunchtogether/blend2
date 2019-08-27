@@ -16,8 +16,9 @@ const readConfig = async ()                 => {
   try {
     const fileExists = await fs.pathExists(configFile);
     if (!fileExists) {
-      logger.error(`${CONFIG_FILE} does not exist at ${configFile}`);
-      throw new Error(`${CONFIG_FILE} does not exist at ${configFile}`);
+      logger.error(`${CONFIG_FILE} does not exist at ${configFile}, creating new file`);
+      await fs.ensureFile(configFile);
+      await fs.outputJSON(configFile, JSON.stringify({ ip: '' }));
     }
     return fs.readJSON(configFile);
   } catch (error) {
