@@ -39,7 +39,6 @@ Section "install"
   # Copy Files
   File files\sample.mp4
   File /r files\dist-www
-  File files\*.node
 
   ${If} ${RunningX64}
     # Copy 64bit files
@@ -51,10 +50,10 @@ Section "install"
 
   SetShellVarContext "all"
   FileOpen $4 "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\blend.cmd" a
-  FileWrite $4 'echo @off$\r$\nset BLEND_RUNTIME_DIR=$InstallDir$\r$\ncd "$InstallDir"$\r$\nSTART /b /min "" "blend.exe"'
+  FileWrite $4 'echo @off$\r$\nset BLEND_RUNTIME_DIR=$InstallDir$\r$\ncd "$InstallDir"$\r$\nSTART /b /min "" "blend-runtime.exe"'
   FileClose $4
   AccessControl::GrantOnFile "$InstallDir" "(BU)" "FullAccess"
-  ExecShell "" "$InstallDir\blend.exe"
+  ExecShell "" "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\blend.cmd"
 
   writeUninstaller "$InstallDir\Uninstaller.exe"
 
