@@ -66,7 +66,7 @@ module.exports.getSetupRouter = () => {
     }
     try {
       await updateConfig({ ip });
-      await triggerUpdate();
+      triggerUpdate();
       return res.sendStatus(200);
     } catch (error) {
       logger.warn(`Unable to save device IP address, Error: ${error.message}`);
@@ -77,7 +77,7 @@ module.exports.getSetupRouter = () => {
 
   router.post('/update-device', async (req                 , res                  ) => {
     try {
-      await triggerUpdate();
+      triggerUpdate();
       return res.sendStatus(200);
     } catch (error) {
       logger.error(`Unable to trigger device update, Error: ${error.message}`);

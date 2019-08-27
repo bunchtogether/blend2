@@ -142,9 +142,7 @@ export class Setup extends React.PureComponent<Props, State> { // eslint-disable
   }
 
   handleChange = (event: Event) => {
-    console.log("event.target: ", event.target.value.length)
     if (event.target.value.length <= IP_MAX_LENGTH) {
-      console.log("setting state: ")
       this.setState({ [event.target.id]: event.target.value, error: false })
     }
     if (event.target.value && event.target.value.length === IP_MAX_LENGTH) {
