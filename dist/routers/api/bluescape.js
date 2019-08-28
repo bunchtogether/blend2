@@ -14,8 +14,8 @@ module.exports.getBluescapeRouter = () => {
       await switchToApp('tsx_winslave', 10, 100);
       res.sendStatus(200);
     } catch (error) {
-      logger.warn('Can not switch to Bluescape');
-      logger.warn(error);
+      logger.error('Can not switch to Bluescape');
+      logger.errorStack(error);
       res.status(400).send('Can not switch to Bluescape');
     }
   });

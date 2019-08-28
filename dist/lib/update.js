@@ -30,7 +30,7 @@ const triggerWindowsUpdate = async () => {
 const triggerLinuxUpdate = async () => {
   await new Promise((resolve, reject) => {
     try {
-      exec('/bin/bash /etc/band/scripts/update-check', (err, stdout, stderr) => { // eslint-disable-line
+      exec('/bin/bash /etc/band/scripts/update-check', { env: { 'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games' } }, (err, stdout, stderr) => { // eslint-disable-line
         if (err) {
           reject(err);
         }
