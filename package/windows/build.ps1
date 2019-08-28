@@ -28,8 +28,9 @@ cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x32\ffmpeg.exe .\packag
 cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x32\ffprobe.exe .\package\windows\files\x86\ffprobe.exe
 cp .\package\windows\x86\* .\package\windows\files\x86
 
-# Copy sample.mp4
+# Copy sample.mp4 and band.png
 cp .\src\sample.mp4 .\package\windows\files\sample.mp4
+cp .\src\band.png .\package\windows\files\band.png
 
 # Build installer
 & 'C:\Program Files (x86)\NSIS\Bin\makensis.exe' .\package\windows\installer.nsi
