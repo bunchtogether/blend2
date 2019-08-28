@@ -58,7 +58,7 @@
       "dist/**/*.js",
       "node_modules/sdl2-image/lib/image.js",
       "node_modules/leveldown/prebuilds/linux-x64",
-	    "node_modules/leveldown/prebuilds/win32-x64"
+      "node_modules/leveldown/prebuilds/win32-x64"
     ],
     "assets": [
       "dist-www/static/**/*",
@@ -104,7 +104,7 @@
     "@bunchtogether/desktop-window-button": "^1.0.8",
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
-    "@bunchtogether/picture-in-picture": "^1.0.8",
+    "@bunchtogether/picture-in-picture": "^1.0.9",
     "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
     "@serialport/parser-byte-length": "^2.0.2",
     "@serialport/parser-delimiter": "^2.0.2",
