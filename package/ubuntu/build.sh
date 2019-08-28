@@ -45,6 +45,7 @@ ssh -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -p $BUILDER_PO
 scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../src ubuntu@$BUILDER_IP_ADDRESS:~/build/src
 scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../dist-www ubuntu@$BUILDER_IP_ADDRESS:~/build/dist-www
 scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../static ubuntu@$BUILDER_IP_ADDRESS:~/build/static
+scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../scripts ubuntu@$BUILDER_IP_ADDRESS:~/build/scripts
 scp -r -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../vendor/zoom-rooms-control-system ubuntu@$BUILDER_IP_ADDRESS:~/build/vendor/zoom-rooms-control-system
 scp -i ./credentials/ubuntu_vm_id_rsa -o StrictHostKeyChecking=no -P $BUILDER_PORT ../../package.json ubuntu@$BUILDER_IP_ADDRESS:~/build/package.json
 

@@ -51,6 +51,7 @@ mkdir -p blend/etc/blend
 cp ~/build/blend ~/blend/etc/blend/
 cp -r ~/build/dist-www ~/blend/etc/blend/dist-www
 cp -r ~/build/static ~/blend/etc/blend/static
+cp -r ~/build/scripts ~/blend/etc/blend/scripts
 cp ~/build/node_modules/@serialport/bindings/build/Release/bindings.node ~/blend/etc/blend/bindings.node
 cp ~/build/node_modules/sqlite3/lib/binding/node-v64-linux-x64/node_sqlite3.node ~/blend/etc/blend/node_sqlite3.node
 cp ~/build/node_modules/ffi/build/Release/ffi_bindings.node ~/blend/etc/blend/ffi_bindings.node

@@ -1,6 +1,6 @@
 {
   "name": "blend",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "main": "dist/index.js",
   "bin": "dist/index.js",
   "repository": "https://github.com/bunchtogether/blend2.git",
@@ -58,11 +58,12 @@
       "dist/**/*.js",
       "node_modules/sdl2-image/lib/image.js",
       "node_modules/leveldown/prebuilds/linux-x64",
-	  "node_modules/leveldown/prebuilds/win32-x64"
+	    "node_modules/leveldown/prebuilds/win32-x64"
     ],
     "assets": [
       "dist-www/static/**/*",
-      "static/**/*"
+      "static/**/*",
+      "scripts/**/*"
     ]
   },
   "devDependencies": {
