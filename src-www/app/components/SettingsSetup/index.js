@@ -12,8 +12,6 @@ import { deviceIpSelector } from 'containers/App/selectors';
 
 const styles = (theme: Object) => ({
   container: {
-    width: '100%',
-    position: 'absolute',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
@@ -45,9 +43,6 @@ const styles = (theme: Object) => ({
     '&:hover': {
       backgroundColor: theme.palette.secondary.main,
     }
-  },
-  updateButton: {
-    marginTop: theme.spacing(1),
   },
   marginTop: {
     marginTop: theme.spacing(1),
@@ -117,9 +112,7 @@ class SettingsSetup extends React.Component<Props, State> {
   }
 
   handleChange = (event: Event) => {
-    console.log("event.target: ", event.target.value.length)
     if (event.target.value.length <= IP_MAX_LENGTH) {
-      console.log("setting state: ")
       this.setState({ [event.target.id]: event.target.value, error: false })
     }
     if (event.target.value && event.target.value.length === IP_MAX_LENGTH) {
@@ -137,7 +130,11 @@ class SettingsSetup extends React.Component<Props, State> {
   }
 
   handleTriggerUpdate = () => {
-    this.setState({ updateLoading: true });
+    this.setState({ updateLoading: true }, () => {
+      setTimeout(() => {
+        this.setState({ updateLoading: false })
+      }, 10000);
+    });
     this.props.triggerDeviceUpdate();
   }
 
@@ -223,10 +220,9 @@ class SettingsSetup extends React.Component<Props, State> {
           />
         </div>
         {this.state.error ? <Typography className={classes.error}>Enter a complete IP address</Typography> : null}
-        {this.state.updateLoading ? <Typography>Fetching updates from server...</Typography> : null}
         <div className={classes.buttonContainer}>
           <Button
-            className={classes.updateButton}
+            className={classes.marginTop}
             variant='contained'
             color='primary'
             onClick={this.handleTriggerUpdate}
@@ -244,6 +240,7 @@ class SettingsSetup extends React.Component<Props, State> {
             Save
           </Button>
         </div>
+        {this.state.updateLoading ? <Typography className={classes.marginTop}>Fetching update from hardware server... device will automatically reboot if update is found</Typography> : null}
       </div>
     );
   }
