@@ -38,6 +38,7 @@ Section "install"
 
   # Copy Files
   File files\sample.mp4
+  File files\band.png
   File /r files\dist-www
 
   ${If} ${RunningX64}
