@@ -57,7 +57,8 @@
     "scripts": [
       "dist/**/*.js",
       "node_modules/sdl2-image/lib/image.js",
-      "node_modules/leveldown/prebuilds/linux-x64"
+      "node_modules/leveldown/prebuilds/linux-x64",
+	  "node_modules/leveldown/prebuilds/win32-x64"
     ],
     "assets": [
       "dist-www/static/**/*",

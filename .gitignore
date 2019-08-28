@@ -45,3 +45,5 @@ update-vm.sh
 *.sqlite
 *audit.json
 # *.dll
+
+blend-installer.exe

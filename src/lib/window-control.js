@@ -19,7 +19,11 @@ const switchToBand = async () => {
     closeBandButton = null;
   }
   logger.info('Activating Chrome Window');
-  await setForegroundWindow('chrome');
+  try {
+    await setForegroundWindow('chrome');
+  } catch (error) {
+    logger.error(`Failed to activate Chrome window: ${error.message}`);
+  }
   bandActive = true;
 };
 
@@ -29,7 +33,11 @@ const switchToApp = async (pathname: string, buttonX?:number, buttonY?:number) =
     closeBandButton = null;
   }
   logger.info(`Activating "${pathname}" Window`);
-  await setForegroundWindow(pathname);
+  try {
+    await setForegroundWindow(pathname);
+  } catch (error) {
+    logger.error(`Failed to activate "${pathname}" window: ${error.message}`);
+  }
   if (typeof buttonX === 'number' && typeof buttonY === 'number') {
     closeBandButton = await openDesktopWindowButton(buttonImageSrc, buttonX, buttonY, switchToBand, 'top right');
   }
