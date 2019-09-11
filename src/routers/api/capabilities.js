@@ -1,7 +1,7 @@
 // @flow
 
 const { Router } = require('express');
-const find = require('find-process');
+const find = require('@bunchtogether/find-process');
 const adapters = require('../../adapters');
 const logger = require('../../lib/logger')('Capabilities API');
 
