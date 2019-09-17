@@ -14,7 +14,7 @@ BLEND_VERSION=$(cat ../../package.json | jq '.version' -r)
 BUILDER_IP_ADDRESS=10.0.0.104
 BUILDER_PORT=22
 BUILDER_KEY=./credentials/ubuntu_vm_id_rsa
-BUILD_DIR=blend_build
+BUILD_DIR="/home/ubuntu/blend_build"
 
 header() {
   echo ""
@@ -72,7 +72,7 @@ prebuild() {
 
 build() {
   sshexec "sudo rm -rf $BUILD_DIR; mkdir -p $BUILD_DIR/vendor;"
-  sshcopy ../../dist $BUILD_DIR/dist
+  sshcopy ../../src $BUILD_DIR/src
   sshcopy ../../dist-www $BUILD_DIR/dist-www
   sshcopy ../../static $BUILD_DIR/static
   sshcopy ../../scripts $BUILD_DIR/scripts
@@ -87,7 +87,7 @@ build() {
 
 download() {
   [ -f ../../installers/blend.$BLEND_VERSION.AppImage ] && rm -rf ../../installers/blend.$BLEND_VERSION.AppImage
-  rsshcopy ~/blend.$BLEND_VERSION.AppImage ../../installers
+  rsshcopy $BUILD_DIR/blend-$BLEND_VERSION.AppImage ../../installers
 }
 
 postbuild() {
@@ -99,7 +99,6 @@ postbuild() {
 header
 builderinfo
 prebuild
-buildweb
 build
 download
 postbuild

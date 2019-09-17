@@ -36,12 +36,14 @@ script:
   - cat > blend.desktop <<\EOF
   - [Desktop Entry]
   - Name=Blend
-  - Version=$BLEND_VERSION
+  - Version=1.0
   - Exec=/etc/blend/blend
   - Icon=blend
   - Type=Application
   - Categories=Network
   - Terminal=true
+  - X-AppImage-Name=Blend
+  - X-AppImage-Version=$BLEND_VERSION
   - EOF
   - cat > ./AppRun <<\EOF
   - #!/bin/sh
@@ -58,4 +60,4 @@ EOF
 cp $BUILD_DIR/blend.png $APPIMAGE_DIR/blend.png
 bash -ex ./pkg2appimage AppImage.yml
 
-mv $APPIMAGE_DIR/out/Blend*.AppImage ~/blend-$BLEND_VERSION.AppImage
+mv $APPIMAGE_DIR/out/Blend*.AppImage $BUILD_DIR/blend-$BLEND_VERSION.AppImage
