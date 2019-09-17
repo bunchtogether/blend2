@@ -18,6 +18,7 @@
     "coverage": "codecov",
     "package-osx": "cd ./package/osx/; chmod +x ./build.sh; ./build.sh",
     "package-ubuntu": "cd ./package/ubuntu/; chmod +x ./build.sh; ./build.sh",
+    "package-appimage": "cd ./package/appimage/; chmod +x ./build.sh; ./build.sh",
     "package-windows": "yarn build && .\\package\\windows\\build.cmd",
     "start:build": "yarn build && node dist/index.js",
     "start": "node dist/index.js",
@@ -58,7 +59,8 @@
       "dist/**/*.js",
       "node_modules/sdl2-image/lib/image.js",
       "node_modules/leveldown/prebuilds/linux-x64",
-      "node_modules/leveldown/prebuilds/win32-x64"
+      "node_modules/leveldown/prebuilds/win32-x64",
+      "node_modules/network/lib/*.js"
     ],
     "assets": [
       "dist-www/static/**/*",
