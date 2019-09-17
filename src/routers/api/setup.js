@@ -18,7 +18,7 @@ const readConfig = async ():Promise<Object> => {
     if (!fileExists) {
       logger.error(`${CONFIG_FILE} does not exist at ${configFile}, creating new file`);
       await fs.ensureFile(configFile);
-      await fs.outputJSON(configFile, JSON.stringify({ ip: '' }));
+      await fs.outputJSON(configFile, { ip: '', multicast: null });
     }
     return fs.readJSON(configFile);
   } catch (error) {

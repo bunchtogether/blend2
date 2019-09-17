@@ -60,26 +60,19 @@ builderinfo() {
 }
 
 prebuild() {
-  local currDir=$(web)
+  local currDir=$(pwd)
   cd ../../
   mkdir -p installers
 
-  # Check dist-www
-  [ ! -d ./dist-www ] && buildweb
-
-  cd $currDir
-}
-
-buildweb() {
-  local currDir=$(pwd)
-  cd ../../src-www
+  # Build src, src-www
   yarn build
+
   cd $currDir
 }
 
 build() {
   sshexec "sudo rm -rf $BUILD_DIR; mkdir -p $BUILD_DIR/vendor;"
-  sshcopy ../../src $BUILD_DIR/src
+  sshcopy ../../dist $BUILD_DIR/dist
   sshcopy ../../dist-www $BUILD_DIR/dist-www
   sshcopy ../../static $BUILD_DIR/static
   sshcopy ../../scripts $BUILD_DIR/scripts
@@ -94,11 +87,12 @@ build() {
 
 download() {
   [ -f ../../installers/blend.$BLEND_VERSION.AppImage ] && rm -rf ../../installers/blend.$BLEND_VERSION.AppImage
-  rsshcopy $BUILD_DIR/blend.$BLEND_VERSION.AppImage ../../installers
+  rsshcopy ~/blend.$BLEND_VERSION.AppImage ../../installers
 }
 
 postbuild() {
   sshexec "sudo rm -rf $BUILD_DIR"
+  sshexec "sudo rm -rf ~/blend.$BLEND_VERSION.AppImage"
 }
 
 

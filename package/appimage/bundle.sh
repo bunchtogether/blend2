@@ -36,7 +36,7 @@ script:
   - cat > blend.desktop <<\EOF
   - [Desktop Entry]
   - Name=Blend
-  - Version=1.0
+  - Version=$BLEND_VERSION
   - Exec=/etc/blend/blend
   - Icon=blend
   - Type=Application
