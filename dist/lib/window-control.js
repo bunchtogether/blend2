@@ -21,12 +21,8 @@ const buttonImageSrcPromise = (async () => {
 })();
 
 let closeBandButton;
-let bandActive = false;
 
 const switchToBand = async () => {
-  if (bandActive) {
-    return;
-  }
   if (closeBandButton) {
     closeBandButton();
     closeBandButton = null;
@@ -37,7 +33,6 @@ const switchToBand = async () => {
   } catch (error) {
     logger.error(`Failed to activate Chrome window: ${error.message}`);
   }
-  bandActive = true;
 };
 
 const switchToApp = async (pathname        , buttonX        , buttonY        ) => {
@@ -55,7 +50,6 @@ const switchToApp = async (pathname        , buttonX        , buttonY        ) =
     const buttonImageSrc = await buttonImageSrcPromise;
     closeBandButton = await openDesktopWindowButton(buttonImageSrc, buttonX, buttonY, switchToBand, 'top right');
   }
-  bandActive = false;
 };
 
 module.exports = {
