@@ -2,6 +2,7 @@
 
 const { Router } = require('express');
 const find = require('@bunchtogether/find-process');
+const { getActiveInterfaceMac } = require('../../lib/network');
 const adapters = require('../../adapters');
 const logger = require('../../lib/logger')('Capabilities API');
 
@@ -36,16 +37,18 @@ module.exports.getCapabilitiesRouter = () => {
 
   router.get('', async (req                 , res                  ) => {
     try {
-      const [activeAdapter, isBluescapeAvailable, isZoomRoomAvailable] = await Promise.all([
+      const [activeAdapter, isBluescapeAvailable, isZoomRoomAvailable, macAddress] = await Promise.all([
         adapters.getActiveAdapter(),
         checkIfBluescapeIsAvailable(),
         checkIfZoomRoomIsAvailable(),
+        getActiveInterfaceMac(),
       ]);
       res.status(200).send({
         isServerAvailable: true,
         isDeviceAvailable: activeAdapter && activeAdapter.ready,
         isBluescapeAvailable,
         isZoomRoomAvailable,
+        macAddress,
       });
     } catch (error) {
       logger.error('Unable to get capabilities');

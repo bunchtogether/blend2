@@ -37,6 +37,7 @@ module.exports = () => {
       zoomRoomsControlSystem.removeAllListeners('zConfiguration');
       zoomRoomsControlSystem.removeAllListeners('zStatus');
       zoomRoomsControlSystem.removeAllListeners('zCommand');
+      zoomRoomsControlSystem.removeAllListeners('zEvent');
       zoomRoomsControlSystem.removeAllListeners('error');
       zoomRoomsControlSystem.removeAllListeners('close');
       zrcs = null;
@@ -46,6 +47,7 @@ module.exports = () => {
       zoomRoomsControlSystem.removeAllListeners('zConfiguration');
       zoomRoomsControlSystem.removeAllListeners('zStatus');
       zoomRoomsControlSystem.removeAllListeners('zCommand');
+      zoomRoomsControlSystem.removeAllListeners('zEvent');
       zoomRoomsControlSystem.removeAllListeners('error');
       zoomRoomsControlSystem.removeAllListeners('close');
       zrcs = null;
@@ -112,6 +114,20 @@ module.exports = () => {
       ws.send(JSON.stringify(['zCommand', key, data]), { compress: false, binary: false });
     };
 
+    const handleEvent = (key:string, data:Object) => {
+      if (key === 'CallDisconnect' && data.success === 'on') {
+        switchToBand().catch((error) => {
+          logger.error('Switch to Band failed');
+          logger.errorStack(error);
+        });
+      }
+      if (ws.readyState !== 1) {
+        logger.error(`Cannot send message to socket ID ${socketId}, ready state is ${ws.readyState}`);
+        return;
+      }
+      ws.send(JSON.stringify(['zEvent', key, data]), { compress: false, binary: false });
+    };
+
     const handleError = () => {
       ws.close(1001, 'Zoom Room Control System error');
     };
@@ -134,6 +150,7 @@ module.exports = () => {
     zoomRoomsControlSystem.on('zConfiguration', handleConfiguration);
     zoomRoomsControlSystem.on('zStatus', handleStatus);
     zoomRoomsControlSystem.on('zCommand', handleCommand);
+    zoomRoomsControlSystem.on('zEvent', handleEvent);
     zoomRoomsControlSystem.on('error', handleError);
     zoomRoomsControlSystem.on('close', handleClose);
 
@@ -165,6 +182,7 @@ module.exports = () => {
       zoomRoomsControlSystem.removeListener('zConfiguration', handleConfiguration);
       zoomRoomsControlSystem.removeListener('zStatus', handleStatus);
       zoomRoomsControlSystem.removeListener('zCommand', handleCommand);
+      zoomRoomsControlSystem.removeListener('zEvent', handleEvent);
       zoomRoomsControlSystem.removeListener('error', handleError);
       zoomRoomsControlSystem.removeListener('close', handleClose);
       clearTimeout(heartbeatTimeout);
