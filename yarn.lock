@@ -610,15 +610,16 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@bunchtogether/desktop-window-button@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@bunchtogether/desktop-window-button/-/desktop-window-button-1.0.8.tgz#8b7e86438ff7aca10f12c9601a322beb33e75561"
+"@bunchtogether/desktop-window-button@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@bunchtogether/desktop-window-button/-/desktop-window-button-1.0.9.tgz#61d4169173fd26972225b9d67813437d444856e1"
+  integrity sha512-nfzPZ2ja2FzCVfkCAubd3FrdgJuKec8m0ETsKfpBKv6Mj6cluoXUP2slRFC9CDfTAJf7VFBxWfC9F1BZTuixmA==
   dependencies:
     "@bunchtogether/exit-handler" "^1.0.0"
-    "@bunchtogether/picture-in-picture" "^1.0.8"
+    "@bunchtogether/node-sdl2" "^2.1.3"
+    "@bunchtogether/picture-in-picture" "^1.0.9"
     fs-extra "^8.1.0"
     lru-cache "^5.1.1"
-    node-sdl2 "^2.1.2"
     ref "^1.3.5"
     sdl2-image "^2.0.3"
 
@@ -632,24 +633,28 @@
   dependencies:
     which "^1.3.1"
 
-"@bunchtogether/find-process@^1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@bunchtogether/find-process/-/find-process-1.4.2.tgz#ede19938992576defc4b20c24b1fe11154f7b506"
-  integrity sha512-pxQJPbl4DoKLj184BRX0iXErCzOow/o8eO9ngHNhf373ZyNk4c+R7R2fUb6bSri4+J9wFLv2eXV5HDA5p7a4xQ==
+"@bunchtogether/find-process@^1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@bunchtogether/find-process/-/find-process-1.4.4.tgz#aa2048ff104461fe15dd772f2aebc301dbcb5349"
+  integrity sha512-ICiqEx/X3ZOgHXCxiAjyBlL+8iwHHd086SPOCDHJTPzEVKivBsXVx71y5l27M6q4RqTa38X8Qi8jSNkECH6ppw==
   dependencies:
     chalk "^2.0.1"
     commander "^2.11.0"
     debug "^2.6.8"
 
-"@bunchtogether/picture-in-picture@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@bunchtogether/picture-in-picture/-/picture-in-picture-1.0.8.tgz#ea62a81bc61d9a3a15cfa4650e3ac1dd87bb8a7c"
+"@bunchtogether/node-sdl2@^2.1.3":
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/@bunchtogether/node-sdl2/-/node-sdl2-2.1.3.tgz#a8c3a3037b3c6f2d4b8eb75f4afc348d67bd3d21"
+  integrity sha512-eZ2KwHstjB2hsIgOkEmEXpo95dDyOaDINtD0TCYagyojw+8XLUz4BXqc72C/wZXQiUuAPMwSVYLsWIrYB0OEdw==
   dependencies:
-    ffi "^2.3.0"
-    lru-cache "^5.1.1"
-    node-osascript "^2.1.0"
-    ref "^1.3.5"
-    ref-struct "^1.1.0"
+    ffi "^2.0.0"
+    ref "^1.3.2"
+    ref-array "^1.1.2"
+    ref-struct "^1.0.2"
+    ref-union "^1.0.1"
+    sdl2-gfx "^2.0.2"
+    sdl2-image "^2.0.3"
+    sdl2-ttf "^2.0.3"
 
 "@bunchtogether/picture-in-picture@^1.0.9":
   version "1.0.9"
@@ -5501,19 +5506,6 @@ node-releases@^1.1.25:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.28.tgz#503c3c70d0e4732b84e7aaa2925fbdde10482d4a"
   dependencies:
     semver "^5.3.0"
-
-node-sdl2@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/node-sdl2/-/node-sdl2-2.1.2.tgz#4ea27849762cfd49733dd12b111c72f886e50f55"
-  dependencies:
-    ffi "^2.0.0"
-    ref "^1.3.2"
-    ref-array "^1.1.2"
-    ref-struct "^1.0.2"
-    ref-union "^1.0.1"
-    sdl2-gfx "^2.0.2"
-    sdl2-image "^2.0.3"
-    sdl2-ttf "^2.0.3"
 
 node-ssdp@^3.2.1:
   version "3.3.0"

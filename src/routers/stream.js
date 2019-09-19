@@ -35,6 +35,10 @@ const addStreamUrlParameters = module.exports.addStreamUrlParameters = (url:stri
   if (parsed.protocol === 'udp:') {
     parsed.searchParams.append('fifo_size', '50000000');
     parsed.searchParams.append('overrun_nonfatal', '1');
+    parsed.searchParams.append('reuse', '1');
+  }
+  if (parsed.protocol === 'rtp:') {
+    parsed.searchParams.append('reuse', '1');
   }
   return parsed.toString();
 };
@@ -182,7 +186,7 @@ const getThumbnail = async (streamUrl:string, thumbnailPath:string) => {
   }
   const args = [
     '-threads', '1',
-    '-i', streamUrl,
+    '-i', addStreamUrlParameters(streamUrl),
     '-vf', 'fps=fps=1',
     '-frames', '1',
     '-threads', '1',

@@ -101,7 +101,7 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
-    "@bunchtogether/desktop-window-button": "^1.0.8",
+    "@bunchtogether/desktop-window-button": "^1.0.9",
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
     "@bunchtogether/picture-in-picture": "^1.0.9",
@@ -118,7 +118,7 @@
     "express-graceful-exit": "^0.4.2",
     "express-ws": "^4.0.0",
     "ffi": "^2.3.0",
-    "@bunchtogether/find-process": "^1.4.2",
+    "@bunchtogether/find-process": "^1.4.4",
     "flatted": "^2.0.0",
     "fs-extra": "^8.1.0",
     "ip": "^1.1.5",
@@ -130,7 +130,6 @@
     "moment": "^2.24.0",
     "node-int64": "^0.4.0",
     "ps-node": "^0.1.6",
-    "sequelize": "^5.9.0",
     "serialport": "^7.1.5",
     "sqlite3": "^4.0.9",
     "superagent": "^4.1.0",
