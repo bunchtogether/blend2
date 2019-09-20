@@ -1,5 +1,5 @@
 !include x64.nsh
-!define Version "v1.0.0"
+!define Version "v2.2.10"
 
 Name "Blend Installer"
 Outfile "blend-installer.exe"
@@ -24,6 +24,10 @@ Function .onInit
 FunctionEnd
 
 Section "install"
+
+  ExecWait "TaskKill /IM blend-runtime.exe /F"
+  ExecWait "TaskKill /IM blend.exe /F"
+
   CreateDirectory "$InstallDir"
   SetOutPath "$InstallDir"
 
@@ -75,7 +79,10 @@ Function un.onInit
 FunctionEnd
 
 Section "uninstall"
+  ExecWait "TaskKill /IM blend-runtime.exe /F"
+  ExecWait "TaskKill /IM blend.exe /F"
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend"
   SetOutPath "$InstallDir\..\"
   RMDir /r $InstallDir
+  Delete "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\blend.cmd"
 SectionEnd

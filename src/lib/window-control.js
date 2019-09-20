@@ -3,8 +3,10 @@
 const path = require('path');
 const fs = require('fs-extra');
 const openDesktopWindowButton = require('@bunchtogether/desktop-window-button');
-const { setForegroundWindow } = require('@bunchtogether/picture-in-picture');
+const { setForegroundWindow, keepOnTop } = require('@bunchtogether/picture-in-picture');
+const { addShutdownHandler } = require('@bunchtogether/exit-handler');
 const logger = require('./logger')('Window Control');
+
 
 const buttonImageSrcPromise = (async () => {
   const basePath = path.resolve(__dirname, '../band.png');
@@ -29,7 +31,7 @@ const switchToBand = async () => {
   }
   logger.info('Activating Chrome Window');
   try {
-    await setForegroundWindow('chrome');
+    await keepOnTop('chrome', true);
   } catch (error) {
     logger.error(`Failed to activate Chrome window: ${error.message}`);
   }
@@ -42,6 +44,7 @@ const switchToApp = async (pathname: string, buttonX?:number, buttonY?:number) =
   }
   logger.info(`Activating "${pathname}" Window`);
   try {
+    await keepOnTop('chrome', false);
     await setForegroundWindow(pathname);
   } catch (error) {
     logger.error(`Failed to activate "${pathname}" window: ${error.message}`);
@@ -51,6 +54,14 @@ const switchToApp = async (pathname: string, buttonX?:number, buttonY?:number) =
     closeBandButton = await openDesktopWindowButton(buttonImageSrc, buttonX, buttonY, switchToBand, 'top right');
   }
 };
+
+addShutdownHandler(async () => {
+  await keepOnTop('chrome', false);
+}, (error:Error) => {
+  logger.error("Unable to move Chrome from top");
+  logger.errorStack(error);
+});
+
 
 module.exports = {
   switchToBand,

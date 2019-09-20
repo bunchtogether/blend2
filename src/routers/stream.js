@@ -7,7 +7,7 @@ const fs = require('fs-extra');
 const { URL } = require('url');
 const dgram = require('dgram');
 const os = require('os');
-const ps = require('ps-node');
+const find = require('@bunchtogether/find-process');
 const path = require('path');
 const crypto = require('crypto');
 const broadcastAddress = require('broadcast-address');
@@ -411,21 +411,17 @@ const startStream = async (socketId:number, url:string) => {
   mainProcess.stdout.on('data', stdOutDataHandler);
 };
 
-const getFFmpegProcesses = async () => new Promise((resolve, reject) => {
-  ps.lookup({ command: 'ffmpeg' }, (error, resultList) => {
-    if (error) {
-      reject(error);
-    } else {
-      const processes = new Set();
-      resultList.forEach((result) => {
-        if (result.arguments && result.arguments.indexOf('blend=1') !== -1) {
-          processes.add(parseInt(result.pid, 10));
-        }
-      });
-      resolve(processes);
+const getFFmpegProcesses = async () => {
+  const result = await find('name', 'ffmpeg', true);
+  const processes = new Set();
+  result.forEach((res) => {
+    if (res.cmd && res.cmd.indexOf('blend=1') !== -1) {
+      processes.add(parseInt(res.pid, 10));
     }
   });
-});
+  logger.info(`Found FFmpeg process ${[...processes].join(', ')}`);
+  return processes;
+};
 
 getFFmpegProcesses().then((processes) => {
   for (const pid of processes) {

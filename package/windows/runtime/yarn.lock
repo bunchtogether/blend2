@@ -14,6 +14,11 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
+"@bunchtogether/exit-handler@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@bunchtogether/exit-handler/-/exit-handler-1.0.0.tgz#350caef9ef93e047080d1139a22e818098eea290"
+  integrity sha512-8lk/zWnOiWtS+4XqK/qNpEv8Ktz5AQSyiSxm46n29uCaDQ2DVKdwPFE/HqW8tVAQBWvcQ0uNMqSyYc4X+VIv6g==
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"

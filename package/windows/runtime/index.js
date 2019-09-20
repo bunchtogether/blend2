@@ -3,6 +3,7 @@
 const pm2 = require('pm2');
 const fs = require('fs');
 const path = require('path');
+const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 
 const { BLEND_RUNTIME_DIR } = process.env;
 if (!BLEND_RUNTIME_DIR) {
@@ -11,6 +12,7 @@ if (!BLEND_RUNTIME_DIR) {
 
 const BLEND_DIRECTORY = path.resolve(BLEND_RUNTIME_DIR);
 const BLEND_BINARY_PATH = path.resolve(BLEND_RUNTIME_DIR, 'blend.exe');
+let exitCode = 0;
 
 const checkPath = async (filePath) => {
   return new Promise((resolve) => {
@@ -41,12 +43,17 @@ const preStartCheck = async () => {
 
 const start = async () => {
   await preStartCheck();
-  pm2.connect(true, (error) => {
-    if (error) {
-      console.log(`Crashed on connecting to pm2, Error: ${error.message}`, error);
-      throw error;
-    }
-
+  await new Promise((resolve, reject) => {
+    pm2.connect(true, (error) => {
+      if (error) {
+        console.log(`Crashed on connecting to pm2, Error: ${error.message}`, error);
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+  const procs = await new Promise((resolve, reject) => {
     pm2.start({
       name: 'Blend',
       script: BLEND_BINARY_PATH,
@@ -60,19 +67,46 @@ const start = async () => {
       autorestart: true,
       kill_timeout: 3000,
       restart_delay: 5000,
-    }, (connectError, apps) => {
-      if (connectError) {
-        console.log(`Error occured while starting blend, Error: ${connectError.message}`);
+    }, (error, p) => {
+      if (error) {
+        console.log(`Error occured while starting blend, Error: ${error.message}`);
         pm2.disconnect();
+        reject(error);
+      } else {
+        resolve(p);
       }
     });
   });
+
+  const shutdown = async () => {
+    await new Promise((resolve, reject) => {
+      pm2.stop(procs, (error) => {
+          if(error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+      });
+    });
+    pm2.disconnect();
+  }
+
+  addShutdownHandler(shutdown, (error) => {
+    console.log(`Error shutting down Blend`);
+    console.error(error);
+  });
+
 };
 
-try {
-  console.log('Starting Blend runtime');
-  start();
-} catch(error) {
-  console.log(`Unable to run blend, Error: ${error.message}`);
-  process.exit(1);
-}
+addPostShutdownHandler(() => {
+  process.exit(exitCode);
+});
+
+console.log('Starting Blend runtime');
+
+start().catch((error) => {
+  console.log(`Unable to run Blend, Error: ${error.message}`);
+  exitCode = 1;
+  runShutdownHandlers();
+});
+

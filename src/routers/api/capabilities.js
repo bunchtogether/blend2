@@ -13,8 +13,10 @@ const checkIfBluescapeIsAvailable = async () => {
   if (bluescapeDetected) {
     return true;
   }
+  const start = Date.now();
   const result = await find('name', 'tsx_winmaster', true);
   bluescapeDetected = Array.isArray(result) && result.length > 0;
+  logger.info(`Bluescape check: ${Date.now() - start}`);
   return bluescapeDetected;
 };
 
@@ -22,8 +24,10 @@ const checkIfZoomRoomIsAvailable = async () => {
   if (zoomRoomsDetected) {
     return true;
   }
+  const start = Date.now();
   const result = await find('name', 'ZoomRooms', true);
   zoomRoomsDetected = Array.isArray(result) && result.length > 0;
+  logger.info(`Zoom check: ${Date.now() - start}`);
   return zoomRoomsDetected;
 };
 
@@ -37,12 +41,14 @@ module.exports.getCapabilitiesRouter = () => {
 
   router.get('', async (req: express$Request, res: express$Response) => {
     try {
+      const start = Date.now();
       const [activeAdapter, isBluescapeAvailable, isZoomRoomAvailable, macAddress] = await Promise.all([
         adapters.getActiveAdapter(),
         checkIfBluescapeIsAvailable(),
         checkIfZoomRoomIsAvailable(),
         getActiveInterfaceMac(),
       ]);
+      logger.info(`Capabilities check: ${Date.now() - start}`);
       res.status(200).send({
         isServerAvailable: true,
         isDeviceAvailable: activeAdapter && activeAdapter.ready,
