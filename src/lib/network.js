@@ -5,23 +5,26 @@ const logger = require('./logger')('MAC Address');
 
 let cachedAddress;
 
-const getActiveInterfaceMac = module.exports.getActiveInterfaceMac = () => new Promise((resolve, reject) => {
+const getActiveInterfaceMac = async ():Promise<string> => {
   if (cachedAddress) {
-    resolve(cachedAddress);
-    return;
+    return cachedAddress;
   }
-  macaddress.one((error, addr) => {
-    if (error) {
-      reject(error);
-    } else {
-    	logger.info(`Found ${addr}`);
-      cachedAddress = addr;
-      resolve(addr);
-    }
+  return new Promise((resolve, reject) => {
+    macaddress.one((error, addr) => {
+      if (error) {
+        reject(error);
+      } else {
+        logger.info(`Found ${addr}`);
+        cachedAddress = addr;
+        resolve(addr);
+      }
+    });
   });
-});
+};
 
 getActiveInterfaceMac().catch((error) => {
   logger.error('Unable to get MAC address');
   logger.errorStack(error);
 });
+
+module.exports.getActiveInterfaceMac = getActiveInterfaceMac;

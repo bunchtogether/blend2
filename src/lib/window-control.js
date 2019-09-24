@@ -58,7 +58,7 @@ const switchToApp = async (pathname: string, buttonX?:number, buttonY?:number) =
 addShutdownHandler(async () => {
   await keepOnTop('chrome', false);
 }, (error:Error) => {
-  logger.error("Unable to move Chrome from top");
+  logger.error('Unable to move Chrome from top');
   logger.errorStack(error);
 });
 

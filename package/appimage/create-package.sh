@@ -86,7 +86,8 @@ LimitNPROC=infinity
 LimitCORE=infinity
 EnvironmentFile=/etc/blend/blend.defaults
 Environment=PATH=/usr/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
-Environment=BLEND_CONFIG=/etc/blend/config.json
+Environment=BLEND_CONFIG=/etc/blend.json
+Environment=BAND_UPDATE_CHECK=/etc/band/scripts/update-check
 PIDFile=/etc/blend/blend.pid
 Restart=always
 WorkingDirectory=/etc/blend
@@ -112,8 +113,8 @@ chmod 755 $DEBIAN_DIR/DEBIAN/preinst
 
 cat <<EOF >> $DEBIAN_DIR/DEBIAN/postinst
 #!/bin/bash
-if [ ! -f /etc/blend/config.json ]; then
-    echo "{ \"ip\": \"\" }" > /etc/blend/config.json
+if [ ! -f /etc/blend.json ]; then
+    echo "{ \"ip\": \"\", \"multicast\": \"\" }" > /etc/blend.json
 fi
 
 # Check if libSDL2.so and libSDL2-image.so is available
