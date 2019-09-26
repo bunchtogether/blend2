@@ -1,36 +1,30 @@
 //      
-const logger = require('./logger')('Updater');
-const os = require('os');
 
+const os = require('os');
+const fs = require('fs-extra');
 const exec = require('child_process').exec;
+
+const logger = require('./logger')('Updater');
+
+const { BAND_UPDATE_CHECK } = process.env;
 
 
 const triggerWindowsUpdate = async () => {
   throw new Error('Trigger Windows update not implemented yet');
-  // await new Promise((resolve, reject) => {
-  //   try {
-  //     exec('/bin/bash /etc/band/scripts/update-check-windows', (err, stdout, stderr) => { // eslint-disable-line
-  //       if (err) {
-  //         reject(err);
-  //       }
-  //       if (stdout) {
-  //         resolve(stdout);
-  //       }
-  //       if (stderr) {
-  //         reject(stderr);
-  //       }
-  //     });
-  //   } catch (error) {
-  //     logger.errorStack(error);
-  //     reject(error);
-  //   }
-  // });
 };
 
 const triggerLinuxUpdate = async () => {
+  if (!BAND_UPDATE_CHECK) {
+    throw new Error('Missing BAND_UPDATE_CHECK environmental variable, Update check script path is not defined');
+  }
+
+  const scriptExists = await fs.exists(BAND_UPDATE_CHECK);
+  if (!scriptExists) {
+    throw new Error(`Update script does not exist at ${BAND_UPDATE_CHECK}`);
+  }
   await new Promise((resolve, reject) => {
     try {
-      exec('/bin/bash /etc/band/scripts/update-check', { env: { 'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games' } }, (err, stdout, stderr) => { // eslint-disable-line
+      exec(`/bin/bash ${BAND_UPDATE_CHECK} -i`, { env: { 'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' } }, (err, stdout, stderr) => { // eslint-disable-line
         if (err) {
           reject(err);
         }

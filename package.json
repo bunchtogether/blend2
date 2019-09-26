@@ -107,7 +107,7 @@
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
     "@bunchtogether/find-process": "^1.4.4",
-    "@bunchtogether/picture-in-picture": "^1.0.9",
+    "@bunchtogether/picture-in-picture": "^1.0.10",
     "@bunchtogether/ps-tree": "1.2.1",
     "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
     "@serialport/parser-byte-length": "^2.0.2",

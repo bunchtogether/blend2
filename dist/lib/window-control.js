@@ -37,15 +37,15 @@ const switchToBand = async () => {
   }
 };
 
-const switchToApp = async (pathname        , buttonX        , buttonY        ) => {
+const switchToApp = async (pathname        , buttonX        , buttonY        , className        ) => {
   if (closeBandButton) {
     closeBandButton();
     closeBandButton = null;
   }
-  logger.info(`Activating "${pathname}" Window`);
+  logger.info(`Activating "${pathname}" Window${className ? ` with "${className}" Class` : ''}`);
   try {
     await keepOnTop('chrome', false);
-    await setForegroundWindow(pathname);
+    await setForegroundWindow(pathname, className);
   } catch (error) {
     logger.error(`Failed to activate "${pathname}" window: ${error.message}`);
   }
@@ -58,7 +58,7 @@ const switchToApp = async (pathname        , buttonX        , buttonY        ) =
 addShutdownHandler(async () => {
   await keepOnTop('chrome', false);
 }, (error      ) => {
-  logger.error("Unable to move Chrome from top");
+  logger.error('Unable to move Chrome from top');
   logger.errorStack(error);
 });
 

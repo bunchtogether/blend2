@@ -37,15 +37,15 @@ const switchToBand = async () => {
   }
 };
 
-const switchToApp = async (pathname: string, buttonX?:number, buttonY?:number) => {
+const switchToApp = async (pathname: string, buttonX?:number, buttonY?:number, className?:string) => {
   if (closeBandButton) {
     closeBandButton();
     closeBandButton = null;
   }
-  logger.info(`Activating "${pathname}" Window`);
+  logger.info(`Activating "${pathname}" Window${className ? ` with "${className}" Class` : ''}`);
   try {
     await keepOnTop('chrome', false);
-    await setForegroundWindow(pathname);
+    await setForegroundWindow(pathname, className);
   } catch (error) {
     logger.error(`Failed to activate "${pathname}" window: ${error.message}`);
   }

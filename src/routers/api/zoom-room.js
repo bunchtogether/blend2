@@ -12,6 +12,7 @@ function randomInteger() {
   return crypto.randomBytes(4).readUInt32BE(0, true);
 }
 
+let prevIsAirHostClientConnected = false;
 module.exports = () => {
   logger.info('Attaching Zoom Rooms router');
 
@@ -89,6 +90,20 @@ module.exports = () => {
           logger.error('Switch to Band failed');
           logger.errorStack(error);
         });
+      } else if (key === 'Sharing') {
+        if (data.isAirHostClientConnected) {
+          prevIsAirHostClientConnected = true;
+          switchToApp('ZoomRoom', undefined, undefined, 'RoomsFTEWndClass').catch((error) => {
+            logger.error('Switch to Zoom Rooms - RoomsFTEWndClass failed');
+            logger.errorStack(error);
+          });
+        } else if (prevIsAirHostClientConnected) {
+          prevIsAirHostClientConnected = false;
+          switchToBand().catch((error) => {
+            logger.error('Switch to Band failed');
+            logger.errorStack(error);
+          });
+        }
       }
       if (ws.readyState !== 1) {
         logger.error(`Cannot send message to socket ID ${socketId}, ready state is ${ws.readyState}`);
