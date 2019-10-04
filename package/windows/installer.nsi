@@ -55,7 +55,8 @@ Section "install"
 
   SetShellVarContext "all"
   FileOpen $4 "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\blend.cmd" a
-  FileWrite $4 'echo @off$\r$\nset BLEND_RUNTIME_DIR=$InstallDir$\r$\ncd "$InstallDir"$\r$\nSTART /b /min "" "blend-runtime.exe"'
+  # FileWrite $4 'echo @off$\r$\nset BLEND_RUNTIME_DIR=$InstallDir$\r$\ncd "$InstallDir"$\r$\nSTART /b /min "" "blend-runtime.exe"'
+  FileWrite $4 'echo @off$\r$\nset BLEND_RUNTIME_DIR=$InstallDir$\r$\ncd "$InstallDir"$\r$\nPowershell.exe -command "Start-Process -FilePath $InstallDir\blend-runtime.exe -WorkingDirectory $InstallDir -WindowStyle Hidden"'
   FileClose $4
   AccessControl::GrantOnFile "$InstallDir" "(BU)" "FullAccess"
   ExecShell "" "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\blend.cmd"
