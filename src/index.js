@@ -2,6 +2,25 @@
 
 const os = require('os');
 const path = require('path');
+const commander = require('commander');
+const packageInfo = require('../package.json');
+
+commander
+  .name('blend')
+  .usage('[options]')
+  .option('-v, --version', 'Display blend version', false)
+  .option('-c, --config <path>', 'Blend config');
+
+commander.parse(process.argv);
+if (commander.version) {
+  console.log(`Blend v${packageInfo.version}`); //eslint-disable-line
+  process.exit(0);
+}
+if (commander.config) {
+  process.env.BLEND_CONFIG = commander.config;
+}
+
+
 const fs = require('fs-extra');
 const getExpressApp = require('./express-app');
 const startHttpServer = require('./http-server');
@@ -10,7 +29,6 @@ const getLevelDb = require('./database');
 const { initAdapter, closeAdapter } = require('./adapters');
 const { API_PORT } = require('./constants');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
-const { version } = require('../package.json');
 const logger = require('./lib/logger')('CLI');
 
 let switchToBandFn = null;
@@ -27,6 +45,7 @@ const triggerSwitchToBand = async ():Promise<void> => {
 };
 
 const start = async ():Promise<void> => {
+  logger.info(`Starting Blend v${packageInfo.version}`);
   const dataPath = path.join(os.homedir(), '.blend');
   const levelDbPath = path.join(dataPath, 'leveldb');
   await fs.ensureDir(dataPath);
@@ -90,7 +109,7 @@ const start = async ():Promise<void> => {
       logger.error('Error closing Level database');
       logger.errorStack(error);
     }
-    logger.info(`Shut down Blend ${version}`);
+    logger.info(`Shut down Blend v${packageInfo.version}`);
   };
 
   addShutdownHandler(shutdown, (error:Error) => {

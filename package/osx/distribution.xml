@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<installer-gui-script minSpecVersion="2">
+    <title>Blend</title>
+    <pkg-ref id="com.bunchenterprise.blend"/>
+    <organization>com.bunchenterprise</organization>
+    <domains enable_localSystem="true"/>
+    <options rootVolumeOnly="true"/>
+    <welcome file="welcome.html" mime-type="text/html" />
+    <license file="license.html" mime-type="text/html" />
+    <pkg-ref id="com.bunchenterprise.blend.installer"
+             version="2.2.10"
+             auth="root">install.blend.2.2.10.pkg</pkg-ref>
+    <pkg-ref id="com.bunchenterprise.blend.uninstaller"
+             version="2.2.10"
+             auth="root">uninstall.blend.2.2.10.pkg</pkg-ref>
+    <choices-outline>
+      <line choice="install" />
+      <line choice="uninstall" />
+    </choices-outline>
+    <choice
+        id="install"
+        visible="true"
+        title="Install Blend"
+        description="Install the Blend multicast receiver."
+        selected="!choices.uninstall.selected">
+      <pkg-ref id="com.bunchenterprise.blend.installer"/>
+    </choice>
+    <choice
+        id="uninstall"
+        visible="true"
+        title="Uninstall Blend"
+        description="Uninstall the Blend multicast receiver."
+        selected="!choices.install.selected"
+        start_selected="false">
+      <pkg-ref id="com.bunchenterprise.blend.uninstaller"/>
+    </choice>
+</installer-gui-script>
