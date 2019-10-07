@@ -9,17 +9,22 @@ commander
   .name('blend')
   .usage('[options]')
   .option('-v, --version', 'Display blend version', false)
-  .option('-c, --config <path>', 'Blend config');
+  .option('-c, --config <path>', 'Blend config path, overwrite BLEND_CONFIG env variable.')
+  .option('-u, --update-check <path>', 'Band update-check script path, overwrite BAND_UPDATE_CHECK env variable.')
+  .parse(process.argv);
 
-commander.parse(process.argv);
 if (commander.version) {
   console.log(`Blend v${packageInfo.version}`); //eslint-disable-line
   process.exit(0);
 }
 if (commander.config) {
+  // Overwrite band config.json file path
   process.env.BLEND_CONFIG = commander.config;
 }
-
+if (commander.updateCheck) {
+  // Overwrite band auto update check script
+  process.env.BAND_UPDATE_CHECK = commander.updateCheck;
+}
 
 const fs = require('fs-extra');
 const getExpressApp = require('./express-app');

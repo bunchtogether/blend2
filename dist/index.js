@@ -9,17 +9,22 @@ commander
   .name('blend')
   .usage('[options]')
   .option('-v, --version', 'Display blend version', false)
-  .option('-c, --config <path>', 'Blend config');
+  .option('-c, --config <path>', 'Blend config path, overwrite BLEND_CONFIG env variable.')
+  .option('-u, --update-check <path>', 'Band update-check script path, overwrite BAND_UPDATE_CHECK env variable.')
+  .parse(process.argv);
 
-commander.parse(process.argv);
 if (commander.version) {
   console.log(`Blend v${packageInfo.version}`); //eslint-disable-line
   process.exit(0);
 }
 if (commander.config) {
+  // Overwrite band config.json file path
   process.env.BLEND_CONFIG = commander.config;
 }
-
+if (commander.updateCheck) {
+  // Overwrite band auto update check script
+  process.env.BAND_UPDATE_CHECK = commander.updateCheck;
+}
 
 const fs = require('fs-extra');
 const getExpressApp = require('./express-app');
@@ -30,7 +35,6 @@ const { initAdapter, closeAdapter } = require('./adapters');
 const { API_PORT } = require('./constants');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 const logger = require('./lib/logger')('CLI');
-
 
 let switchToBandFn = null;
 if (os.platform() === 'win32') {
@@ -46,6 +50,7 @@ const triggerSwitchToBand = async ()               => {
 };
 
 const start = async ()               => {
+  logger.info(`Starting Blend v${packageInfo.version}`);
   const dataPath = path.join(os.homedir(), '.blend');
   const levelDbPath = path.join(dataPath, 'leveldb');
   await fs.ensureDir(dataPath);
@@ -109,7 +114,7 @@ const start = async ()               => {
       logger.error('Error closing Level database');
       logger.errorStack(error);
     }
-    logger.info(`Shut down Blend ${packageInfo.version}`);
+    logger.info(`Shut down Blend v${packageInfo.version}`);
   };
 
   addShutdownHandler(shutdown, (error      ) => {
