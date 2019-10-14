@@ -11,6 +11,7 @@ commander
   .version(packageInfo.version, '-v, --version', 'Display blend version')
   .option('-c, --config <path>', 'Blend config path, overwrite BLEND_CONFIG env variable.')
   .option('-u, --update-check <path>', 'Band update-check script path, overwrite BAND_UPDATE_CHECK env variable.')
+  .option('-k, --kiosk', 'Kiosk mode', false)
   .parse(process.argv);
 
 if (commander.config) {
@@ -22,13 +23,18 @@ if (commander.updateCheck) {
   process.env.BAND_UPDATE_CHECK = commander.updateCheck;
 }
 
+if (commander.kiosk) {
+  // Kiosk mode
+  process.env.KIOSK_MODE = true;
+}
+
 const fs = require('fs-extra');
 const getExpressApp = require('./express-app');
 const startHttpServer = require('./http-server');
 const getRouters = require('./routers');
 const getLevelDb = require('./database');
 const { initAdapter, closeAdapter } = require('./adapters');
-const { API_PORT } = require('./constants');
+const { API_PORT, KIOSK_MODE } = require('./constants');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 const logger = require('./lib/logger')('CLI');
 const { bandIcon } = require('./icon');
@@ -42,7 +48,9 @@ if (isWindows) {
 
 let exitCode = 0;
 const triggerSwitchToBand = async ()               => {
-  if (isWindows && switchToBandFn !== null) {
+  console.log(isWindows, KIOSK_MODE)
+  if (isWindows && switchToBandFn !== null && KIOSK_MODE) {
+    console.log('Triggering Chrome switch fn')
     await switchToBandFn();
   }
 };

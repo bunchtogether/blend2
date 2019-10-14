@@ -1,6 +1,6 @@
 // @flow
 
-const { BLEND_CONFIG } = process.env;
+const { BLEND_CONFIG, KIOSK_MODE } = process.env;
 
 module.exports.API_PORT = 61340;
 
@@ -16,3 +16,5 @@ if (BLEND_CONFIG) {
 }
 
 module.exports.CONFIG_FILE = configFile;
+
+module.exports.KIOSK_MODE = KIOSK_MODE === 'true';
