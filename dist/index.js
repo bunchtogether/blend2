@@ -8,15 +8,11 @@ const packageInfo = require('../package.json');
 commander
   .name('blend')
   .usage('[options]')
-  .option('-v, --version', 'Display blend version', false)
+  .version(packageInfo.version, '-v, --version', 'Display blend version')
   .option('-c, --config <path>', 'Blend config path, overwrite BLEND_CONFIG env variable.')
   .option('-u, --update-check <path>', 'Band update-check script path, overwrite BAND_UPDATE_CHECK env variable.')
   .parse(process.argv);
 
-if (commander.version) {
-  console.log(`Blend v${packageInfo.version}`); //eslint-disable-line
-  process.exit(0);
-}
 if (commander.config) {
   // Overwrite band config.json file path
   process.env.BLEND_CONFIG = commander.config;
@@ -35,17 +31,58 @@ const { initAdapter, closeAdapter } = require('./adapters');
 const { API_PORT } = require('./constants');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 const logger = require('./lib/logger')('CLI');
+const { bandIcon } = require('./icon');
 
 let switchToBandFn = null;
-if (os.platform() === 'win32') {
+const isWindows = os.platform() === 'win32';
+if (isWindows) {
   const { switchToBand } = require('./lib/window-control'); // eslint-disable-line global-require
   switchToBandFn = switchToBand;
 }
 
 let exitCode = 0;
 const triggerSwitchToBand = async ()               => {
-  if (os.platform() === 'win32' && switchToBandFn !== null) {
+  if (isWindows && switchToBandFn !== null) {
     await switchToBandFn();
+  }
+};
+
+const setupTray = function () {
+  if (isWindows) {
+    const SysTray = require('systray').default; // eslint-disable-line global-require
+    const systrayOptions = {
+      menu: {
+        icon: bandIcon,
+        title: '',
+        tooltip: 'Blend Multicast Reciever',
+        items: [{
+          title: 'Exit',
+          tooltip: 'Exit Blend Multicast Reciever',
+          checked: false,
+          enabled: true,
+        }],
+      },
+      copyDir: true,
+    };
+    const systray = new SysTray(systrayOptions);
+    const shutdownTray = () => systray.kill(false);
+
+    addShutdownHandler(shutdownTray, (error      ) => {
+      if (error.stack) {
+        logger.error('Error shutting down:');
+        error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
+      } else {
+        logger.error(`Error shutting down: ${error.message}`);
+      }
+    });
+
+    // Trigger shutdown when tray icon is clicked
+    systray.onClick((action) => {
+      if (action.seq_id === 0) {
+        logger.info('Shutting down blend');
+        runShutdownHandlers();
+      }
+    });
   }
 };
 
@@ -127,6 +164,8 @@ const start = async ()               => {
   });
 
   await triggerSwitchToBand();
+
+  await setupTray();
 
   logger.info('Started');
 };
