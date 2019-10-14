@@ -52,7 +52,7 @@ const setupTray = function () {
     const SysTray = require('systray').default; // eslint-disable-line global-require
     const systrayOptions = {
       menu: {
-        icon: bandIcon,
+        icon: bandIcon(),
         title: '',
         tooltip: 'Blend Multicast Reciever',
         items: [{
