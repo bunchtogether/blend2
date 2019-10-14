@@ -35,17 +35,58 @@ const { initAdapter, closeAdapter } = require('./adapters');
 const { API_PORT } = require('./constants');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 const logger = require('./lib/logger')('CLI');
+const { bandIcon } = require('./icon');
 
 let switchToBandFn = null;
-if (os.platform() === 'win32') {
+const isWindows = os.platform() === 'win32';
+if (isWindows) {
   const { switchToBand } = require('./lib/window-control'); // eslint-disable-line global-require
   switchToBandFn = switchToBand;
 }
 
 let exitCode = 0;
 const triggerSwitchToBand = async ():Promise<void> => {
-  if (os.platform() === 'win32' && switchToBandFn !== null) {
+  if (isWindows && switchToBandFn !== null) {
     await switchToBandFn();
+  }
+};
+
+const setupTray = function () {
+  if (isWindows) {
+    const SysTray = require('systray').default; // eslint-disable-line global-require
+    const systrayOptions = {
+      menu: {
+        icon: bandIcon,
+        title: '',
+        tooltip: 'Blend Multicast Reciever',
+        items: [{
+          title: 'Exit',
+          tooltip: 'Exit Blend Multicast Reciever',
+          checked: false,
+          enabled: true,
+        }],
+      },
+      copyDir: true,
+    };
+    const systray = new SysTray(systrayOptions);
+    const shutdownTray = () => systray.kill(false);
+
+    addShutdownHandler(shutdownTray, (error:Error) => {
+      if (error.stack) {
+        logger.error('Error shutting down:');
+        error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
+      } else {
+        logger.error(`Error shutting down: ${error.message}`);
+      }
+    });
+
+    // Trigger shutdown when tray icon is clicked
+    systray.onClick((action) => {
+      if (action.seq_id === 0) {
+        logger.info('Shutting down blend');
+        runShutdownHandlers();
+      }
+    });
   }
 };
 
@@ -127,6 +168,8 @@ const start = async ():Promise<void> => {
   });
 
   await triggerSwitchToBand();
+
+  await setupTray();
 
   logger.info('Started');
 };

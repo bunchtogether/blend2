@@ -142,6 +142,7 @@
     "serialport": "^7.1.5",
     "sqlite3": "^4.0.9",
     "superagent": "^4.1.0",
+    "systray": "^1.0.5",
     "terminate": "^2.1.2",
     "typechecker": "^4.7.0",
     "uuid": "^3.3.2",
