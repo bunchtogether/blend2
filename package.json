@@ -61,6 +61,7 @@
       "node_modules/leveldown/prebuilds/linux-x64",
       "node_modules/leveldown/prebuilds/win32-x64",
       "node_modules/network/lib/*.js",
+      "node_modules/systray/traybin",
       "package.json"
     ],
     "assets": [
