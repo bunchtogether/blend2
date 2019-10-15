@@ -46,6 +46,8 @@ Section "install"
   File files\band.png
   File files\icon.ico
   File /r files\dist-www
+  File /r files\static
+  File /r files\scripts
 
   ${If} ${RunningX64}
     # Copy 64bit files

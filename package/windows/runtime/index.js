@@ -105,7 +105,7 @@ const start = async () => {
   });
   const procs = await new Promise((resolve, reject) => {
     pm2.start({
-      name: 'Blend',
+      name: 'blend',
       script: BLEND_BINARY_PATH,
       cwd: BLEND_DIRECTORY,
       instances: 1,
@@ -134,7 +134,7 @@ const start = async () => {
 
   const shutdown = async () => {
     await new Promise((resolve, reject) => {
-      pm2.stop(procs, (error) => {
+      pm2.stop('blend', (error) => {
           if(error) {
             reject(error);
           } else {
