@@ -74,7 +74,7 @@ const setupTray = function () {
     const systray = new SysTray(systrayOptions);
     const shutdownTray = () => systray.kill(false);
 
-    addShutdownHandler(shutdownTray, (error:Error) => {
+    addShutdownHandler(shutdownTray, (error) => {
       if (error.stack) {
         logger.error('Error shutting down:');
         error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
