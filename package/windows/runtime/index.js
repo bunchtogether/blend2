@@ -132,6 +132,8 @@ const start = async () => {
     });
   });
 
+  await setupTray();
+
   const shutdown = async () => {
     await new Promise((resolve, reject) => {
       pm2.stop(procs, (error) => {
