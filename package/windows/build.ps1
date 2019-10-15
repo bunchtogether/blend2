@@ -35,7 +35,7 @@ cp .\src\band.png .\package\windows\files\band.png
 
 # Build installer
 &'C:\Program Files (x86)\NSIS\Bin\makensis.exe' .\package\windows\installer.nsi
-rm .\installers\blend-installer-x64-86-$VERSION.exe
+Remove-Item .\installers\blend-installer-x64-86-$VERSION.exe -ErrorAction Ignore
 move .\package\windows\blend-installer.exe .\installers\blend-installer-x64-86-$VERSION.exe
 
 # pause
