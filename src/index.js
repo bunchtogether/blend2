@@ -26,11 +26,11 @@ if (commander.updateCheck) {
 
 if (commander.kiosk) {
   // Kiosk mode
-  process.env.KIOSK_MODE = true;
+  process.env.KIOSK_MODE = 'true';
 }
 
 if (commander.tray) {
-  process.env.ENABLE_TRAY_ICON = true;
+  process.env.ENABLE_TRAY_ICON = 'true';
 }
 
 
@@ -48,8 +48,8 @@ const { bandIcon } = require('./icon');
 let switchToBandFn = null;
 const isWindows = os.platform() === 'win32';
 if (isWindows) {
-  const { switchToBand } = require('./lib/window-control'); // eslint-disable-line global-require
-  switchToBandFn = switchToBand;
+  const { waitForChromeToSwitchToBand } = require('./lib/window-control'); // eslint-disable-line global-require
+  switchToBandFn = waitForChromeToSwitchToBand;
 }
 
 let exitCode = 0;

@@ -2,6 +2,7 @@
 
 const path = require('path');
 const fs = require('fs-extra');
+const psNode = require('ps-node');
 const openDesktopWindowButton = require('@bunchtogether/desktop-window-button');
 const { setForegroundWindow, keepOnTop } = require('@bunchtogether/picture-in-picture');
 const { addShutdownHandler } = require('@bunchtogether/exit-handler');
@@ -23,6 +24,39 @@ const buttonImageSrcPromise = (async () => {
 })();
 
 let closeBandButton;
+
+const maxTimeout = 5 * 60 * 1000; // 5 mins
+const waitForChromeToSwitchToBand = async () => {
+  try {
+    let isChromeAvailable = false;
+    const stopAt = Date.now() + maxTimeout;
+
+    while (stopAt > Date.now()) {
+      isChromeAvailable = await new Promise(async (resolve, reject) => { // eslint-disable-line
+        psNode.lookup({ command: 'chrome' }, (err, results) => {
+          if (err) {
+            logger.error(`Failed to query processes, Error: ${err.message}`);
+            resolve(false);
+          }
+          if (Array.isArray(results) && results.length > 0) {
+            resolve(true);
+          }
+          resolve(false);
+        });
+      });
+      if (isChromeAvailable) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+
+    if (isChromeAvailable) {
+      await switchToBand();
+    }
+  } catch (error) {
+    logger.error(`Failed to lookup chrome process, Error: ${error.message}`);
+  }
+};
 
 const switchToBand = async () => {
   if (closeBandButton) {
@@ -64,6 +98,7 @@ addShutdownHandler(async () => {
 
 
 module.exports = {
+  waitForChromeToSwitchToBand,
   switchToBand,
   switchToApp,
 };
