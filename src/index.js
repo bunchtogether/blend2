@@ -54,7 +54,7 @@ const triggerSwitchToBand = async ():Promise<void> => {
 };
 
 const setupTray = function () {
-  if (!isWindows) {
+  if (isWindows) {
     const SysTray = require('@bunchtogether/node-systray').default; // eslint-disable-line global-require
     const systrayOptions = {
       menu: {
