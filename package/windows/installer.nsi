@@ -44,6 +44,7 @@ Section "install"
   # Copy Files
   File files\sample.mp4
   File files\band.png
+  File files\icon.ico
   File /r files\dist-www
 
   ${If} ${RunningX64}
@@ -63,6 +64,9 @@ Section "install"
   FileClose $4
   AccessControl::GrantOnFile "$InstallDir" "(BU)" "FullAccess"
   ExecShell "" "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\blend.cmd"
+
+  # Startup Menu entry
+  CreateShortCut "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\blend.cmd" "" "$InstallDir\icon.ico"
 
   writeUninstaller "$InstallDir\Uninstaller.exe"
 

@@ -48,16 +48,14 @@ if (isWindows) {
 
 let exitCode = 0;
 const triggerSwitchToBand = async ():Promise<void> => {
-  console.log(isWindows, KIOSK_MODE)
   if (isWindows && switchToBandFn !== null && KIOSK_MODE) {
-    console.log('Triggering Chrome switch fn')
     await switchToBandFn();
   }
 };
 
 const setupTray = function () {
-  if (isWindows) {
-    const SysTray = require('systray').default; // eslint-disable-line global-require
+  if (!isWindows) {
+    const SysTray = require('@bunchtogether/node-systray').default; // eslint-disable-line global-require
     const systrayOptions = {
       menu: {
         icon: bandIcon(),
@@ -171,9 +169,9 @@ const start = async ():Promise<void> => {
     }
   });
 
-  await triggerSwitchToBand();
-
   await setupTray();
+
+  await triggerSwitchToBand();
 
   logger.info('Started');
 };

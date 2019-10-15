@@ -656,6 +656,14 @@
     sdl2-image "^2.0.3"
     sdl2-ttf "^2.0.3"
 
+"@bunchtogether/node-systray@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@bunchtogether/node-systray/-/node-systray-1.1.0.tgz#d47f9badb12368cde6879f80f072488338b4abdc"
+  integrity sha512-uvtX8Ddo12/gPI4029mcfmFJCNb5I2k1d/eWnoDzgmThuIRLsNMohwyXrVx5IUk7CVid1z4iZH/nP8M8zUMvBA==
+  dependencies:
+    debug "^3.0.1"
+    fs-extra "^4.0.2"
+
 "@bunchtogether/picture-in-picture@^1.0.10":
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/@bunchtogether/picture-in-picture/-/picture-in-picture-1.0.10.tgz#b4858fe72b07d96d153dec28a0df6f1a230b7383"
@@ -7291,21 +7299,6 @@ supports-color@^5.3.0:
 symbol-tree@^3.2.2:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
-
-systray@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/systray/-/systray-1.0.5.tgz#cec2aa10c3d369c2022beb580c1cf1a6e5d4aec0"
-  integrity sha512-qLsl5lk8lUuqCTaREJ0nR6NgF2y2Ni01vBjUs0cVWf54ZeV4pr3TFLMcUT+od1Twb1qQMq/SKyj+BKd2vg6+Fg==
-  dependencies:
-    debug "^3.0.1"
-    fs-extra "^4.0.2"
-
-"systray@https://github.com/bunchtogether/node-systray":
-  version "1.0.5"
-  resolved "https://github.com/bunchtogether/node-systray#4b38bcc2f87d82888b1e146ea220b92e8c80c51f"
-  dependencies:
-    debug "^3.0.1"
-    fs-extra "^4.0.2"
 
 table-parser@^0.1.3:
   version "0.1.3"

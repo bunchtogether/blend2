@@ -61,7 +61,7 @@
       "node_modules/leveldown/prebuilds/linux-x64",
       "node_modules/leveldown/prebuilds/win32-x64",
       "node_modules/network/lib/*.js",
-      "node_modules/systray/traybin",
+      "node_modules/systray/traybin/**/*",
       "package.json"
     ],
     "assets": [
@@ -109,6 +109,7 @@
     "@bunchtogether/exit-handler": "^1.0.0",
     "@bunchtogether/ffmpeg-static": "^1.1.0",
     "@bunchtogether/find-process": "^1.4.4",
+    "@bunchtogether/node-systray": "^1.1.0",
     "@bunchtogether/picture-in-picture": "^1.0.10",
     "@bunchtogether/ps-tree": "1.2.1",
     "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
@@ -143,7 +144,6 @@
     "serialport": "^7.1.5",
     "sqlite3": "^4.0.9",
     "superagent": "^4.1.0",
-    "systray": "https://github.com/bunchtogether/node-systray",
     "terminate": "^2.1.2",
     "typechecker": "^4.7.0",
     "uuid": "^3.3.2",
