@@ -5,12 +5,24 @@ const fs = require('fs');
 const path = require('path');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 
-const { BLEND_RUNTIME_DIR } = process.env;
-if (!BLEND_RUNTIME_DIR) {
-  throw new Error('Missing BLEND_RUNTIME_DIR environment variable');
+const getBlendRuntimeDir = function() {
+  if (process.env.BLEND_RUNTIME_DIR) {
+    return path.resolve(process.env.BLEND_RUNTIME_DIR)
+  }
+  return path.resolve(process.cwd());
 }
 
-const BLEND_DIRECTORY = path.resolve(BLEND_RUNTIME_DIR);
+const isKioskModeEnabled = function() {
+  if (process.env.BAND_KIOSK_MODE === 'true') {
+    return true
+  }
+  if (process.env.KIOSK_MODE === 'true') {
+    return true
+  }
+  return false
+}
+
+const BLEND_DIRECTORY = getBlendRuntimeDir();
 const BLEND_BINARY_PATH = path.resolve(BLEND_RUNTIME_DIR, 'blend.exe');
 let exitCode = 0;
 
@@ -63,6 +75,7 @@ const start = async () => {
       exec_interpreter: 'none',
       env: {
         NODE_ENV: 'production',
+        KIOSK_MODE: isKioskModeEnabled(),
       },
       autorestart: true,
       kill_timeout: 3000,
