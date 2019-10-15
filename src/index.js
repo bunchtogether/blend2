@@ -12,6 +12,7 @@ commander
   .option('-c, --config <path>', 'Blend config path, overwrite BLEND_CONFIG env variable.')
   .option('-u, --update-check <path>', 'Band update-check script path, overwrite BAND_UPDATE_CHECK env variable.')
   .option('-k, --kiosk', 'Kiosk mode', false)
+  .option('-t, --tray', 'System tray icon', false)
   .parse(process.argv);
 
 if (commander.config) {
@@ -28,13 +29,18 @@ if (commander.kiosk) {
   process.env.KIOSK_MODE = true;
 }
 
+if (commander.tray) {
+  process.env.ENABLE_TRAY_ICON = true;
+}
+
+
 const fs = require('fs-extra');
 const getExpressApp = require('./express-app');
 const startHttpServer = require('./http-server');
 const getRouters = require('./routers');
 const getLevelDb = require('./database');
 const { initAdapter, closeAdapter } = require('./adapters');
-const { API_PORT, KIOSK_MODE } = require('./constants');
+const { API_PORT, KIOSK_MODE, ENABLE_TRAY_ICON } = require('./constants');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 const logger = require('./lib/logger')('CLI');
 const { bandIcon } = require('./icon');
@@ -54,7 +60,7 @@ const triggerSwitchToBand = async ():Promise<void> => {
 };
 
 const setupTray = function () {
-  if (isWindows) {
+  if (ENABLE_TRAY_ICON) {
     const SysTray = require('@bunchtogether/node-systray').default; // eslint-disable-line global-require
     const systrayOptions = {
       menu: {

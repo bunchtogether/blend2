@@ -3,7 +3,9 @@
 const pm2 = require('pm2');
 const fs = require('fs');
 const path = require('path');
+const SysTray = require('@bunchtogether/node-systray').default;
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
+const { bandIcon } = require('./icon');
 
 const getBlendRuntimeDir = function() {
   if (process.env.BLEND_RUNTIME_DIR) {
@@ -52,6 +54,44 @@ const preStartCheck = async () => {
   }
 }
 
+const setupTray = function () {
+    const systrayOptions = {
+      menu: {
+        icon: bandIcon(),
+        title: '',
+        tooltip: 'Blend Multicast Reciever',
+        items: [
+          {
+            title: 'Exit',
+            tooltip: 'Exit Blend',
+            checked: false,
+            enabled: true,
+          }
+        ],
+      },
+      copyDir: true,
+    };
+    const systray = new SysTray(systrayOptions);
+    const shutdownTray = () => systray.kill(false);
+
+    addShutdownHandler(shutdownTray, (error:Error) => {
+      if (error.stack) {
+        logger.error('Error shutting down:');
+        error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
+      } else {
+        logger.error(`Error shutting down: ${error.message}`);
+      }
+    });
+
+    // Trigger shutdown when tray icon is clicked
+    systray.onClick((action) => {
+      if (action.seq_id === 0) {
+        logger.info('Shutting down blend');
+        runShutdownHandlers();
+      }
+    });
+};
+
 
 const start = async () => {
   await preStartCheck();
@@ -76,6 +116,7 @@ const start = async () => {
       env: {
         NODE_ENV: 'production',
         KIOSK_MODE: isKioskModeEnabled(),
+        ENABLE_TRAY_ICON: 'false',
       },
       autorestart: true,
       kill_timeout: 3000,
