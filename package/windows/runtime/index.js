@@ -23,7 +23,7 @@ const isKioskModeEnabled = function() {
 }
 
 const BLEND_DIRECTORY = getBlendRuntimeDir();
-const BLEND_BINARY_PATH = path.resolve(BLEND_RUNTIME_DIR, 'blend.exe');
+const BLEND_BINARY_PATH = path.resolve(BLEND_DIRECTORY, 'blend.exe');
 let exitCode = 0;
 
 const checkPath = async (filePath) => {
