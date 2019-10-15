@@ -75,18 +75,16 @@ const setupTray = function () {
     const shutdownTray = () => systray.kill(false);
 
     addShutdownHandler(shutdownTray, (error) => {
+      console.error(`Error shutting down: ${error.message}`);
       if (error.stack) {
-        logger.error('Error shutting down:');
-        error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
-      } else {
-        logger.error(`Error shutting down: ${error.message}`);
+        error.stack.split('\n').forEach((line) => console.error(`\t${line.trim()}`));
       }
     });
 
     // Trigger shutdown when tray icon is clicked
     systray.onClick((action) => {
       if (action.seq_id === 0) {
-        logger.info('Shutting down blend');
+        console.log('Shutting down blend');
         runShutdownHandlers();
       }
     });
