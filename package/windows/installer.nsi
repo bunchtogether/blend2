@@ -93,4 +93,5 @@ Section "uninstall"
   SetOutPath "$InstallDir\..\"
   RMDir /r $InstallDir
   Delete "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\blend.cmd"
+  Delete "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Blend.lnk"
 SectionEnd
