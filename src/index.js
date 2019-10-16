@@ -175,11 +175,12 @@ const start = async ():Promise<void> => {
     }
   });
 
+  logger.info('Started');
+
+  // Setup Tray icon
   await setupTray();
 
   await triggerSwitchToBand();
-
-  logger.info('Started');
 };
 
 addPostShutdownHandler(() => {
