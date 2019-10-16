@@ -1,5 +1,5 @@
 !include x64.nsh
-!define Version "v2.2.10"
+!define Version "v2.2.12"
 !define ENV_HKLM 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 
 Name "Blend Installer"
@@ -82,10 +82,6 @@ SectionEnd
 Function un.onInit
 	SetShellVarContext all
 	StrCpy $InstallDir "$PROGRAMFILES\Blend"
-	#Verify the uninstaller - last chance to back out
-	MessageBox MB_OKCANCEL "Permanantly remove Blend ?" IDOK next
-		Abort
-	next:
 	!insertmacro VerifyUserIsAdmin
 FunctionEnd
 
