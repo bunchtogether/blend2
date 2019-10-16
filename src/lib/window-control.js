@@ -2,7 +2,8 @@
 
 const path = require('path');
 const fs = require('fs-extra');
-const psNode = require('ps-node');
+const os = require('os');
+const findProcess = require('@bunchtogether/find-process');
 const openDesktopWindowButton = require('@bunchtogether/desktop-window-button');
 const { setForegroundWindow, keepOnTop } = require('@bunchtogether/picture-in-picture');
 const { addShutdownHandler } = require('@bunchtogether/exit-handler');
@@ -25,6 +26,19 @@ const buttonImageSrcPromise = (async () => {
 
 let closeBandButton;
 
+const getGoogleChromeName = () => {
+  switch (os.platform()) {
+    case 'win32':
+      return 'chrome';
+    case 'darwin':
+      return 'Google Chrome';
+    case 'linux':
+      return 'chromium';
+    default:
+      return 'chrome';
+  }
+};
+
 const maxTimeout = 5 * 60 * 1000; // 5 mins
 const waitForChromeToSwitchToBand = async () => {
   try {
@@ -32,19 +46,9 @@ const waitForChromeToSwitchToBand = async () => {
     const stopAt = Date.now() + maxTimeout;
 
     while (stopAt > Date.now()) {
-      isChromeAvailable = await new Promise(async (resolve, reject) => { // eslint-disable-line
-        psNode.lookup({ command: 'chrome' }, (err, results) => {
-          if (err) {
-            logger.error(`Failed to query processes, Error: ${err.message}`);
-            resolve(false);
-          }
-          if (Array.isArray(results) && results.length > 0) {
-            resolve(true);
-          }
-          resolve(false);
-        });
-      });
-      if (isChromeAvailable) {
+      const processList = findProcess('name', getGoogleChromeName(), true);
+      if (Array.isArray(processList) && processList.length > 0) {
+        isChromeAvailable = true;
         break;
       }
       await new Promise((resolve) => setTimeout(resolve, 5000));
