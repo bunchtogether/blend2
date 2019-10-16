@@ -1,9 +1,4 @@
 
-
-# Remove-Item -Recurse .\node_modules
-# Remove-Item -Recurse .\package\windows\files\x64\*
-# Remove-Item -Recurse .\package\windows\files\x86\*
-# Remove-Item -Recurse .\package\windows\files\dist-www
 Remove-Item -Recurse -ErrorAction Ignore .\package\windows\files
 New-Item -Path .\package\windows\files -Name "files" -ItemType "directory"
 New-Item -Path .\package\windows\files\x64 -Name "x64" -ItemType "directory"
@@ -39,6 +34,7 @@ cp .\package\windows\x86\* .\package\windows\files\x86
 cp .\src\sample.mp4 .\package\windows\files\sample.mp4
 cp .\src\band.png .\package\windows\files\band.png
 cp .\src\icon.ico .\package\windows\files\icon.ico
+cp .\src\blend.ico .\package\windows\files\blend.ico
 
 # Build installer
 &'C:\Program Files (x86)\NSIS\Bin\makensis.exe' .\package\windows\installer.nsi

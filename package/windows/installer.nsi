@@ -44,7 +44,7 @@ Section "install"
   # Copy Files
   File files\sample.mp4
   File files\band.png
-  File files\icon.ico
+  File files\blend.ico
   File /r files\dist-www
   File /r files\static
   File /r files\scripts
@@ -69,7 +69,7 @@ Section "install"
   ExecShell "" "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Blend.cmd"
 
   # Startup Menu entry
-  CreateShortCut "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Blend.cmd" "" "$InstallDir\icon.ico"
+  CreateShortCut "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Blend.cmd" "" "$InstallDir\blend.ico"
 
   writeUninstaller "$InstallDir\Uninstaller.exe"
 
