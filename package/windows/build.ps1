@@ -1,9 +1,13 @@
 
 
 # Remove-Item -Recurse .\node_modules
-Remove-Item -Recurse .\package\windows\files\x64\*
-Remove-Item -Recurse .\package\windows\files\x86\*
-Remove-Item -Recurse .\package\windows\files\dist-www
+# Remove-Item -Recurse .\package\windows\files\x64\*
+# Remove-Item -Recurse .\package\windows\files\x86\*
+# Remove-Item -Recurse .\package\windows\files\dist-www
+Remove-Item -Recurse -ErrorAction Ignore .\package\windows\files
+New-Item -Path .\package\windows\files -Name "files" -ItemType "directory"
+New-Item -Path .\package\windows\files\x64 -Name "x64" -ItemType "directory"
+New-Item -Path .\package\windows\files\x86 -Name "x86" -ItemType "directory"
 
 $path = "./installers"
 If(!(test-path $path)) { New-Item -ItemType Directory -Force -Path $path }
