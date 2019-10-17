@@ -56,7 +56,7 @@ const generateLogs = async function ()                  {
     let dumpLogs;
     const logGeneratorScript = generateLogsScript();
     if (os.platform() === 'win32') {
-      dumpLogs = spawn('powershell.exe', ['-ExecutionPolicy', 'Bypass', '-File', logGeneratorScript, filename]);
+      dumpLogs = spawn('powershell.exe', ['-WindowStyle', 'Hidden', '-ExecutionPolicy', 'Bypass', '-File', logGeneratorScript, filename]);
     } else {
       dumpLogs = spawn('bash', [logGeneratorScript, filename]);
     }
