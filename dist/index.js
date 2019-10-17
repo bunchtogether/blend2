@@ -12,6 +12,7 @@ commander
   .option('-c, --config <path>', 'Blend config path, overwrite BLEND_CONFIG env variable.')
   .option('-u, --update-check <path>', 'Band update-check script path, overwrite BAND_UPDATE_CHECK env variable.')
   .option('-k, --kiosk', 'Kiosk mode', false)
+  .option('-t, --tray', 'System tray icon', false)
   .parse(process.argv);
 
 if (commander.config) {
@@ -25,8 +26,13 @@ if (commander.updateCheck) {
 
 if (commander.kiosk) {
   // Kiosk mode
-  process.env.KIOSK_MODE = true;
+  process.env.KIOSK_MODE = 'true';
 }
+
+if (commander.tray) {
+  process.env.ENABLE_TRAY_ICON = 'true';
+}
+
 
 const fs = require('fs-extra');
 const getExpressApp = require('./express-app');
@@ -34,7 +40,7 @@ const startHttpServer = require('./http-server');
 const getRouters = require('./routers');
 const getLevelDb = require('./database');
 const { initAdapter, closeAdapter } = require('./adapters');
-const { API_PORT, KIOSK_MODE } = require('./constants');
+const { API_PORT, KIOSK_MODE, ENABLE_TRAY_ICON } = require('./constants');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 const logger = require('./lib/logger')('CLI');
 const { bandIcon } = require('./icon');
@@ -42,22 +48,20 @@ const { bandIcon } = require('./icon');
 let switchToBandFn = null;
 const isWindows = os.platform() === 'win32';
 if (isWindows) {
-  const { switchToBand } = require('./lib/window-control'); // eslint-disable-line global-require
-  switchToBandFn = switchToBand;
+  const { waitForChromeToSwitchToBand } = require('./lib/window-control'); // eslint-disable-line global-require
+  switchToBandFn = waitForChromeToSwitchToBand;
 }
 
 let exitCode = 0;
 const triggerSwitchToBand = async ()               => {
-  console.log(isWindows, KIOSK_MODE)
   if (isWindows && switchToBandFn !== null && KIOSK_MODE) {
-    console.log('Triggering Chrome switch fn')
     await switchToBandFn();
   }
 };
 
 const setupTray = function () {
-  if (isWindows) {
-    const SysTray = require('systray').default; // eslint-disable-line global-require
+  if (ENABLE_TRAY_ICON) {
+    const SysTray = require('@bunchtogether/node-systray').default; // eslint-disable-line global-require
     const systrayOptions = {
       menu: {
         icon: bandIcon(),
@@ -171,11 +175,12 @@ const start = async ()               => {
     }
   });
 
-  await triggerSwitchToBand();
+  logger.info('Started');
 
+  // Setup Tray icon
   await setupTray();
 
-  logger.info('Started');
+  await triggerSwitchToBand();
 };
 
 addPostShutdownHandler(() => {
