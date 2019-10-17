@@ -46,7 +46,7 @@ const waitForChromeToSwitchToBand = async () => {
     const stopAt = Date.now() + maxTimeout;
 
     while (stopAt > Date.now()) {
-      const processList = findProcess('name', getGoogleChromeName(), true);
+      const processList = await findProcess('name', getGoogleChromeName(), true);
       if (Array.isArray(processList) && processList.length > 0) {
         isChromeAvailable = true;
         break;
