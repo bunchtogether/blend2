@@ -67,10 +67,10 @@ const setupTray = function () {
       menu: {
         icon: bandIcon(),
         title: '',
-        tooltip: 'Blend Multicast Reciever',
+        tooltip: 'Blend Multicast Receiver',
         items: [{
           title: 'Exit',
-          tooltip: 'Exit Blend Multicast Reciever',
+          tooltip: 'Exit Blend',
           checked: false,
           enabled: true,
         }],
