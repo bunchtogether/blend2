@@ -7,6 +7,7 @@ const getZoomRoomRouter = require('./zoom-room');
 const { getBluescapeRouter } = require('./bluescape');
 const { getLogsRouter } = require('./logs');
 const { getSetupRouter } = require('./setup');
+const { getSystemRouter } = require('./system');
 const { getCapabilitiesRouter } = require('./capabilities');
 const adapterMiddleware = require('../middleware/adapter');
 
@@ -21,6 +22,7 @@ function getApiRouters(levelDb:Object) {
   routers.use('/bluescape', getBluescapeRouter());
   routers.use('/logs', getLogsRouter());
   routers.use('/setup', getSetupRouter());
+  routers.use('/system', getSystemRouter());
 
   return [routers, async () => {
     await shutdownZoomRoomsRouter();

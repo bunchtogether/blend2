@@ -54,7 +54,7 @@ if (isWindows) {
 
 let exitCode = 0;
 const triggerSwitchToBand = async ():Promise<void> => {
-  logger.info(`Enable Kiosk Mode: ${KIOSK_MODE}`);
+  logger.info(`Enable Kiosk Mode: ${KIOSK_MODE ? 'TRUE' : 'FALSE'}`);
   if (isWindows && switchToBandFn !== null && KIOSK_MODE) {
     await switchToBandFn();
   }

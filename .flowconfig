@@ -17,3 +17,4 @@ flow-typed/
 [options]
 traces=3
 module.name_mapper='^expose-loader?.*' -> 'expose-loader'
+module.name_mapper='^node-audio-windows' -> 'empty'

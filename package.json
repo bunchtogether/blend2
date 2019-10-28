@@ -1,6 +1,6 @@
 {
   "name": "blend",
-  "version": "2.2.12",
+  "version": "2.2.13",
   "main": "dist/index.js",
   "bin": "dist/index.js",
   "repository": "https://github.com/bunchtogether/blend2.git",
@@ -11,7 +11,7 @@
     "build": "yarn build:src-www && yarn build:src",
     "flow-typed": "./node_modules/.bin/flow-typed install -o",
     "test": "yarn lint && yarn test:js",
-    "test:js": "cross-env NODE_ENV=test jest --runInBand ./tests/setup.test.js",
+    "test:js": "cross-env NODE_ENV=test jest --runInBand tests",
     "lint": "npm run lint:js && npm run lint:flow",
     "lint:js": "eslint -c ./.eslintrc --no-eslintrc --cache --fix .",
     "lint:flow": "flow --show-all-errors",
@@ -103,6 +103,10 @@
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3"
   },
+  "optionalDependencies": {
+    "loudness": "^0.3.0",
+    "node-audio-windows": "^1.0.1"
+  },
   "dependencies": {
     "@bunchtogether/desktop-window-button": "^1.0.9",
     "@bunchtogether/exit-handler": "^1.0.0",
@@ -122,6 +126,7 @@
     "colors": "^1.3.3",
     "commander": "^3.0.2",
     "eachr": "^3.2.0",
+    "empty": "^0.10.1",
     "express": "^4.17.1",
     "express-graceful-exit": "^0.4.2",
     "express-ws": "^4.0.0",
