@@ -28,9 +28,9 @@ describe('Capabilities', () => {
     await superagent.post(`http://127.0.0.1:${PORT}/api/1.0/system/volume`).send({ volume: 0 });
     const response1 = await superagent.get(`http://127.0.0.1:${PORT}/api/1.0/system/volume`);
     expect(response1.body.volume).toEqual(0);
-    await superagent.post(`http://127.0.0.1:${PORT}/api/1.0/system/volume`).send({ volume: 1 });
+    await superagent.post(`http://127.0.0.1:${PORT}/api/1.0/system/volume`).send({ volume: 100 });
     const response2 = await superagent.get(`http://127.0.0.1:${PORT}/api/1.0/system/volume`);
-    expect(response2.body.volume).toEqual(1);
+    expect(response2.body.volume).toEqual(100);
     await superagent.post(`http://127.0.0.1:${PORT}/api/1.0/system/volume`).send({ volume: startVolume });
   });
 

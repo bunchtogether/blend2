@@ -11,19 +11,16 @@ let getMuted = () => { throw new Error('Get muted not implemented'); };
 
 const useLoudness = () => {
   const loudness = require('loudness'); // eslint-disable-line global-require,import/no-extraneous-dependencies,import/no-unresolved
-  setVolume = (volume: number) => loudness.setVolume(volume * 100);
-  getVolume = async () => {
-    const volume = await loudness.getVolume();
-    return volume / 100;
-  };
+  setVolume = (volume: number) => loudness.setVolume(volume);
+  getVolume = () => loudness.getVolume();
   setMuted = (muted: boolean) => loudness.setMuted(muted);
   getMuted = () => loudness.getMuted();
 };
 
 const useWinAudio = () => {
   const { volume: winAudio } = require('node-audio-windows'); // eslint-disable-line global-require,import/no-extraneous-dependencies,import/no-unresolved
-  setVolume = (volume: number) => winAudio.setVolume(volume);
-  getVolume = () => winAudio.getVolume();
+  setVolume = (volume: number) => winAudio.setVolume(volume * 100);
+  getVolume = () => winAudio.getVolume() / 100;
   setMuted = (muted: boolean) => winAudio.setMute(muted);
   getMuted = () => winAudio.isMuted();
 };
@@ -82,8 +79,8 @@ module.exports.getSystemRouter = () => {
       return;
     }
 
-    if (volume < 0 || volume > 1) {
-      res.status(400).send('Body parameter "volume" should be between 0 and 1');
+    if (volume < 0 || volume > 100) {
+      res.status(400).send('Body parameter "volume" should be between 0 and 100');
       return;
     }
 
