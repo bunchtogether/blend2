@@ -19,8 +19,8 @@ const useLoudness = () => {
 
 const useWinAudio = () => {
   const { volume: winAudio } = require('node-audio-windows'); // eslint-disable-line global-require,import/no-extraneous-dependencies,import/no-unresolved
-  setVolume = (volume: number) => winAudio.setVolume(volume * 100);
-  getVolume = () => winAudio.getVolume() / 100;
+  setVolume = (volume: number) => winAudio.setVolume(volume / 100);
+  getVolume = () => winAudio.getVolume() * 100;
   setMuted = (muted: boolean) => winAudio.setMute(muted);
   getMuted = () => winAudio.isMuted();
 };
