@@ -1,5 +1,5 @@
 
-$BLEND_DIR = "$Env:ProgramFiles(x86)\Blend"
+$BLEND_DIR = "$Env:ProgramFiles (x86)\Blend"
 
 # Constants
 $blendInboundName = "Allow-Blend (In)"
