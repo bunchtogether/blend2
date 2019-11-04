@@ -45,12 +45,15 @@ Section "install"
   ; Add Firewall exceptions
   ; blend-runtime, blend, ffmpeg, ffprobe
   ExpandEnvStrings $0 "%COMSPEC%"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden New-NetFirewallRule -DisplayName “Allow Blend” -Direction Inbound -Program $InstallDir\blend.exe -Action Allow"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden New-NetFirewallRule -DisplayName “Allow Blend” -Direction Outbound -Program $InstallDir\blend.exe -Action Allow"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden New-NetFirewallRule -DisplayName “Allow Blend-FFMpeg” -Direction Inbound -Program $InstallDir\ffmpeg.exe -Action Allow"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden New-NetFirewallRule -DisplayName “Allow Blend-FFMpeg” -Direction Outbound -Program $InstallDir\ffmpeg.exe -Action Allow"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden New-NetFirewallRule -DisplayName “Allow Blend-FFProbe” -Direction Inbound -Program $InstallDir\ffprobe.exe -Action Allow"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden New-NetFirewallRule -DisplayName “Allow Blend-FFProbe” -Direction Outbound -Program $InstallDir\ffprobe.exe -Action Allow"
+  File /r firewall.ps1
+  ExecWait "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\firewall.ps1"
+  Delete "$InstallDir\firewall.ps1"
+  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend” -Direction Inbound -Program $InstallDir\blend.exe -Action Allow$\""
+  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend” -Direction Outbound -Program $InstallDir\blend.exe -Action Allow$\""
+  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend-FFMpeg” -Direction Inbound -Program $InstallDir\ffmpeg.exe -Action Allow$\""
+  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend-FFMpeg” -Direction Outbound -Program $InstallDir\ffmpeg.exe -Action Allow$\""
+  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend-FFProbe” -Direction Inbound -Program $InstallDir\ffprobe.exe -Action Allow$\""
+  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend-FFProbe” -Direction Outbound -Program $InstallDir\ffprobe.exe -Action Allow$\""
 
   # Copy Files
   File files\sample.mp4
