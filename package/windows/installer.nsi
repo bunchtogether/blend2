@@ -106,6 +106,7 @@ Section "uninstall"
 
   ; Remove firewall rules
   ; ExecWait "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\firewall.ps1 -Action UNINSTALL"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Node.js Server-side JavaScript'"
   ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend-TCP-In'"
   ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend-UDP-In'"
   ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend-TCP-Out'"

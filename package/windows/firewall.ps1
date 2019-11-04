@@ -13,6 +13,7 @@ $ffprobeInboundTCPName = "Allow-FFProbe-TCP-In"
 $ffprobeInboundUDPName = "Allow-FFProbe-UDP-In"
 $ffprobeOutboundTCPName = "Allow-FFProbe-TCP-Out"
 $ffprobeOutboundUDPName = "Allow-FFProbe-UDP-Out"
+$nodejsTCPInbound = "Node.js Server-side JavaScript"
 
 # Create Blend Inbound rule
 $blendInboundRuleExists = (Get-NetFirewallRule -DisplayName $blendInboundTCPName)
@@ -21,6 +22,13 @@ $ffmpegInboundRuleExists = (Get-NetFirewallRule -DisplayName $ffmpegInboundTCPNa
 $ffmpegOutboundRuleExists = (Get-NetFirewallRule -DisplayName $ffmpegOutboundTCPName)
 $ffprobeInboundRuleExists = (Get-NetFirewallRule -DisplayName $ffprobeInboundTCPName)
 $ffprobeOutboundRuleExists = (Get-NetFirewallRule -DisplayName $ffprobeOutboundTCPName)
+$nodejsTCPInboundExists = (Get-NetFirewallRule -DisplayName $nodejsTCPInbound)
+
+if ($nodejsTCPInboundExists) {
+  Set-NetFirewallRule -DisplayName $blendInboundTCPName -Enabled True -Direction Inbound -Protocol TCP -Action Allow -Protocol TCP -Profile Domain,Public,Private -Program "$BLEND_DIR\blend.exe"
+} else {
+  New-NetFirewallRule -Name "Node.js-Inbound-TCP" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -Protocol TCP -Profile Domain,Public,Private -Program "$BLEND_DIR\blend.exe"
+}
 
 if ($blendInboundRuleExists) {
   Set-NetFirewallRule -DisplayName $blendInboundTCPName -Protocol TCP -Enabled True -Direction Inbound  -Profile Domain,Public,Private -Program "$BLEND_DIR\blend.exe" -Action Allow
