@@ -17,38 +17,38 @@ $ffprobeInboundRuleExists = (Get-NetFirewallRule -DisplayName $ffprobeInboundNam
 $ffprobeOutboundRuleExists = (Get-NetFirewallRule -DisplayName $ffprobeOutboundName)
 
 if ($blendInboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $blendInboundName -Enabled True
+  Set-NetFirewallRule -DisplayName $blendInboundName -Enabled True -Direction Inbound -Profile Domain,Public,Private -Program "$BLEND_DIR\blend.exe" -Action Allow
 } else {
-  New-NetFirewallRule -DisplayName $blendInboundName -Direction Inbound -Program "$BLEND_DIR\blend.exe" -Action Allow
+  New-NetFirewallRule -DisplayName $blendInboundName -Enabled True -Direction Inbound -Profile Domain,Public,Private -Program "$BLEND_DIR\blend.exe" -Action Allow
 }
 
 if ($blendOutboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $blendOutboundName -Enabled True
+  Set-NetFirewallRule -DisplayName $blendOutboundName -Enabled True -Direction Outbound -Profile Domain,Public,Private -Program "$BLEND_DIR\blend.exe" -Action Allow
 } else {
-  New-NetFirewallRule -DisplayName $blendOutboundName -Direction Outbound -Program "$BLEND_DIR\blend.exe" -Action Allow
+  New-NetFirewallRule -DisplayName $blendOutboundName -Enabled True -Direction Outbound -Profile Domain,Public,Private -Program "$BLEND_DIR\blend.exe" -Action Allow
 }
 
 
 if ($ffmpegInboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $ffmpegInboundName -Enabled True
+  Set-NetFirewallRule -DisplayName $ffmpegInboundName -Enabled True -Direction Inbound -Profile Domain,Public,Private -Program "$BLEND_DIR\ffmpeg.exe" -Action Allow
 } else {
-  New-NetFirewallRule -DisplayName $ffmpegInboundName -Direction Inbound -Program "$BLEND_DIR\ffmpeg.exe" -Action Allow
+  New-NetFirewallRule -DisplayName $ffmpegInboundName -Enabled True -Direction Inbound -Profile Domain,Public,Private -Program "$BLEND_DIR\ffmpeg.exe" -Action Allow
 }
 
 if ($ffmpegOutboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $ffmpegOutboundName -Enabled True
+  Set-NetFirewallRule -DisplayName $ffmpegOutboundName -Enabled True -Direction Outbound -Profile Domain,Public,Private -Program "$BLEND_DIR\ffmpeg.exe" -Action Allow
 } else {
-  New-NetFirewallRule -DisplayName $ffmpegOutboundName -Direction Outbound -Program "$BLEND_DIR\ffmpeg.exe" -Action Allow
+  New-NetFirewallRule -DisplayName $ffmpegOutboundName -Enabled True -Direction Outbound -Profile Domain,Public,Private -Program "$BLEND_DIR\ffmpeg.exe" -Action Allow
 }
 
 if ($ffprobeInboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $ffprobeInboundName -Enabled True
+  Set-NetFirewallRule -DisplayName $ffprobeInboundName -Enabled True -Direction Inbound -Profile Domain,Public,Private -Program "$BLEND_DIR\ffprobe.exe" -Action Allow
 } else {
-  New-NetFirewallRule -DisplayName $ffprobeInboundName -Direction Inbound -Program "$BLEND_DIR\ffprobe.exe" -Action Allow
+  New-NetFirewallRule -DisplayName $ffprobeInboundName -Enabled True -Direction Inbound -Profile Domain,Public,Private -Program "$BLEND_DIR\ffprobe.exe" -Action Allow
 }
 
 if ($ffprobeOutboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $ffprobeOutboundName -Enabled True
+  Set-NetFirewallRule -DisplayName $ffprobeOutboundName -Enabled True -Direction Outbound -Profile Domain,Public,Private -Program "$BLEND_DIR\ffprobe.exe" -Action Allow
 } else {
-  New-NetFirewallRule -DisplayName $ffprobeOutboundName -Direction Outbound -Program "$BLEND_DIR\ffprobe.exe" -Action Allow
+  New-NetFirewallRule -DisplayName $ffprobeOutboundName -Enabled True -Direction Outbound -Profile Domain,Public,Private -Program "$BLEND_DIR\ffprobe.exe" -Action Allow
 }
