@@ -45,14 +45,9 @@ Section "install"
   ; Add Firewall exceptions
   ; blend-runtime, blend, ffmpeg, ffprobe
   ExpandEnvStrings $0 "%COMSPEC%"
-  File /r firewall.ps1
-  ExecWait "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\firewall.ps1 -Action Install"
-  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend” -Direction Inbound -Program $InstallDir\blend.exe -Action Allow$\""
-  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend” -Direction Outbound -Program $InstallDir\blend.exe -Action Allow$\""
-  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend-FFMpeg” -Direction Inbound -Program $InstallDir\ffmpeg.exe -Action Allow$\""
-  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend-FFMpeg” -Direction Outbound -Program $InstallDir\ffmpeg.exe -Action Allow$\""
-  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend-FFProbe” -Direction Inbound -Program $InstallDir\ffprobe.exe -Action Allow$\""
-  ; ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command $\"New-NetFirewallRule -DisplayName “Allow Blend-FFProbe” -Direction Outbound -Program $InstallDir\ffprobe.exe -Action Allow$\""
+  File /r files\firewall.ps1
+  ExecWait "powershell -ErrorAction SilentlyContinue -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\firewall.ps1"
+  Delete "$InstallDir\firewall.ps1"
 
   # Copy Files
   File files\sample.mp4
@@ -85,7 +80,7 @@ Section "install"
   CreateShortCut "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"
 
   ; Autostart
-  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Blend" "Powershell.exe -command $\"Start-Process -FilePath $\'$InstallDir\blend-runtime.exe$\' -WorkingDirectory $\'$InstallDir$\' -WindowStyle Hidden$\""
+  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Blend" "Powershell.exe -command Start-Process -FilePath $InstallDir\blend-runtime.exe -WorkingDirectory $InstallDir -WindowStyle Hidden"
 
   writeUninstaller "$InstallDir\Uninstaller.exe"
 
@@ -106,7 +101,13 @@ Section "uninstall"
   ExecWait "TaskKill /IM blend.exe /F"
 
   ; Remove firewall rules
-  ExecWait "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\firewall.ps1 -Action UNINSTALL"
+  ; ExecWait "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\firewall.ps1 -Action UNINSTALL"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend (In)'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend (Out)'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFMpeg (In)'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFMpeg (Out)'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFProbe (In)'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFProbe (Out)'"
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend"
   DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run\Blend"
