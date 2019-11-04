@@ -36,7 +36,6 @@ Section "install"
   # File /r pfx-to-pem.ps1
   # ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\generate-cert.ps1"
 
-
   # Copy Files
   File files\sample.mp4
   File files\band.png
@@ -56,7 +55,6 @@ Section "install"
   ${EndIf}
 
   SetShellVarContext "all"
-
   # Add or Remove Program Reg Key
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "DisplayName" Blend
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "DisplayVersion" ${Version}
@@ -73,7 +71,9 @@ Section "install"
   ExecShell "" "$InstallDir\Launch.cmd"
 
   # Startup Menu entry
-  CreateShortCut "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"
+  # When shellContext is set to all users, C:/ProgramData is used as AppData directory
+  SetShellVarContext all
+  CreateShortCut "$AppData\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"
 
   ; Autostart
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Blend" "powershell.exe -command Start-Process -FilePath '$InstallDir\blend-runtime.exe' -WorkingDirectory '$InstallDir' -WindowStyle Hidden"
@@ -117,5 +117,6 @@ Section "uninstall"
   DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run\Blend"
   SetOutPath "$InstallDir\..\"
   RMDir /r $InstallDir
-  Delete "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Blend.lnk"
+  SetShellVarContext all
+  Delete "$AppData\Microsoft\Windows\Start Menu\Programs\Blend.lnk"
 SectionEnd
