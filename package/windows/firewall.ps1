@@ -1,4 +1,10 @@
 
+
+Param(
+     [Parameter(Mandatory=$true, Position=1, HelpMessage="Enter INSTALL/UNINSTALL Firewall rules")]
+     [string] $Action
+)
+
 $BLEND_DIR = "$Env:ProgramFiles (x86)\Blend"
 
 # Constants
@@ -17,39 +23,52 @@ $ffmpegOutboundRuleExists = (Get-NetFirewallRule -DisplayName $ffmpegOutboundNam
 $ffprobeInboundRuleExists = (Get-NetFirewallRule -DisplayName $ffprobeInboundName)
 $ffprobeOutboundRuleExists = (Get-NetFirewallRule -DisplayName $ffprobeOutboundName)
 
-if ($blendInboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $blendInboundName -Enabled True
+if ($Action -eq "INSTALL") {
+  if ($blendInboundRuleExists) {
+    Set-NetFirewallRule -DisplayName $blendInboundName -Enabled True
+  } else {
+    New-NetFirewallRule -DisplayName $blendInboundName -Direction Inbound -Program "$BLEND_DIR\blend.exe" -Action Allow
+  }
+
+  if ($blendOutboundRuleExists) {
+    Set-NetFirewallRule -DisplayName $blendOutboundName -Enabled True
+  } else {
+    New-NetFirewallRule -DisplayName $blendOutboundName -Direction Outbound -Program "$BLEND_DIR\blend.exe" -Action Allow
+  }
+
+
+  if ($ffmpegInboundRuleExists) {
+    Set-NetFirewallRule -DisplayName $ffmpegInboundName -Enabled True
+  } else {
+    New-NetFirewallRule -DisplayName $ffmpegInboundName -Direction Inbound -Program "$BLEND_DIR\ffmpeg.exe" -Action Allow
+  }
+
+  if ($ffmpegOutboundRuleExists) {
+    Set-NetFirewallRule -DisplayName $ffmpegOutboundName -Enabled True
+  } else {
+    New-NetFirewallRule -DisplayName $ffmpegOutboundName -Direction Outbound -Program "$BLEND_DIR\ffmpeg.exe" -Action Allow
+  }
+
+  if ($ffprobeInboundRuleExists) {
+    Set-NetFirewallRule -DisplayName $ffprobeInboundName -Enabled True
+  } else {
+    New-NetFirewallRule -DisplayName $ffprobeInboundName -Direction Inbound -Program "$BLEND_DIR\ffprobe.exe" -Action Allow
+  }
+
+  if ($ffprobeOutboundRuleExists) {
+    Set-NetFirewallRule -DisplayName $ffprobeOutboundName -Enabled True
+  } else {
+    New-NetFirewallRule -DisplayName $ffprobeOutboundName -Direction Outbound -Program "$BLEND_DIR\ffprobe.exe" -Action Allow
+  }
+} elseif ($Action -eq "UNINSTALL") {
+  Remove-NetFirewallRule -DisplayName $blendInboundName
+  Remove-NetFirewallRule -DisplayName $blendOutboundName
+  Remove-NetFirewallRule -DisplayName $ffmpegInboundName
+  Remove-NetFirewallRule -DisplayName $ffmpegOutboundName
+  Remove-NetFirewallRule -DisplayName $ffprobeInboundName
+  Remove-NetFirewallRule -DisplayName $ffprobeOutboundName
 } else {
-  New-NetFirewallRule -DisplayName $blendInboundName -Direction Inbound -Program "$BLEND_DIR\blend.exe" -Action Allow
+  Write-Host("Script accepts INSTALL/UNINSTALL as Action parameter value");
+  Exit 1;
 }
 
-if ($blendOutboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $blendOutboundName -Enabled True
-} else {
-  New-NetFirewallRule -DisplayName $blendOutboundName -Direction Outbound -Program "$BLEND_DIR\blend.exe" -Action Allow
-}
-
-
-if ($ffmpegInboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $ffmpegInboundName -Enabled True
-} else {
-  New-NetFirewallRule -DisplayName $ffmpegInboundName -Direction Inbound -Program "$BLEND_DIR\ffmpeg.exe" -Action Allow
-}
-
-if ($ffmpegOutboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $ffmpegOutboundName -Enabled True
-} else {
-  New-NetFirewallRule -DisplayName $ffmpegOutboundName -Direction Outbound -Program "$BLEND_DIR\ffmpeg.exe" -Action Allow
-}
-
-if ($ffprobeInboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $ffprobeInboundName -Enabled True
-} else {
-  New-NetFirewallRule -DisplayName $ffprobeInboundName -Direction Inbound -Program "$BLEND_DIR\ffprobe.exe" -Action Allow
-}
-
-if ($ffprobeOutboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $ffprobeOutboundName -Enabled True
-} else {
-  New-NetFirewallRule -DisplayName $ffprobeOutboundName -Direction Outbound -Program "$BLEND_DIR\ffprobe.exe" -Action Allow
-}
