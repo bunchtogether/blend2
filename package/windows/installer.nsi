@@ -73,7 +73,7 @@ Section "install"
   # Startup Menu entry
   # When shellContext is set to all users, C:/ProgramData is used as AppData directory
   SetShellVarContext all
-  CreateShortCut "$AppData\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"
+  CreateShortCut "$ALLUSERSPROFILE\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"
 
   ; Autostart
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Blend" "powershell.exe -command Start-Process -FilePath '$InstallDir\blend-runtime.exe' -WorkingDirectory '$InstallDir' -WindowStyle Hidden"
@@ -82,8 +82,7 @@ Section "install"
   ; blend-runtime, blend, ffmpeg, ffprobe
   ExpandEnvStrings $0 "%COMSPEC%"
   File /r firewall.ps1
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File  $\"$InstallDir\firewall.ps1$\"" $0
-  MessageBox MB_OK "Firewall Status $0"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File  $\"$InstallDir\firewall.ps1$\""
   Delete "$InstallDir\firewall.ps1"
 
   writeUninstaller "$InstallDir\Uninstaller.exe"
@@ -118,5 +117,5 @@ Section "uninstall"
   SetOutPath "$InstallDir\..\"
   RMDir /r $InstallDir
   SetShellVarContext all
-  Delete "$AppData\Microsoft\Windows\Start Menu\Programs\Blend.lnk"
+  Delete "$ALLUSERSPROFILE\Microsoft\Windows\Start Menu\Programs\Blend.lnk"
 SectionEnd
