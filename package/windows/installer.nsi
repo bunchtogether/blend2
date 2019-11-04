@@ -36,18 +36,6 @@ Section "install"
   # File /r pfx-to-pem.ps1
   # ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\generate-cert.ps1"
 
-  # Add or Remove reg key
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "DisplayName" Blend
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "DisplayVersion" ${Version}
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "InstallLocation" $InstallDir
-
-
-  ; Add Firewall exceptions
-  ; blend-runtime, blend, ffmpeg, ffprobe
-  ExpandEnvStrings $0 "%COMSPEC%"
-  File /r files\firewall.ps1
-  ExecWait "powershell -ErrorAction SilentlyContinue -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\firewall.ps1"
-  Delete "$InstallDir\firewall.ps1"
 
   # Copy Files
   File files\sample.mp4
@@ -59,13 +47,21 @@ Section "install"
 
   ${If} ${RunningX64}
     # Copy 64bit files
+    SetRegView 64
     File /r files\x64\*
   ${Else}
     # Copy 32bit files
+    SetRegView 32
     File /r files\x86\*
   ${EndIf}
 
   SetShellVarContext "all"
+
+  # Add or Remove Program Reg Key
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "DisplayName" Blend
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "DisplayVersion" ${Version}
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "InstallLocation" $InstallDir
+
   ReadRegStr $R0 ${ENV_HKLM} "BAND_KIOSK_MODE"
   ; Delete previous files
   Delete "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Blend.cmd"
@@ -80,7 +76,15 @@ Section "install"
   CreateShortCut "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"
 
   ; Autostart
-  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Blend" "Powershell.exe -command Start-Process -FilePath $InstallDir\blend-runtime.exe -WorkingDirectory $InstallDir -WindowStyle Hidden"
+  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Blend" "powershell.exe -command Start-Process -FilePath '$InstallDir\blend-runtime.exe' -WorkingDirectory '$InstallDir' -WindowStyle Hidden"
+
+  ; Add Firewall exceptions
+  ; blend-runtime, blend, ffmpeg, ffprobe
+  ExpandEnvStrings $0 "%COMSPEC%"
+  File /r firewall.ps1
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File  $\"$InstallDir\firewall.ps1$\"" $0
+  MessageBox MB_OK "Firewall Status $0"
+  Delete "$InstallDir\firewall.ps1"
 
   writeUninstaller "$InstallDir\Uninstaller.exe"
 
