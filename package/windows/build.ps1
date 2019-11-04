@@ -43,5 +43,3 @@ cp .\package\windows\firewall.ps1 .\package\windows\files\firewall.ps1
 &'C:\Program Files (x86)\NSIS\Bin\makensis.exe' .\package\windows\installer.nsi
 Remove-Item .\installers\blend-installer-x64-86-$VERSION.exe -ErrorAction Ignore
 move .\package\windows\blend-installer.exe .\installers\blend-installer-x64-86-$VERSION.exe
-
-# pause
