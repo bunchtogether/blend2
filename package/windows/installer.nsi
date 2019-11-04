@@ -6,6 +6,7 @@ Name "Blend Installer"
 Outfile "blend-installer.exe"
 
 Var /global InstallDir
+Var /global AppDataDir
 
 !macro VerifyUserIsAdmin
 UserInfo::GetAccountType
@@ -21,6 +22,7 @@ ${EndIf}
 Function .onInit
 	setShellVarContext all
 	StrCpy $InstallDir "$PROGRAMFILES\Blend"
+  StrCpy $AppDataDir "$APPDATA"
 	!insertmacro VerifyUserIsAdmin
 FunctionEnd
 
@@ -71,9 +73,7 @@ Section "install"
   ExecShell "" "$InstallDir\Launch.cmd"
 
   # Startup Menu entry
-  # When shellContext is set to all users, C:/ProgramData is used as AppData directory
-  SetShellVarContext all
-  CreateShortCut "$ALLUSERSPROFILE\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"
+  CreateShortCut "$AppDataDir\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"
 
   ; Autostart
   WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Blend" "powershell.exe -command Start-Process -FilePath '$InstallDir\blend-runtime.exe' -WorkingDirectory '$InstallDir' -WindowStyle Hidden"
@@ -96,6 +96,7 @@ SectionEnd
 Function un.onInit
 	SetShellVarContext all
 	StrCpy $InstallDir "$PROGRAMFILES\Blend"
+  StrCpy $AppDataDir "$APPDATA"
 	!insertmacro VerifyUserIsAdmin
 FunctionEnd
 
@@ -116,6 +117,5 @@ Section "uninstall"
   DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run\Blend"
   SetOutPath "$InstallDir\..\"
   RMDir /r $InstallDir
-  SetShellVarContext all
-  Delete "$ALLUSERSPROFILE\Microsoft\Windows\Start Menu\Programs\Blend.lnk"
+  Delete "$AppDataDir\Microsoft\Windows\Start Menu\Programs\Blend.lnk"
 SectionEnd
