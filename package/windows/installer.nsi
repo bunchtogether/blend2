@@ -97,6 +97,11 @@ Function un.onInit
 	SetShellVarContext all
 	StrCpy $InstallDir "$PROGRAMFILES\Blend"
   StrCpy $AppDataDir "$APPDATA"
+  ${If} ${RunningX64}
+    SetRegView 64
+  ${Else}
+    SetRegView 32
+  ${EndIf}
 	!insertmacro VerifyUserIsAdmin
 FunctionEnd
 
@@ -106,19 +111,12 @@ Section "uninstall"
 
   ; Remove firewall rules
   ; ExecWait "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\firewall.ps1 -Action UNINSTALL"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Node.js Server-side JavaScript'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend-TCP-In'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend-UDP-In'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend-TCP-Out'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend-UPD-Out'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFMpeg-TCP-In'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFMpeg-UDP-In'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFMpeg-TCP-Out'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFMpeg-UDP-Out'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFProbe-TCP-In'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFProbe-UDP-In'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFProbe-TCP-Out'"
-  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFProbe-UDP-Out'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend-In'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-Blend-Out'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFMpeg-In'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFMpeg-Out'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFProbe-In'"
+  ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command Remove-NetFirewallRule -DisplayName 'Allow-FFProbe-Out'"
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend"
   DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run\Blend"
