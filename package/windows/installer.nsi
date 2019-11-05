@@ -85,10 +85,13 @@ Section "install"
   ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File  $\"$InstallDir\firewall.ps1$\""
   Delete "$InstallDir\firewall.ps1"
 
+  ExecWait 'netsh advfirewall firewall add rule name=$\"Allow-Blend-HTTP$\" action=allow program=$\"$InstallDir\blend.exe$\" enable=yes Localip=$\"127.0.0.1$\" Localport=61340 protocol=tcp interfacetype=any profile=domain,private,public dir=in'
+
   writeUninstaller "$InstallDir\Uninstaller.exe"
 
   # Exit after installation is finished
   Quit
+
 SectionEnd
 
 

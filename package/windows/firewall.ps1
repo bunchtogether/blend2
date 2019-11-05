@@ -1,4 +1,4 @@
-$BLEND_DIR = "$Env:ProgramFiles\Blend"
+$BLEND_DIR = "$Env:ProgramFiles\Blend".toLower()
 
 # Constants
 $blendInboundName = "Allow-Blend-In"
@@ -7,7 +7,6 @@ $ffmpegInboundName = "Allow-FFMpeg-In"
 $ffmpegOutboundName = "Allow-FFMpeg-Out"
 $ffprobeInboundName = "Allow-FFProbe-In"
 $ffprobeOutboundName = "Allow-FFProbe-Out"
-$nodeInboundName = "Allow-Blend-HTTP"
 
 # Create Blend Inbound rule
 $blendInboundRuleExists = (Get-NetFirewallRule -DisplayName $blendInboundName)
@@ -16,13 +15,6 @@ $ffmpegInboundRuleExists = (Get-NetFirewallRule -DisplayName $ffmpegInboundName)
 $ffmpegOutboundRuleExists = (Get-NetFirewallRule -DisplayName $ffmpegOutboundName)
 $ffprobeInboundRuleExists = (Get-NetFirewallRule -DisplayName $ffprobeInboundName)
 $ffprobeOutboundRuleExists = (Get-NetFirewallRule -DisplayName $ffprobeOutboundName)
-$nodeInboundRuleExists = (Get-NetFirewallRule -DisplayName $nodeInboundName)
-
-if ($nodeInboundRuleExists) {
-  Set-NetFirewallRule -DisplayName $nodeInboundName -Enabled True -Direction Inbound  -Profile Domain,Public,Private -Program "$BLEND_DIR\blend.exe" -Action Allow -LocalPort 61340 -LocalAddress "127.0.0.1" -Protocol TCP -InterfaceType Any
-} else {
-  New-NetFirewallRule -DisplayName $nodeInboundName -Enabled True -Direction Inbound  -Profile Domain,Public,Private -Program "$BLEND_DIR\blend.exe" -Action Allow -LocalPort 61340 -LocalAddress "127.0.0.1" -Protocol TCP -InterfaceType Any
-}
 
 if ($blendInboundRuleExists) {
   Set-NetFirewallRule -DisplayName $blendInboundName -Enabled True -Direction Inbound  -Profile Domain,Public,Private -Program "$BLEND_DIR\blend.exe" -Action Allow
