@@ -55,6 +55,7 @@ module.exports.getCapabilitiesRouter = () => {
         isBluescapeAvailable,
         isZoomRoomAvailable,
         macAddress,
+        system: 1,
       });
     } catch (error) {
       logger.error('Unable to get capabilities');

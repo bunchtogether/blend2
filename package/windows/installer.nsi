@@ -69,7 +69,7 @@ Section "install"
   FileOpen $4 "$InstallDir\Launch.cmd" a
   FileWrite $4 'echo @off$\r$\nPowershell.exe -command "Start-Process -FilePath $\'$InstallDir\blend-runtime.exe$\' -WorkingDirectory $\'$InstallDir$\' -WindowStyle Hidden"'
   FileClose $4
-  AccessControl::GrantOnFile "$InstallDir" "(BU)" "FullAccess"
+  AccessControl::GrantOnFile "$InstallDir" "(S-1-5-32-545)" "FullAccess"
 
   # Startup Menu entry
   CreateShortCut "$AppDataDir\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"

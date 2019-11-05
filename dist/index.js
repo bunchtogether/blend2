@@ -5,20 +5,29 @@ const path = require('path');
 const commander = require('commander');
 const packageInfo = require('../package.json');
 
+const dataPath = path.join(os.homedir(), '.blend');
+const defaultLogsPath = path.join(dataPath, 'logs');
+
 commander
   .name('blend')
   .usage('[options]')
   .version(packageInfo.version, '-v, --version', 'Display blend version')
+  .option('-l, --logs <directory path>', 'Blend logs folder', defaultLogsPath)
   .option('-c, --config <path>', 'Blend config path, overwrite BLEND_CONFIG env variable.')
   .option('-u, --update-check <path>', 'Band update-check script path, overwrite BAND_UPDATE_CHECK env variable.')
   .option('-k, --kiosk', 'Kiosk mode', false)
   .option('-t, --tray', 'System tray icon', false)
   .parse(process.argv);
 
+if (commander.logs) {
+  process.env.BLEND_LOGS_DIR = commander.logs;
+}
+
 if (commander.config) {
   // Overwrite band config.json file path
   process.env.BLEND_CONFIG = commander.config;
 }
+
 if (commander.updateCheck) {
   // Overwrite band auto update check script
   process.env.BAND_UPDATE_CHECK = commander.updateCheck;
@@ -32,7 +41,6 @@ if (commander.kiosk) {
 if (commander.tray) {
   process.env.ENABLE_TRAY_ICON = 'true';
 }
-
 
 const fs = require('fs-extra');
 const getExpressApp = require('./express-app');
@@ -53,8 +61,8 @@ if (isWindows) {
 }
 
 let exitCode = 0;
-const triggerSwitchToBand = async ()               => {
-  logger.info(`Enable Kiosk Mode: ${KIOSK_MODE}`);
+const triggerSwitchToBand = async ()                => {
+  logger.info(`Enable Kiosk Mode: ${KIOSK_MODE ? 'TRUE' : 'FALSE'}`);
   if (isWindows && switchToBandFn !== null && KIOSK_MODE) {
     await switchToBandFn();
   }
@@ -80,7 +88,7 @@ const setupTray = function () {
     const systray = new SysTray(systrayOptions);
     const shutdownTray = () => systray.kill(false);
 
-    addShutdownHandler(shutdownTray, (error      ) => {
+    addShutdownHandler(shutdownTray, (error       ) => {
       if (error.stack) {
         logger.error('Error shutting down:');
         error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
@@ -99,12 +107,12 @@ const setupTray = function () {
   }
 };
 
-const start = async ()               => {
+const start = async ()                => {
   logger.info(`Starting Blend v${packageInfo.version}`);
-  const dataPath = path.join(os.homedir(), '.blend');
   const levelDbPath = path.join(dataPath, 'leveldb');
   await fs.ensureDir(dataPath);
   await fs.ensureDir(levelDbPath);
+  await fs.ensureDir(defaultLogsPath);
 
   const [levelDb, closeLevelDb] = await getLevelDb(levelDbPath);
   await initAdapter(levelDb);
@@ -167,7 +175,7 @@ const start = async ()               => {
     logger.info(`Shut down Blend v${packageInfo.version}`);
   };
 
-  addShutdownHandler(shutdown, (error      ) => {
+  addShutdownHandler(shutdown, (error       ) => {
     if (error.stack) {
       logger.error('Error shutting down:');
       error.stack.split('\n').forEach((line) => logger.error(`\t${line.trim()}`));
