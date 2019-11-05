@@ -70,7 +70,6 @@ Section "install"
   FileWrite $4 'echo @off$\r$\nPowershell.exe -command "Start-Process -FilePath $\'$InstallDir\blend-runtime.exe$\' -WorkingDirectory $\'$InstallDir$\' -WindowStyle Hidden"'
   FileClose $4
   AccessControl::GrantOnFile "$InstallDir" "(BU)" "FullAccess"
-  ExecShell "" "$InstallDir\Launch.cmd"
 
   # Startup Menu entry
   CreateShortCut "$AppDataDir\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"
@@ -88,6 +87,8 @@ Section "install"
   ExecWait 'netsh advfirewall firewall add rule name=$\"Allow-Blend-HTTP$\" action=allow program=$\"$InstallDir\blend.exe$\" enable=yes Localip=$\"127.0.0.1$\" Localport=61340 protocol=tcp interfacetype=any profile=domain,private,public dir=in'
 
   writeUninstaller "$InstallDir\Uninstaller.exe"
+
+  ExecShell "" "$InstallDir\Launch.cmd"
 
   # Exit after installation is finished
   Quit
