@@ -8,7 +8,7 @@ const openDesktopWindowButton = require('@bunchtogether/desktop-window-button');
 const { setForegroundWindow, keepOnTop } = require('@bunchtogether/picture-in-picture');
 const { addShutdownHandler } = require('@bunchtogether/exit-handler');
 const logger = require('./logger')('Window Control');
-
+const { KIOSK_MODE } = require('../constants');
 
 const buttonImageSrcPromise = (async () => {
   const basePath = path.resolve(__dirname, '../band.png');
@@ -94,7 +94,9 @@ const switchToApp = async (pathname: string, buttonX?:number, buttonY?:number, c
 };
 
 addShutdownHandler(async () => {
-  await keepOnTop('chrome', false);
+  if(KIOSK_MODE) {
+    await keepOnTop('chrome', false);
+  }
 }, (error:Error) => {
   logger.error('Unable to move Chrome from top');
   logger.errorStack(error);
