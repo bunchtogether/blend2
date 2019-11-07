@@ -5,7 +5,9 @@
   "license": "MIT",
   "bin": "index.js",
   "scripts": {
-    "build": "npm run build:winx64",
+    "pm2": "pm2",
+    "start": "node index.js",
+    "build": "npm run build:winx64 && npm run build:winx86",
     "build:winx64": "pkg --output blend-runtime-x64.exe --target node10-win-x64 index.js",
     "build:winx86": "pkg --output blend-runtime-x86.exe --target node10-win-x86 index.js"
   },

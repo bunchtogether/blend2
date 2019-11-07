@@ -90,10 +90,9 @@ const setupTray = function () {
     });
 };
 
-
-const start = async () => {
-  await preStartCheck();
-  await new Promise((resolve, reject) => {
+const connect = async () => {
+  console.log('Connecting to PM2 ...')
+  return new Promise((resolve, reject) => {
     pm2.connect(true, (error) => {
       if (error) {
         console.log(`Crashed on connecting to pm2, Error: ${error.message}`, error);
@@ -103,6 +102,58 @@ const start = async () => {
       }
     });
   });
+}
+
+const waitFor = async (delay) => new Promise((resolve) => setTimeout(resolve, delay));
+
+const KillExistingRuntime = async () => {
+  try {
+    console.log('Checking for existing blend-runtime processes')
+
+    const processList = await new Promise((resolve, reject) => {
+      pm2.list((err, list) => {
+        if (err) { 
+          reject(err)
+        }
+        resolve(list)
+      })
+    })
+
+    if (Array.isArray(processList) && processList.length === 0) {
+      // No active runtimes 
+      return true;
+    }
+
+    console.log('Exising runtime found, killing it');
+
+    // Kill pm2
+    await new Promise((resolve, reject) => {
+      pm2.kill((err, res) => {
+        if (err) {
+          console.error('Unable to kill pm2', err);
+          reject(err)
+        }
+        resolve(res)
+      })
+    })
+    
+    await waitFor(2000);
+    await connect();
+  } catch(error) {
+    console.error(`Failed to stop existing blend-runtime processes, Error: ${error.message}`)
+    console.error(error);
+  }
+}
+
+
+const start = async () => {
+  await preStartCheck();
+  await connect();
+
+  // Check if blend-runtime process is already running,
+  // stop it before launching another one
+  await KillExistingRuntime();
+
   const procs = await new Promise((resolve, reject) => {
     pm2.start({
       name: 'blend',
