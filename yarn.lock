@@ -627,9 +627,10 @@
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@bunchtogether/exit-handler/-/exit-handler-1.0.0.tgz#350caef9ef93e047080d1139a22e818098eea290"
 
-"@bunchtogether/ffmpeg-static@^1.1.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@bunchtogether/ffmpeg-static/-/ffmpeg-static-1.2.0.tgz#7c06a29a560253a2d09ba903639de7610e248550"
+"@bunchtogether/ffmpeg-static@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@bunchtogether/ffmpeg-static/-/ffmpeg-static-1.3.0.tgz#e9bbad031d82686bdbac6825225e5401d6e866c7"
+  integrity sha512-1FLnnS0ixjhkN1ObI6z9414e+NJlu+z0xBmRnI6FrHqQu6bm54yI1qVsWhwNwyMo1Srkp3v/0JD/CEm3KesiJg==
   dependencies:
     which "^1.3.1"
 

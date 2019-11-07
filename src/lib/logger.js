@@ -9,6 +9,7 @@ const timestamp = require('logform/timestamp');
 const printf = require('logform/printf');
 const { createLogger, transports } = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
+const { BLEND_LOGS_DIR } = require('../constants');
 
 const loggers = {};
 
@@ -50,14 +51,15 @@ if (os.platform() === 'win32') {
       timestamp(),
       printf((info) => `${moment().format('YYYY-MM-DD HH:mm:ss')} - ${(info.name || '').padEnd(30, ' ')} - ${(info.level || '').padEnd(6, ' ')} - ${info.message}`),
     ),
+    dirname: BLEND_LOGS_DIR,
     filename: 'blend-%DATE%.log',
     maxSize: '25m',
     maxFiles: '10',
   });
-
   logger = createLogger({
     transports: [consoleTransport, loggerFileTransport],
   });
+  logger.info(`Blend logs at ${BLEND_LOGS_DIR}`);
 } else {
   logger = createLogger({
     transports: [consoleTransport],
