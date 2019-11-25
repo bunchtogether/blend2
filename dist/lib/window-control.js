@@ -94,7 +94,7 @@ const switchToApp = async (pathname        , buttonX        , buttonY        , c
 };
 
 addShutdownHandler(async () => {
-  if(KIOSK_MODE) {
+  if (KIOSK_MODE) {
     await keepOnTop('chrome', false);
   }
 }, (error      ) => {

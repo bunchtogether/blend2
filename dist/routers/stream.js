@@ -251,17 +251,24 @@ const getThumbnail = async (streamUrl       , thumbnailPath       ) => {
 };
 
 const startStream = async (socketId       , url       ) => {
+  if (!active) {
+    return;
+  }
   if (url === 'rtp://127.0.0.1:13337') {
     await startTestStream();
   }
+  const isRtp = url.indexOf('rtp://') === 0;
+  const internalStreamPort = Math.round(10000 + 10000 * Math.random());
+  const calculatedUrl = isRtp ? `udp://127.0.0.1:${internalStreamPort}` : url;
   logger.info(`Sending ${url} to ${socketId}`);
+  const ffmpegPathCalculated = await ffmpegPathPromise;
   const args = [
     '-nostats',
     '-loglevel', 'debug',
     '-fflags', '+discardcorrupt',
     '-err_detect', '+ignore_err',
     '-copyts',
-    '-i', addStreamUrlParameters(url),
+    '-i', addStreamUrlParameters(calculatedUrl),
     '-c:a', 'aac',
     '-af', 'aresample=async=176000:min_comp=0.0001',
     '-c:v', 'copy',
@@ -272,10 +279,6 @@ const startStream = async (socketId       , url       ) => {
     'pipe:1',
     '-metadata', 'blend=1',
   ];
-  const ffmpegPathCalculated = await ffmpegPathPromise;
-  if (!active) {
-    return;
-  }
   const mainProcess = spawn(ffmpegPathCalculated, args, {
     windowsHide: true,
     shell: false,
@@ -293,6 +296,49 @@ const startStream = async (socketId       , url       ) => {
       processLogger.error(error.message);
     }
   });
+  if (isRtp) {
+    const secondaryArgs = [
+      '-nostats',
+      '-loglevel', 'debug',
+      '-fflags', '+discardcorrupt',
+      '-err_detect', '+ignore_err',
+      '-copyts',
+      '-i', addStreamUrlParameters(url),
+      '-c:a', 'copy',
+      '-c:v', 'copy',
+      '-f', 'mpegts',
+      `udp://127.0.0.1:${internalStreamPort}?reuse=1`,
+      '-metadata', 'blend=1',
+    ];
+    const secondaryProcess = spawn(ffmpegPathCalculated, secondaryArgs, {
+      windowsHide: true,
+      shell: false,
+      detached: true,
+    });
+    const secondaryPid = secondaryProcess.pid;
+    if (!secondaryPid) {
+      killProcess(pid, 'FFmpeg process');
+    }
+    secondaryProcess.on('error', (error) => {
+      logger.error('Secondary process error');
+      logger.errorStack(error);
+    });
+    secondaryProcess.on('close', (code) => {
+      if (code && code !== 255) {
+        logger.error(`Secondary FFmpeg process ${secondaryPid} exited with error code ${code}`);
+      } else {
+        logger.warn(`Secondary FFmpeg process ${secondaryPid} exited`);
+      }
+      killProcess(pid, 'FFmpeg process');
+    });
+    mainProcess.once('close', () => {
+      killProcess(secondaryPid, 'FFmpeg secondary process');
+    });
+    secondaryProcess.stderr.on('data', (data) => {
+      const message = data.toString('utf8');
+      message.trim().split('\n').forEach((line) => processLogger.info(line));
+    });
+  }
   const syncPeers = {};
   const syncPeerReportingInterval = setInterval(() => {
     const cutoff = Date.now() - 20000;
