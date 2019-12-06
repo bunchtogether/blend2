@@ -75,7 +75,7 @@ Section "install"
   CreateShortCut "$AppDataDir\Microsoft\Windows\Start Menu\Programs\Blend.lnk" "$InstallDir\Launch.cmd" "" "$InstallDir\blend.ico"
 
   ; Autostart
-  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Blend" "powershell.exe -command Start-Process -FilePath '$InstallDir\blend-runtime.exe' -WorkingDirectory '$InstallDir' -WindowStyle Hidden"
+  WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "Blend" "'$SYSDIR\WindowsPowerShell\v1.0\powershell.exe' -command Start-Process -FilePath '$InstallDir\blend-runtime.exe' -WorkingDirectory '$InstallDir' -WindowStyle Hidden"
 
   ; Add Firewall exceptions
   ; blend-runtime, blend, ffmpeg, ffprobe
