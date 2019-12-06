@@ -35,7 +35,7 @@ Section "install"
   ExecWait "TaskKill /IM ffprobe.exe /F"
 
   ; Reference: https://nsis.sourceforge.io/Auto-uninstall_old_before_installing_new
-  IfFileExists "$InstallDir\Uninstaller.exe" 0 +2
+  IfFileExists "$InstallDir\Uninstaller.exe" 0 +3
   ExecWait '"$InstallDir\Uninstaller.exe" /S _?=$InstallDir'
   RMDir "$InstallDir"
 
@@ -120,6 +120,8 @@ FunctionEnd
 Section "uninstall"
   ExecWait "TaskKill /IM blend-runtime.exe /F"
   ExecWait "TaskKill /IM blend.exe /F"
+  ExecWait "TaskKill /IM ffmpeg.exe /F"
+  ExecWait "TaskKill /IM ffprobe.exe /F"
 
   ; Remove firewall rules
   ; ExecWait "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\firewall.ps1 -Action UNINSTALL"
