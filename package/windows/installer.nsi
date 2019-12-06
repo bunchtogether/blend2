@@ -1,5 +1,5 @@
 !include x64.nsh
-!define Version "v2.2.15"
+!define Version "v2.2.16"
 !define ENV_HKLM 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 
 Name "Blend Installer"
