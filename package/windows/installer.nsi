@@ -1,4 +1,5 @@
 !include x64.nsh
+!include LogicLib.nsh
 !define Version "v2.2.16"
 !define ENV_HKLM 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 
@@ -30,6 +31,13 @@ Section "install"
 
   ExecWait "TaskKill /IM blend-runtime.exe /F"
   ExecWait "TaskKill /IM blend.exe /F"
+  ExecWait "TaskKill /IM ffmpeg.exe /F"
+  ExecWait "TaskKill /IM ffprobe.exe /F"
+
+  ; Reference: https://nsis.sourceforge.io/Auto-uninstall_old_before_installing_new
+  IfFileExists "$InstallDir\Uninstaller.exe" 0 +2
+  ExecWait '"$InstallDir\Uninstaller.exe" /S _?=$InstallDir'
+  RMDir "$InstallDir"
 
   CreateDirectory "$InstallDir"
   SetOutPath "$InstallDir"
