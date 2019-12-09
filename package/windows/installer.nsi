@@ -75,7 +75,7 @@ Section "install"
   Delete "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Blend.cmd"
 
   FileOpen $4 "$InstallDir\Launch.cmd" a
-  FileWrite $4 'echo @off$\r$\n"$\"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe$\" -command "Start-Process -FilePath $\'$InstallDir\blend-runtime.exe$\' -WorkingDirectory $\'$InstallDir$\' -WindowStyle Hidden"'
+  FileWrite $4 'echo @off$\r$\n$\"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe$\" -command "Start-Process -FilePath $\'$InstallDir\blend-runtime.exe$\' -WorkingDirectory $\'$InstallDir$\' -WindowStyle Hidden"'
   FileClose $4
   AccessControl::GrantOnFile "$InstallDir" "(S-1-5-32-545)" "FullAccess"
 
