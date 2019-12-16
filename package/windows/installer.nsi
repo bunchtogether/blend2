@@ -46,6 +46,9 @@ Section "install"
   # File /r pfx-to-pem.ps1
   # ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\generate-cert.ps1"
 
+  CreateDirectory "$APPDATA\blend"
+  AccessControl::SetOnFile "$APPDATA\blend" "Everyone" "FullAccess"
+
   # Copy Files
   File files\sample.mp4
   File files\band.png
