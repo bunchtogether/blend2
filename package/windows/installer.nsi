@@ -1,6 +1,6 @@
 !include x64.nsh
 !include LogicLib.nsh
-!define Version "v2.2.17"
+!define Version "v2.2.18"
 !define ENV_HKLM 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 
 Name "Blend Installer"
@@ -47,7 +47,7 @@ Section "install"
   # ExecWait "powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\generate-cert.ps1"
 
   CreateDirectory "$APPDATA\blend"
-  AccessControl::SetOnFile "$APPDATA\blend" "Everyone" "FullAccess"
+  AccessControl::GrantOnFile "$APPDATA\blend" "(BU)" "FullAccess"
 
   # Copy Files
   File files\sample.mp4

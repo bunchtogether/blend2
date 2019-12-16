@@ -7,7 +7,7 @@
   "author": "johnwehr@bunchtogether.com",
   "scripts": {
     "build:src": "rimraf ./dist && mkdirp ./dist && flow-remove-types ./src --out-dir ./dist && ncp ./src/sample.mp4 ./dist/sample.mp4 && ncp ./src/band.png ./dist/band.png && mkdirp ./dist/cli && ncp ./src/cli ./dist/cli",
-    "build:src-www": "cd src-www && cross-env BLEND_VERSION=2.2.17 yarn build && cd ..",
+    "build:src-www": "cd src-www && cross-env BLEND_VERSION=2.2.18 yarn build && cd ..",
     "build": "yarn build:src-www && yarn build:src",
     "flow-typed": "./node_modules/.bin/flow-typed install -o",
     "test": "yarn lint && yarn test:js",
