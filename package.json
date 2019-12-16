@@ -1,6 +1,6 @@
 {
   "name": "blend",
-  "version": "2.2.16",
+  "version": "2.2.17",
   "main": "dist/index.js",
   "bin": "dist/index.js",
   "repository": "https://github.com/bunchtogether/blend2.git",
@@ -118,6 +118,7 @@
     "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
     "@serialport/parser-byte-length": "^2.0.2",
     "@serialport/parser-delimiter": "^2.0.2",
+    "appdata-path": "^1.0.0",
     "bl": "^3.0.0",
     "body-parser": "^1.18.3",
     "broadcast-address": "^1.0.2",

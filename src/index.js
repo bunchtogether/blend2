@@ -3,9 +3,10 @@
 const os = require('os');
 const path = require('path');
 const commander = require('commander');
+const getAppDataPath = require("appdata-path");
 const packageInfo = require('../package.json');
 
-const dataPath = path.join(os.homedir(), '.blend');
+const dataPath = path.join(getAppDataPath(), 'blend');
 const defaultLogsPath = path.join(dataPath, 'logs');
 
 commander
