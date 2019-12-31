@@ -11,7 +11,7 @@ function handlePsTreeCallback(
   callback = () => {},
 ) {
   const pollInterval = options.pollInterval || 500;
-  const timeout = options.timeout;
+  const timeout = options.timeout || 5000;
   if (err) {
     callback(err);
     return;
