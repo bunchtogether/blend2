@@ -3,7 +3,7 @@
 const os = require('os');
 const path = require('path');
 const commander = require('commander');
-const getAppDataPath = require("appdata-path");
+const getAppDataPath = require('appdata-path');
 const packageInfo = require('../package.json');
 
 const dataPath = path.join(getAppDataPath(), 'blend');
