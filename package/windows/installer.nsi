@@ -1,6 +1,6 @@
 !include x64.nsh
 !include LogicLib.nsh
-!define Version "v2.2.18"
+!define Version "v2.2.20"
 !define ENV_HKLM 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 
 Name "Blend Installer"
@@ -33,6 +33,14 @@ Section "install"
   ExecWait "TaskKill /IM blend.exe /F"
   ExecWait "TaskKill /IM ffmpeg.exe /F"
   ExecWait "TaskKill /IM ffprobe.exe /F"
+
+  ; Remove prev. $InstallDir instead of uninstall
+  ; Overwrite previous install
+  SetOutPath "$InstallDir\..\"
+  RMDir /r $InstallDir
+  Delete "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\blend.cmd"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend"
+
 
   ;; Reference: https://nsis.sourceforge.io/Auto-uninstall_old_before_installing_new
   ; IfFileExists "$InstallDir\Uninstaller.exe" 0 +3
