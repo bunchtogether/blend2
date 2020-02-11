@@ -34,10 +34,10 @@ Section "install"
   ExecWait "TaskKill /IM ffmpeg.exe /F"
   ExecWait "TaskKill /IM ffprobe.exe /F"
 
-  ; Reference: https://nsis.sourceforge.io/Auto-uninstall_old_before_installing_new
-  IfFileExists "$InstallDir\Uninstaller.exe" 0 +3
-  ExecWait '"$InstallDir\Uninstaller.exe" /S _?=$InstallDir'
-  RMDir "$InstallDir"
+  ;; Reference: https://nsis.sourceforge.io/Auto-uninstall_old_before_installing_new
+  ; IfFileExists "$InstallDir\Uninstaller.exe" 0 +3
+  ; ExecWait '"$InstallDir\Uninstaller.exe" /S _?=$InstallDir'
+  ; RMDir "$InstallDir"
 
   CreateDirectory "$InstallDir"
   SetOutPath "$InstallDir"
