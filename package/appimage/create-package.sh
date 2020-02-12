@@ -57,6 +57,7 @@ cp -r $BUILD_DIR/scripts $DEBIAN_DIR/etc/blend/scripts
 cp $BUILD_DIR/node_modules/@serialport/bindings/build/Release/bindings.node $DEBIAN_DIR/etc/blend/bindings.node
 cp $BUILD_DIR/node_modules/sqlite3/lib/binding/node-v64-linux-x64/node_sqlite3.node $DEBIAN_DIR/etc/blend/node_sqlite3.node
 cp $BUILD_DIR/node_modules/ffi/build/Release/ffi_bindings.node $DEBIAN_DIR/etc/blend/ffi_bindings.node
+cp -r $BUILD_DIR/node_modules/leveldown/prebuilds $DEBIAN_DIR/etc/blend/prebuilds
 cp $BUILD_DIR/node_modules/leveldown/prebuilds/linux-x64/node.napi.musl.node $DEBIAN_DIR/etc/blend/node.napi.musl.node
 cp $BUILD_DIR/node_modules/leveldown/prebuilds/linux-x64/node.napi.node $DEBIAN_DIR/etc/blend/node.napi.node
 cp $BUILD_DIR/node_modules/ref/build/Release/binding.node $DEBIAN_DIR/etc/blend/binding.node
