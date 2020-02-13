@@ -33,6 +33,8 @@ Section "install"
   ExecWait "TaskKill /IM blend.exe /F"
   ExecWait "TaskKill /IM ffmpeg.exe /F"
   ExecWait "TaskKill /IM ffprobe.exe /F"
+  ExecWait "TaskKill /IM tray_windows_release.exe /F"
+
 
   ; Remove prev. $InstallDir instead of uninstall
   ; Overwrite previous install
@@ -133,6 +135,7 @@ Section "uninstall"
   ExecWait "TaskKill /IM blend.exe /F"
   ExecWait "TaskKill /IM ffmpeg.exe /F"
   ExecWait "TaskKill /IM ffprobe.exe /F"
+  ExecWait "TaskKill /IM tray_windows_release.exe /F"
 
   ; Remove firewall rules
   ; ExecWait "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File $InstallDir\firewall.ps1 -Action UNINSTALL"
