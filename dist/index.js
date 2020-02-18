@@ -16,6 +16,7 @@ commander
   .option('-l, --logs <directory path>', 'Blend logs folder', defaultLogsPath)
   .option('-c, --config <path>', 'Blend config path, overwrite BLEND_CONFIG env variable.')
   .option('-u, --update-check <path>', 'Band update-check script path, overwrite BAND_UPDATE_CHECK env variable.')
+  .option('-p, --pid-file <path>', 'Band update-check PID lock filepath, overwrite BAND_UPDATE_CHECK_LOCK env variable.')
   .option('-k, --kiosk', 'Kiosk mode', false)
   .option('-t, --tray', 'System tray icon', false)
   .parse(process.argv);
@@ -32,6 +33,11 @@ if (commander.config) {
 if (commander.updateCheck) {
   // Overwrite band auto update check script
   process.env.BAND_UPDATE_CHECK = commander.updateCheck;
+}
+
+if (commander.pidFile) {
+  // Overwrite band auto update check script
+  process.env.BAND_UPDATE_CHECK_LOCK = commander.pidFile;
 }
 
 if (commander.kiosk) {
