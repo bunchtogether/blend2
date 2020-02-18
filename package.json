@@ -12,6 +12,7 @@
     "flow-typed": "./node_modules/.bin/flow-typed install -o",
     "test": "yarn lint && yarn test:js",
     "test:js": "cross-env NODE_ENV=test jest --runInBand tests/system.test.js",
+    "test:js:update": "cross-env NODE_ENV=test BLEND_LOGS_DIR=/tmp/blend jest --runInBand tests/update.test.js",
     "lint": "npm run lint:js && npm run lint:flow",
     "lint:js": "eslint -c ./.eslintrc --no-eslintrc --cache --fix .",
     "lint:flow": "flow --show-all-errors",
