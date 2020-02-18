@@ -7,11 +7,11 @@ const logger = require('../../lib/logger')('Setup API');
 const { triggerUpdate } = require('../../lib/update');
 const { CONFIG_FILE } = require('../../constants');
 
-const getConfigPath = function ():string {
+const getConfigPath = function (): string {
   return path.resolve(CONFIG_FILE); // returns config.json located in exec dir
 };
 
-const readConfig = async ():Promise<Object> => {
+const readConfig = async (): Promise<Object> => {
   const configFile = getConfigPath();
   try {
     const fileExists = await fs.pathExists(configFile);
@@ -28,7 +28,7 @@ const readConfig = async ():Promise<Object> => {
   }
 };
 
-const updateConfig = async (updatedConfig: Object):Promise<void> => {
+const updateConfig = async (updatedConfig: Object): Promise<void> => {
   const configFile = getConfigPath();
   try {
     const configContent = await readConfig();
@@ -67,7 +67,6 @@ module.exports.getSetupRouter = () => {
     }
     try {
       await updateConfig({ ip });
-      // triggerUpdate();
       return res.sendStatus(200);
     } catch (error) {
       logger.warn(`Unable to save device IP address, Error: ${error.message}`);
@@ -78,8 +77,24 @@ module.exports.getSetupRouter = () => {
 
   router.post('/update-device', async (req: express$Request, res: express$Response) => {
     try {
-      triggerUpdate();
-      return res.sendStatus(200);
+      const status = await triggerUpdate();
+
+      // Error
+      if (status && status.error !== null) {
+        return res.status(400).send({ error: status.error });
+      }
+
+      // Active Check
+      if (status && status.triggered && typeof (status.pid) === 'number' && status.pid > 0) {
+        return res.send({ message: 'Initiated update check' });
+      } else if (status && !status.triggered && typeof (status.pid) === 'number' && status.pid > 0) {
+        return res.send({ message: 'Update check in progress' });
+      } else if (status && !status.triggered && status.pid === null) {
+        return res.send({ message: 'Scheduled update check is in progress' });
+      }
+
+      logger.error(`Got an invalid update-check state ${JSON.stringify(status)}`);
+      return res.status(400).send({ error: 'Failed to trigger update check' });
     } catch (error) {
       logger.error(`Unable to trigger device update, Error: ${error.message}`);
       logger.errorStack(error);

@@ -90,6 +90,7 @@ EnvironmentFile=/etc/blend/blend.defaults
 Environment=PATH=/usr/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
 Environment=BLEND_CONFIG=/etc/blend.json
 Environment=BAND_UPDATE_CHECK=/etc/band/scripts/update-check
+Environment=BAND_UPDATE_CHECK_LOCK=/etc/band/LOCK
 PIDFile=/etc/blend/blend.pid
 Restart=always
 WorkingDirectory=/etc/blend
