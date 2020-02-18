@@ -5,7 +5,7 @@ log() {
 }
 
 log "Starting Update Check"
-sleep 3
+sleep 2
 
 log "Finished Update Check"
 exit 0

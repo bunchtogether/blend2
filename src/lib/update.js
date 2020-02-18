@@ -15,7 +15,7 @@ const triggerWindowsUpdate = async () => {
   logger.error('Trigger Windows update not implemented yet');
   return {
     pid: null,
-    active: false,
+    triggered: false,
     message: null,
     error: 'Update Check for Windows is not enabled',
   };
@@ -25,13 +25,13 @@ const triggerDarwinUpdate = async () => {
   logger.error('Tigger Mac OSX update not implemented yet');
   return {
     pid: null,
-    active: false,
+    triggered: false,
     message: null,
     error: 'Update Check for Mac OSX is not enabled',
   };
 };
 
-const scheduledUpdateCheck = async ():Promise<boolean> => {
+const scheduledUpdateCheck = async (): Promise<boolean> => {
   if (!BAND_UPDATE_CHECK_LOCK) {
     logger.error('Unable to check for active update checks due to missing LOCK file path, BAND_UPDATE_CHECK_LOCK env variable is not defined');
     return false;
@@ -42,6 +42,7 @@ const scheduledUpdateCheck = async ():Promise<boolean> => {
     const fileExists = await fs.exists(lockFilePath);
     if (!fileExists) {
       // Update check is either inactive
+      logger.info(`Lock file doesn't exist at ${lockFilePath}`);
       return false;
     }
 
@@ -77,7 +78,7 @@ const triggerLinuxUpdate = async () => {
     logger.info('Active update in progress, skipping update check');
     return {
       pid: updateCheckPid,
-      active: true,
+      triggered: false,
       message: 'Update check in progress, new check wasn\'t triggered.',
       error: null,
     };
@@ -89,7 +90,7 @@ const triggerLinuxUpdate = async () => {
     logger.error(`Update script does not exist at ${BAND_UPDATE_CHECK}`);
     return {
       pid: null,
-      active: false,
+      triggered: false,
       message: null,
       error: `Update check script doesn't exist at path ${BAND_UPDATE_CHECK} (BAND_UPDATE_CHECK)`,
     };
@@ -101,7 +102,7 @@ const triggerLinuxUpdate = async () => {
     if (isScheduledUpdateCheckActive) {
       return {
         pid: null,
-        active: false,
+        triggered: false,
         message: 'Scheduled update check is currently in progress, skipping new check',
         error: null,
       };
@@ -123,7 +124,7 @@ const triggerLinuxUpdate = async () => {
     updateProcess.unref();
     return {
       pid: updateCheckPid,
-      active: true,
+      triggered: true,
       message: 'Triggered an update check, wait for few mins for the update to finish.',
       error: null,
     };
@@ -132,66 +133,34 @@ const triggerLinuxUpdate = async () => {
     logger.errorStack(error);
     return {
       pid: null,
-      active: false,
+      triggered: false,
       message: null,
       error: `Failed to trigger update check. ${error.message}`,
     };
   }
 };
 
-
-// const triggerLinuxUpdate = async () => {
-//   if (!BAND_UPDATE_CHECK) {
-//     throw new Error('Missing BAND_UPDATE_CHECK environmental variable, Update check script path is not defined');
-//   }
-
-//   const scriptExists = await fs.exists(BAND_UPDATE_CHECK);
-//   if (!scriptExists) {
-//     throw new Error(`Update script does not exist at ${BAND_UPDATE_CHECK}`);
-//   }
-//   await new Promise((resolve, reject) => {
-//     try {
-//       exec(`/bin/bash ${BAND_UPDATE_CHECK} -i`, { env: { 'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' } }, (err, stdout, stderr) => { // eslint-disable-line
-//         if (err) {
-//           reject(err);
-//         }
-//         if (stdout) {
-//           resolve(stdout);
-//         }
-//         if (stderr) {
-//           reject(stderr);
-//         }
-//       });
-//     } catch (error) {
-//       logger.errorStack(error);
-//       reject(error);
-//     }
-//   });
-// };
-
 type TriggerRecord = {
   pid: number | null,
-  active: boolean,
+  triggered: boolean,
   message: string | null,
   error: string | null,
 };
 
-const triggerUpdate = async ():Promise<TriggerRecord> => {
+const triggerUpdate = async (): Promise<TriggerRecord> => {
   logger.info('Triggering update');
   if (os.platform() === 'linux') {
     return triggerLinuxUpdate();
-  }
-  if (os.platform() === 'win32') {
+  } else if (os.platform() === 'win32') {
     return triggerWindowsUpdate();
-  }
-  if (os.platform() === 'darwin') {
+  } else if (os.platform() === 'darwin') {
     return triggerDarwinUpdate();
   }
 
   logger.warn(`Update check is not supported on ${os.platform()} platform`);
   return {
     pid: null,
-    active: false,
+    triggered: false,
     message: null,
     error: `Update checks are not supported on ${os.platform()} platform`,
   };
