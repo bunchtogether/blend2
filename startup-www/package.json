@@ -1,0 +1,27 @@
+{
+  "name": "band-startup-page",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "prebuild": "rimraf ./dist && mkdir -p dist/images",
+    "build": "parcel build --no-source-maps --no-cache src/index.html"
+  },
+  "staticFiles": {
+        "staticPath": [{
+            "staticOutDir": "images",
+            "staticPath": "src/images"
+        }]
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.3.1",
+    "rimraf": "^3.0.2"
+  },
+  "dependencies": {
+    "core-js": "^3.6.4",
+    "regenerator-runtime": "^0.13.3"
+  }
+}
+

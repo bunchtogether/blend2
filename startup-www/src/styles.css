@@ -1,0 +1,78 @@
+
+html {
+  font-family: "Roboto Condensed", system, -apple-system, ".SFNSText-Regular", "San Francisco", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+  /*font-size: calc(16px + 1vw) !important;*/
+  overflow: hidden;
+}
+
+body {
+  width:  100vw;
+  height:  100vh;
+  background-color: #192D9B;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.error {
+  color: #ff4444;
+}
+
+/*#localtime {
+    position: absolute;
+    top: 1em;
+    left: calc(100vw - 10em);
+    font-size: 3rem;
+}*/
+
+#localtime {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 2rem;
+}
+
+#retry-timer {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 2rem;
+}
+
+.container {
+  padding: 1em;
+  margin-top: -20vh;
+  min-width: 35vw;
+  min-height: 50vh;
+  justify-content: center;
+}
+
+.check {
+  padding: 2rem 0px;
+  display: flex;
+  font-size: 2rem;
+}
+
+.message-title {
+  font-size: 6rem;
+  font-weight: 400;
+  margin-bottom: -0.15em;
+}
+
+.message-warning {
+    min-height: 4rem;
+    font-size: 3rem;
+    font-weight: 300;
+}
+
+
+.status {
+    display: flex;
+    align-self: flex-start;
+
+}
+.status-svg {
+    height: 6rem;
+    margin-top: 0.7em;
+}
