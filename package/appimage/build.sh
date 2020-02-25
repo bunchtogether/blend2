@@ -74,6 +74,7 @@ build() {
   sshexec "sudo rm -rf $BUILD_DIR; mkdir -p $BUILD_DIR/vendor;"
   sshcopy ../../src $BUILD_DIR/src
   sshcopy ../../dist-www $BUILD_DIR/dist-www
+  sshcopy ../../dist-startup-www $BUILD_DIR/dist-startup-www
   sshcopy ../../static $BUILD_DIR/static
   sshcopy ../../scripts $BUILD_DIR/scripts
   sshcopy ../../vendor/zoom-rooms-control-system $BUILD_DIR/vendor/zoom-rooms-control-system

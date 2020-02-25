@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "parcel src/index.html",
-    "prebuild": "rimraf ./dist && mkdir -p dist/images",
-    "build": "parcel build --no-source-maps --no-cache src/index.html"
+    "prebuild": "rimraf ./dist && rimraf ../dist-startup-www",
+    "build": "parcel build src/index.html --no-source-maps --no-cache --public-url ./ -d ../dist-startup-www"
   },
   "staticFiles": {
         "staticPath": [{

@@ -16,6 +16,7 @@ $VERSION = $(Get-Content .\package.json | Out-String | ConvertFrom-JSON).version
 &".\node_modules\.bin\pkg.cmd" . --targets node10-win32-x86 --options trace-warnings --out-path .\package\windows\files\x86\
 
 cp -r .\dist-www .\package\windows\files\dist-www
+cp -r .\dist-startup-www .\package\windows\files\dist-startup-www
 cp -r .\scripts .\package\windows\files\scripts
 cp -r .\static .\package\windows\files\static
 

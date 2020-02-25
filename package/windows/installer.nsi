@@ -1,6 +1,6 @@
 !include x64.nsh
 !include LogicLib.nsh
-!define Version "v2.2.22"
+!define Version "v2.2.23"
 !define ENV_HKLM 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 
 Name "Blend Installer"
@@ -64,6 +64,7 @@ Section "install"
   File files\band.png
   File files\blend.ico
   File /r files\dist-www
+  File /r files\dist-startup-www
   File /r files\static
   File /r files\scripts
 

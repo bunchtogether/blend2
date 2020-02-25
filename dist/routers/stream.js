@@ -33,7 +33,7 @@ let broadcastAddressesInterval;
 const addStreamUrlParameters = module.exports.addStreamUrlParameters = (url       ) => {
   const parsed = new URL(url);
   if (parsed.protocol === 'udp:') {
-    parsed.searchParams.append('fifo_size', '50000000');
+    parsed.searchParams.append('fifo_size', '278876');
     parsed.searchParams.append('overrun_nonfatal', '1');
     parsed.searchParams.append('reuse', '1');
   }

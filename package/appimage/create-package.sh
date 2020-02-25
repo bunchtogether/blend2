@@ -52,6 +52,7 @@ mkdir -p $DEBIAN_DIR/etc/blend
 cp $BUILD_DIR/blend $DEBIAN_DIR/etc/blend/
 cp -r $BUILD_DIR/src/band.png $DEBIAN_DIR/etc/blend/band.png
 cp -r $BUILD_DIR/dist-www $DEBIAN_DIR/etc/blend/dist-www
+cp -r $BUILD_DIR/dist-startup-www $DEBIAN_DIR/etc/blend/dist-startup-www
 cp -r $BUILD_DIR/static $DEBIAN_DIR/etc/blend/static
 cp -r $BUILD_DIR/scripts $DEBIAN_DIR/etc/blend/scripts
 cp $BUILD_DIR/node_modules/@serialport/bindings/build/Release/bindings.node $DEBIAN_DIR/etc/blend/bindings.node

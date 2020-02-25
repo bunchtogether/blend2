@@ -47,3 +47,4 @@ update-vm.sh
 # *.dll
 
 blend-installer.exe
+startup-www/dist*

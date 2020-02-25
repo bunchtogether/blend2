@@ -2,7 +2,7 @@
 
 const { Router } = require('express');
 const find = require('@bunchtogether/find-process');
-const { getActiveInterfaceMac } = require('../../lib/network');
+const { getActiveInterfaceMac, getActiveInterfaceIPAddress } = require('../../lib/network');
 const adapters = require('../../adapters');
 const logger = require('../../lib/logger')('Capabilities API');
 
@@ -42,12 +42,14 @@ module.exports.getCapabilitiesRouter = () => {
   router.get('', async (req                 , res                  ) => {
     try {
       const start = Date.now();
-      const [activeAdapter, isBluescapeAvailable, isZoomRoomAvailable, macAddress] = await Promise.all([
+      const [activeAdapter, isBluescapeAvailable, isZoomRoomAvailable, macAddress, ipAddress] = await Promise.all([
         adapters.getActiveAdapter(),
         checkIfBluescapeIsAvailable(),
         checkIfZoomRoomIsAvailable(),
         getActiveInterfaceMac(),
+        getActiveInterfaceIPAddress(),
       ]);
+      console.log(activeAdapter);
       logger.info(`Capabilities check: ${Date.now() - start}`);
       res.status(200).send({
         isServerAvailable: true,
@@ -55,6 +57,7 @@ module.exports.getCapabilitiesRouter = () => {
         isBluescapeAvailable,
         isZoomRoomAvailable,
         macAddress,
+        ipAddress,
         system: 1,
       });
     } catch (error) {

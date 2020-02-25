@@ -50,6 +50,7 @@ mkdir -p blend/etc/blend
 
 cp ~/build/blend ~/blend/etc/blend/
 cp -r ~/build/dist-www ~/blend/etc/blend/dist-www
+cp -r ~/build/dist-startup-www ~/blend/etc/blend/dist-startup-www
 cp -r ~/build/static ~/blend/etc/blend/static
 cp -r ~/build/scripts ~/blend/etc/blend/scripts
 cp ~/build/node_modules/@serialport/bindings/build/Release/bindings.node ~/blend/etc/blend/bindings.node
