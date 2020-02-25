@@ -3,39 +3,28 @@
 const macaddress = require('macaddress');
 const logger = require('./logger')('MAC Address');
 
-let cachedAddress;
-let cachedIPAddress;
-
-const getActiveInterfaceMac = async ():Promise<string> => {
-  if (cachedAddress) {
-    return cachedAddress;
-  }
-  return new Promise((resolve, reject) => {
-    macaddress.one((error, addr) => {
-      if (error) {
-        reject(error);
-      } else {
-        logger.info(`Found ${addr}`);
-        cachedAddress = addr;
-        resolve(addr);
-      }
-    });
-  });
-};
-
-const getActiveInterfaceIPAddress = async ():Promise<string> => {
-  if (cachedIPAddress) {
-    return cachedIPAddress;
-  }
-  const macAddress = await getActiveInterfaceMac();
-  const interfaces = macaddress.networkInterfaces();
-  for (const netInterface of Object.values(interfaces)) {
-    if (netInterface.mac === macAddress) {
-      cachedIPAddress = netInterface.ipv4;
+const getActiveInterfaceMac = async ():Promise<string> => new Promise((resolve, reject) => {
+  macaddress.one((error, addr) => {
+    if (error) {
+      reject(error);
+    } else if (!error && addr === '00:00:00:00:00:00') {
+      reject(new Error('Cannot find an active network interface'));
+    } else {
+      logger.info(`Found ${addr}`);
+      resolve(addr);
     }
+  });
+});
+
+const getActiveInterfaceIPAddress = async ():Promise<any> => {
+  const macAddress = await getActiveInterfaceMac();
+  const netInterfaces = macaddress.networkInterfaces();
+  const filteredInterfaces = Object.values(netInterfaces).filter((netIface) => (netIface && netIface.ipv4 && netIface.mac && netIface.mac === macAddress));
+  if (Array.isArray(filteredInterfaces) && filteredInterfaces.length === 1 && filteredInterfaces[0] && filteredInterfaces[0].ipv4) {
+    return filteredInterfaces[0].ipv4;
   }
-  return cachedIPAddress
-}
+  throw new Error(`Cannot find IPv4 for interface with MAC address ${macAddress}`);
+};
 
 getActiveInterfaceMac().catch((error) => {
   logger.error('Unable to get MAC address');
@@ -45,7 +34,7 @@ getActiveInterfaceMac().catch((error) => {
 getActiveInterfaceIPAddress().catch((error) => {
   logger.error('Unable to get IP address');
   logger.errorStack(error);
-})
+});
 
 module.exports.getActiveInterfaceMac = getActiveInterfaceMac;
 module.exports.getActiveInterfaceIPAddress = getActiveInterfaceIPAddress;

@@ -52,3 +52,5 @@ src/static/player/hls.js
 dist
 dist-www
 src-www
+dist-startup-www
+startup-www

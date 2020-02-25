@@ -49,7 +49,6 @@ module.exports.getCapabilitiesRouter = () => {
         getActiveInterfaceMac(),
         getActiveInterfaceIPAddress(),
       ]);
-      console.log(activeAdapter);
       logger.info(`Capabilities check: ${Date.now() - start}`);
       res.status(200).send({
         isServerAvailable: true,
