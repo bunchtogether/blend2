@@ -16,45 +16,48 @@ const INTERVAL_DURATION = 5000; // 5 secs
 const updateServices = function (capabilities) {
   console.log('Update Services');
   if (capabilities.isServerAvailable) {
+    document.querySelector('#band-services-warning').innerText = '';
     document.querySelector('#band-services-status').setAttribute('src', successSvg);
     return true;
   }
+  document.querySelector('#band-services-status').setAttribute('src', loadingSvg);
   document.querySelector('#band-services-warning').innerText = 'Device is not ready';
-  document.querySelector('#band-services-status').setAttribute('src', errorSvg);
   return false;
 };
 
 const updateNetwork = function (capabilities) {
   console.log('Update Network');
   if (capabilities.macAddress && capabilities.ipAddress) {
+    document.querySelector('#band-network-warning').innerText = '';
     document.querySelector('#band-network-status').setAttribute('src', successSvg);
     return true;
   }
   if (capabilities.macAddress && !capabilities.ipAddress) {
-    document.querySelector('#band-network-warning').innerText = 'IP Address is not available';
+    document.querySelector('#band-network-warning').innerText = 'IP address is not available';
   } else if (!capabilities.macAddress && capabilities.ipAddress) {
-    document.querySelector('#band-network-warning').innerText = 'MAC Address is not available';
+    document.querySelector('#band-network-warning').innerText = 'MAC address is not available';
   } else {
-    document.querySelector('#band-network-warning').innerText = 'Network not configured';
+    document.querySelector('#band-network-warning').innerText = 'Network is not available';
   }
-  document.querySelector('#band-network-status').setAttribute('src', errorSvg);
+  document.querySelector('#band-network-status').setAttribute('src', loadingSvg);
   return false;
 };
 
 const updateBandServer = async function (capabilities) {
   if (!redirectUrl) {
-    document.querySelector('#band-server-status').setAttribute('src', errorSvg);
-    document.querySelector('#band-server-warning').innerText = 'Band Server is not configured';
+    document.querySelector('#band-server-status').setAttribute('src', loadingSvg);
+    document.querySelector('#band-server-warning').innerText = 'Band URL is not configured';
     return false;
   }
   return new Promise((resolve) => {
     const imageNode = document.createElement('img');
     imageNode.onload = function (event) {
+      document.querySelector('#band-server-warning').innerText = '';
       document.querySelector('#band-server-status').setAttribute('src', successSvg);
       resolve(true);
     };
     imageNode.onerror = function (event) {
-      document.querySelector('#band-server-status').setAttribute('src', errorSvg);
+      document.querySelector('#band-server-status').setAttribute('src', loadingSvg);
       document.querySelector('#band-server-warning').innerText = `${redirectUrl} is not reachable`;
       resolve(false);
     };
@@ -72,13 +75,14 @@ const checkCapabilities = async function () {
     capabilities = await response.json();
     console.log(capabilities);
   } catch (error) {
-    document.querySelector('#band-services-status').setAttribute('src', errorSvg);
+    document.querySelector('#band-services-status').setAttribute('src', loadingSvg);
     document.querySelector('#band-services-warning').innerText = 'Device is not ready';
   }
 
   const serviceStatus = updateServices(capabilities);
   const networkStatus = updateNetwork(capabilities);
   const serverStatus = await updateBandServer(capabilities);
+  console.log(serviceStatus, networkStatus, serverStatus);
 
   if (serviceStatus && networkStatus && serverStatus) {
     window.location.href = redirectUrl;
@@ -91,20 +95,6 @@ let timeInterval;
 const initCheck = async function () {
   try {
     checkInterval = setInterval(async () => {
-      document.querySelector('#localtime').innerText = new Date().toLocaleString();
-
-      // Reset Status
-      document.querySelector('#band-services-status').setAttribute('src', loadingSvg);
-      document.querySelector('#band-network-status').setAttribute('src', loadingSvg);
-      document.querySelector('#band-server-status').setAttribute('src', loadingSvg);
-      document.querySelector('#band-services-warning').innerText = '';
-      document.querySelector('#band-network-warning').innerText = '';
-      document.querySelector('#band-server-warning').innerText = '';
-      document.querySelector('#band-services-title').setAttribute('class', 'message-title');
-      document.querySelector('#band-network-title').setAttribute('class', 'message-title');
-      document.querySelector('#band-server-title').setAttribute('class', 'message-title');
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
       // Check
       await checkCapabilities();
     }, INTERVAL_DURATION);
@@ -123,6 +113,7 @@ const initCheck = async function () {
 };
 
 
+// Init
 window.addEventListener('load', () => initCheck(), false);
 window.addEventListener('unload', (event) => {
   if (checkInterval) {
