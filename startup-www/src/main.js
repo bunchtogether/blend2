@@ -5,6 +5,7 @@ import 'regenerator-runtime/runtime';
 const parsedSearch = new URLSearchParams(window.location.search);
 const redirectUrl = parsedSearch.get('redirect');
 const blendEndpoint = 'http://127.0.0.1:61340/api/1.0/capabilities';
+const boostImageEndpoint = '/api/v1.0/health-check/image';
 
 const successSvg = 'images/success.svg';
 const errorSvg = 'images/error.svg';
@@ -61,8 +62,10 @@ const updateBandServer = async function (capabilities) {
       document.querySelector('#band-server-warning').innerText = `${redirectUrl} is not reachable`;
       resolve(false);
     };
+
+    const imageUrl = redirectUrl + boostImageEndpoint;
     imageNode.setAttribute('style', 'display:none;');
-    imageNode.setAttribute('src', `${redirectUrl}/images/favicon-96x96.png`);
+    imageNode.setAttribute('src', imageUrl);
     document.querySelector('#hiddenimage').appendChild(imageNode);
   });
 };
