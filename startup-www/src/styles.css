@@ -43,8 +43,10 @@ body {
 .inner-container {
   position: absolute;
   top: 45%;
-  left: 50%;
+  left: 51%;
   transform: translate(-50%, -50%);
+  width: 710px;
+  min-width: 710px;
 }
 
 .check {
@@ -58,10 +60,9 @@ body {
 
 .message {
   width: 100%;
-  min-height: 110px;
+  min-height: 120px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: flex-start;
 }
 
