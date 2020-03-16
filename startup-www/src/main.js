@@ -71,6 +71,8 @@ const updateBandServer = async function (capabilities) {
 };
 
 
+const delay = async (time = 1000) => new Promise((resolve) => setTimeout(resolve, time));
+
 const checkCapabilities = async function () {
   let capabilities = {};
   try {
@@ -82,12 +84,16 @@ const checkCapabilities = async function () {
     document.querySelector('#band-services-warning').innerText = 'Device is not ready';
   }
 
+  await delay(500);
   const serviceStatus = updateServices(capabilities);
+  await delay(1000);
   const networkStatus = updateNetwork(capabilities);
+  await delay(1000);
   const serverStatus = await updateBandServer(capabilities);
   console.log(serviceStatus, networkStatus, serverStatus);
 
   if (serviceStatus && networkStatus && serverStatus) {
+    await delay(800);
     window.location.href = redirectUrl;
   }
 };
@@ -100,7 +106,7 @@ const initCheck = async function () {
     checkInterval = setInterval(async () => {
       // Check
       await checkCapabilities();
-    }, INTERVAL_DURATION);
+    }, INTERVAL_DURATION); // Every 5 secs
 
     // Clock
     document.querySelector('#localtime').innerText = new Date().toLocaleString();
