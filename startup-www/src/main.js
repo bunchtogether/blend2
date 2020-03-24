@@ -59,7 +59,8 @@ const updateBandServer = async function (capabilities) {
     };
     imageNode.onerror = function (event) {
       document.querySelector('#band-server-status').setAttribute('src', loadingSvg);
-      document.querySelector('#band-server-warning').innerText = `${redirectUrl} is not reachable`;
+      document.querySelector('#band-server-warning').innerText = 'Can not reach application';
+      document.querySelector('#band-server-warning2').innerText = `${redirectUrl}`;
       resolve(false);
     };
 
