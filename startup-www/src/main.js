@@ -55,10 +55,13 @@ const updateBandServer = async function (capabilities) {
   return new Promise((resolve) => {
     const imageNode = document.createElement('img');
     const timeout = setTimeout(() => {
-      console.log(`Timeout after 4000 ms loading ${imageUrl}.`)
-      document.querySelector('#hiddenimage').setAttribute('src', '');
+      console.error(`Timeout after 2000 ms loading ${imageUrl}.`)
+      imageNode.setAttribute('src', '');
+      document.querySelector('#band-server-status').setAttribute('src', loadingSvg);
+      document.querySelector('#band-server-warning').innerText = 'Can not reach application';
+      document.querySelector('#band-server-warning2').innerText = `${redirectUrl}`;
       resolve(false);
-    }, 4000);
+    }, 2000);
     imageNode.onload = function (event) {
       clearTimeout(timeout);
       document.querySelector('#band-server-warning').innerText = '';
