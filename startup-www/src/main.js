@@ -50,24 +50,32 @@ const updateBandServer = async function (capabilities) {
     document.querySelector('#band-server-warning').innerText = 'Band URL is not configured';
     return false;
   }
+  const randomNumber = Math.floor(Math.random() * 100000);
+  const imageUrl = redirectUrl + boostImageEndpoint + "?randomCode=" + randomNumber;
   return new Promise((resolve) => {
     const imageNode = document.createElement('img');
+    const timeout = setTimeout(() => {
+      console.log(`Timeout after 4000 ms loading ${imageUrl}.`)
+      resolve(false);
+    }, 4000);
     imageNode.onload = function (event) {
+      clearTimeout(timeout);
       document.querySelector('#band-server-warning').innerText = '';
       document.querySelector('#band-server-status').setAttribute('src', successSvg);
       resolve(true);
     };
     imageNode.onerror = function (event) {
+      clearTimeout(timeout);
       document.querySelector('#band-server-status').setAttribute('src', loadingSvg);
       document.querySelector('#band-server-warning').innerText = 'Can not reach application';
       document.querySelector('#band-server-warning2').innerText = `${redirectUrl}`;
       resolve(false);
     };
 
-    const imageUrl = redirectUrl + boostImageEndpoint;
     imageNode.setAttribute('style', 'display:none;');
     imageNode.setAttribute('src', imageUrl);
     document.querySelector('#hiddenimage').appendChild(imageNode);
+
   });
 };
 
