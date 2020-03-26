@@ -67,6 +67,9 @@ prebuild() {
   # Build src, src-www
   yarn build
 
+  # Remove node_modules in submodule packages
+  rm -rf vendor/zoom-rooms-control-system/node_modules
+
   cd $currDir
 }
 
@@ -94,6 +97,9 @@ download() {
 postbuild() {
   sshexec "sudo rm -rf $BUILD_DIR"
   sshexec "sudo rm -rf ~/blend.$BLEND_VERSION.AppImage"
+
+  cd ../../vendor/zoom-rooms-control-system
+  yarn install
 }
 
 
