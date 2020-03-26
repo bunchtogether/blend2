@@ -56,6 +56,7 @@ const updateBandServer = async function (capabilities) {
     const imageNode = document.createElement('img');
     const timeout = setTimeout(() => {
       console.log(`Timeout after 4000 ms loading ${imageUrl}.`)
+      document.querySelector('#hiddenimage').setAttribute('src', '');
       resolve(false);
     }, 4000);
     imageNode.onload = function (event) {
