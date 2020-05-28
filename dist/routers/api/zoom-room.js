@@ -251,6 +251,7 @@ module.exports = () => {
 
 
   router.post('/zcommand.dial.join', async (req                 , res                  ) => {
+    let response;
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
@@ -262,7 +263,11 @@ module.exports = () => {
       return res.status(400).send('Missing required body parameter "meetingNumber" with type string');
     }
     try {
-      const response = await zrcs.zcommand.dial.join({ meetingNumber, password });
+      if (password) {
+        response = await zrcs.zcommand.dial.join({ meetingNumber, password });
+      } else {
+        response = await zrcs.zcommand.dial.join({ meetingNumber });
+      }
       return res.json(response);
     } catch (error) {
       logger.error('Error for command zcommand.dial.join');
