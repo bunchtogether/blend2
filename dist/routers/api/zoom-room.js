@@ -1567,13 +1567,28 @@ module.exports = () => {
     if (size && size !== 'Off' && size !== 'Size1' && size !== 'Size2' && size !== 'Size3' && size !== 'Strip') {
       return res.status(400).send('Missing optional body parameter "size" with value "Off" or "Size1" or "Size2" or "Size3" or "Strip"');
     }
-
-    if (position !== 'Center' && position !== 'Up' && position !== 'Right' && position !== 'UpRight' && position !== 'Down' && position !== 'DownRight' && position !== 'Left' && position !== 'UpLeft' && position !== 'DownLeft') {
-      return res.status(400).send('Missing required body parameter "position" with value "Center" or "Up" or "Right" or "UpRight" or "Down" or "DownRight" or "Left" or "UpLeft" or "DownLeft"');
+    if (position && position !== 'Center' && position !== 'Up' && position !== 'Right' && position !== 'UpRight' && position !== 'Down' && position !== 'DownRight' && position !== 'Left' && position !== 'UpLeft' && position !== 'DownLeft') {
+      return res.status(400).send('Missing optional body parameter "position" with value "Center" or "Up" or "Right" or "UpRight" or "Down" or "DownRight" or "Left" or "UpLeft" or "DownLeft"');
     }
     try {
-      const response = await zrcs.zconfiguration.call.layout({ shareThumb, style, size, position });
-      return res.json(response);
+      let response;
+      if (shareThumb) {
+        response = await zrcs.zconfiguration.call.layout({ shareThumb });
+        return res.json(response);
+      }
+      if (style) {
+        response = await zrcs.zconfiguration.call.layout({ style });
+        return res.json(response);
+      }
+      if (size) {
+        response = await zrcs.zconfiguration.call.layout({ size });
+        return res.json(response);
+      }
+      if (position) {
+        response = await zrcs.zconfiguration.call.layout({ position });
+        return res.json(response);
+      }
+      return res.status(400).send('Missing body parameter "shareThumb" or "style" or "size" or "position"');
     } catch (error) {
       logger.error('Error for command zconfiguration.call.layout');
       logger.errorStack(error);
