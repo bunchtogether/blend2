@@ -642,14 +642,17 @@ module.exports = () => {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
     const { body: { mute, id } } = req;
-    if (typeof mute !== 'boolean') {
-      return res.status(400).send('Missing required body parameter "mute" with type boolean');
+    if (!mute) {
+      return res.status(400).send('Missing required body parameter "mute"');
+    }
+    if (mute !== 'on' && mute !== 'off') {
+      return res.status(400).send('Missing required body parameter "mute" with value "on" or "off"');
     }
     if (!id) {
       return res.status(400).send('Missing required body parameter "id"');
     }
-    if (typeof id !== 'number') {
-      return res.status(400).send('Missing required body parameter "id" with type number');
+    if (typeof id !== 'string') {
+      return res.status(400).send('Missing required body parameter "id" with type string');
     }
     try {
       const response = await zrcs.zcommand.call.muteParticipantVideo({ mute, id });
