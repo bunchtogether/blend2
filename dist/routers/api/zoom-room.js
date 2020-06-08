@@ -1092,7 +1092,12 @@ module.exports = () => {
       return res.status(400).send('Missing optional body parameter "action" with value "Left" or "Right" or "Up" or "Down" or "In" or "Out"');
     }
     try {
-      const response = await zrcs.zcommand.call.cameraControl({ id, speed, state, action });
+      let response;
+      if (speed) {
+        response = await zrcs.zcommand.call.cameraControl({ id, speed });
+        return res.json(response);
+      }
+      response = await zrcs.zcommand.call.cameraControl({ id, state, action });
       return res.json(response);
     } catch (error) {
       logger.error('Error for command zcommand.call.cameraControl');
