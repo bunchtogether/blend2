@@ -251,10 +251,11 @@ module.exports = () => {
 
 
   router.post('/zcommand.dial.join', async (req                 , res                  ) => {
+    let response;
     if (!zrcs) {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
-    const { body: { meetingNumber } } = req;
+    const { body: { meetingNumber, password } } = req;
     if (!meetingNumber) {
       return res.status(400).send('Missing required body parameter "meetingNumber"');
     }
@@ -262,7 +263,11 @@ module.exports = () => {
       return res.status(400).send('Missing required body parameter "meetingNumber" with type string');
     }
     try {
-      const response = await zrcs.zcommand.dial.join({ meetingNumber });
+      if (password) {
+        response = await zrcs.zcommand.dial.join({ meetingNumber, password });
+      } else {
+        response = await zrcs.zcommand.dial.join({ meetingNumber });
+      }
       return res.json(response);
     } catch (error) {
       logger.error('Error for command zcommand.dial.join');
@@ -637,14 +642,17 @@ module.exports = () => {
       return res.status(400).send('Zoom Room Control System is not connected');
     }
     const { body: { mute, id } } = req;
-    if (typeof mute !== 'boolean') {
-      return res.status(400).send('Missing required body parameter "mute" with type boolean');
+    if (!mute) {
+      return res.status(400).send('Missing required body parameter "mute"');
+    }
+    if (mute !== 'on' && mute !== 'off') {
+      return res.status(400).send('Missing required body parameter "mute" with value "on" or "off"');
     }
     if (!id) {
       return res.status(400).send('Missing required body parameter "id"');
     }
-    if (typeof id !== 'number') {
-      return res.status(400).send('Missing required body parameter "id" with type number');
+    if (typeof id !== 'string') {
+      return res.status(400).send('Missing required body parameter "id" with type string');
     }
     try {
       const response = await zrcs.zcommand.call.muteParticipantVideo({ mute, id });
@@ -1071,8 +1079,8 @@ module.exports = () => {
     if (!id) {
       return res.status(400).send('Missing required body parameter "id"');
     }
-    if (typeof id !== 'number') {
-      return res.status(400).send('Missing required body parameter "id" with type number');
+    if (typeof id !== 'string') {
+      return res.status(400).send('Missing required body parameter "id" with type string');
     }
     if (speed && typeof speed !== 'number') {
       return res.status(400).send('Missing optional body parameter "speed" with type number');
@@ -1084,7 +1092,12 @@ module.exports = () => {
       return res.status(400).send('Missing optional body parameter "action" with value "Left" or "Right" or "Up" or "Down" or "In" or "Out"');
     }
     try {
-      const response = await zrcs.zcommand.call.cameraControl({ id, speed, state, action });
+      let response;
+      if (speed) {
+        response = await zrcs.zcommand.call.cameraControl({ id, speed });
+        return res.json(response);
+      }
+      response = await zrcs.zcommand.call.cameraControl({ id, state, action });
       return res.json(response);
     } catch (error) {
       logger.error('Error for command zcommand.call.cameraControl');
@@ -1562,13 +1575,28 @@ module.exports = () => {
     if (size && size !== 'Off' && size !== 'Size1' && size !== 'Size2' && size !== 'Size3' && size !== 'Strip') {
       return res.status(400).send('Missing optional body parameter "size" with value "Off" or "Size1" or "Size2" or "Size3" or "Strip"');
     }
-
-    if (position !== 'Center' && position !== 'Up' && position !== 'Right' && position !== 'UpRight' && position !== 'Down' && position !== 'DownRight' && position !== 'Left' && position !== 'UpLeft' && position !== 'DownLeft') {
-      return res.status(400).send('Missing required body parameter "position" with value "Center" or "Up" or "Right" or "UpRight" or "Down" or "DownRight" or "Left" or "UpLeft" or "DownLeft"');
+    if (position && position !== 'Center' && position !== 'Up' && position !== 'Right' && position !== 'UpRight' && position !== 'Down' && position !== 'DownRight' && position !== 'Left' && position !== 'UpLeft' && position !== 'DownLeft') {
+      return res.status(400).send('Missing optional body parameter "position" with value "Center" or "Up" or "Right" or "UpRight" or "Down" or "DownRight" or "Left" or "UpLeft" or "DownLeft"');
     }
     try {
-      const response = await zrcs.zconfiguration.call.layout({ shareThumb, style, size, position });
-      return res.json(response);
+      let response;
+      if (shareThumb) {
+        response = await zrcs.zconfiguration.call.layout({ shareThumb });
+        return res.json(response);
+      }
+      if (style) {
+        response = await zrcs.zconfiguration.call.layout({ style });
+        return res.json(response);
+      }
+      if (size) {
+        response = await zrcs.zconfiguration.call.layout({ size });
+        return res.json(response);
+      }
+      if (position) {
+        response = await zrcs.zconfiguration.call.layout({ position });
+        return res.json(response);
+      }
+      return res.status(400).send('Missing body parameter "shareThumb" or "style" or "size" or "position"');
     } catch (error) {
       logger.error('Error for command zconfiguration.call.layout');
       logger.errorStack(error);

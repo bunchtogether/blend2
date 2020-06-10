@@ -665,10 +665,10 @@
     debug "^3.0.1"
     fs-extra "^4.0.2"
 
-"@bunchtogether/picture-in-picture@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@bunchtogether/picture-in-picture/-/picture-in-picture-1.0.10.tgz#b4858fe72b07d96d153dec28a0df6f1a230b7383"
-  integrity sha512-xNojB5KKS4/uEh1lVCDOtVwUm8JDqiBNJ2tmZfZfiZ3CBYgXpfmvjVeTbzMghyxtRtseqUb6WLmRoiW9s9A5Vw==
+"@bunchtogether/picture-in-picture@^1.0.11":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@bunchtogether/picture-in-picture/-/picture-in-picture-1.0.11.tgz#36ace66fd4a5082cdba911fb38bc80c1c384e748"
+  integrity sha512-n0YngKraOU0Ka2vkehwMgO9e6NQSW5mi2QUsb12A4p1jACSPSdLDWu28BhByvhlQwNHqxSZgRiejAlOBBtUqIA==
   dependencies:
     ffi "^2.3.0"
     lru-cache "^5.1.1"
