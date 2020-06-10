@@ -5,7 +5,7 @@ const fs = require('fs-extra');
 const os = require('os');
 const findProcess = require('@bunchtogether/find-process');
 const openDesktopWindowButton = require('@bunchtogether/desktop-window-button');
-const { setForegroundWindow, keepOnTop } = require('@bunchtogether/picture-in-picture');
+const { setForegroundWindow, keepOnTop, hideWindow, showWindow } = require('@bunchtogether/picture-in-picture');
 const { addShutdownHandler } = require('@bunchtogether/exit-handler');
 const logger = require('./logger')('Window Control');
 const { KIOSK_MODE } = require('../constants');
@@ -69,6 +69,7 @@ const switchToBand = async () => {
   }
   logger.info('Activating Chrome Window');
   try {
+    await showWindow('chrome');
     await keepOnTop('chrome', true);
   } catch (error) {
     logger.error(`Failed to activate Chrome window: ${error.message}`);
@@ -83,6 +84,7 @@ const switchToApp = async (pathname: string, buttonX?:number, buttonY?:number, c
   logger.info(`Activating "${pathname}" Window${className ? ` with "${className}" Class` : ''}`);
   try {
     await keepOnTop('chrome', false);
+    await hideWindow('chrome');
     await setForegroundWindow(pathname, className);
   } catch (error) {
     logger.error(`Failed to activate "${pathname}" window: ${error.message}`);
