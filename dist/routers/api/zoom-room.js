@@ -1079,8 +1079,8 @@ module.exports = () => {
     if (!id) {
       return res.status(400).send('Missing required body parameter "id"');
     }
-    if (typeof id !== 'number') {
-      return res.status(400).send('Missing required body parameter "id" with type number');
+    if (typeof id !== 'string') {
+      return res.status(400).send('Missing required body parameter "id" with type string');
     }
     if (speed && typeof speed !== 'number') {
       return res.status(400).send('Missing optional body parameter "speed" with type number');
