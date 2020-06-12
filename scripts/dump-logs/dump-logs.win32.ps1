@@ -5,6 +5,7 @@
 param($ARCHIVE_NAME)
 
 $BLEND_INSTALLTION_DIR = "C:\Program Files\Blend"
+$BLEND_LOGS_DIR = "$Env:APPDATA\blend\logs"
 $LOGS_DIR_NAME_SUFFIX = [int64](get-date -uformat %s)
 $LOGS_DIR_NAME = "$Env:temp\logs_$LOGS_DIR_NAME_SUFFIX"
 $ZIP_ARCHIVE_NAME = "logs_$LOGS_DIR_NAME_SUFFIX.zip"
@@ -27,7 +28,7 @@ if (Test-Path -LiteralPath "$BLEND_INSTALLTION_DIR\VERSION" -PathType Leaf) {
 
 # Blend logs
 New-Item -Path "$LOGS_DIR_NAME/blend_logs" -ItemType Directory
-Copy-Item "$BLEND_INSTALLTION_DIR\blend*.log" "$LOGS_DIR_NAME\blend_logs"
+Copy-Item "$BLEND_LOGS_DIR\blend*.log" "$LOGS_DIR_NAME\blend_logs"
 
 # System logs
 # Find a way to export them from event viewer
