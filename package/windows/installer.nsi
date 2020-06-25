@@ -85,7 +85,7 @@ Section "install"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "InstallLocation" $InstallDir
 
   # PM2 Home
-  WriteRegExpandStr ${ENV_HKLM} "PM2_HOME" "$APPDATA\blend"
+  WriteRegExpandStr ${ENV_HKLM} "PM2_HOME" "$APPDATA\blend\.pm2"
 
   # Kiosk Mode
   ReadRegStr $R0 ${ENV_HKLM} "BAND_KIOSK_MODE"
