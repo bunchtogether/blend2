@@ -84,6 +84,10 @@ Section "install"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "DisplayVersion" ${Version}
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Blend" "InstallLocation" $InstallDir
 
+  # PM2 Home
+  WriteRegExpandStr ${ENV_HKLM} "PM2_HOME" "$APPDATA\blend"
+
+  # Kiosk Mode
   ReadRegStr $R0 ${ENV_HKLM} "BAND_KIOSK_MODE"
   ; Delete previous files
   Delete "$PROFILE\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\Blend.cmd"
