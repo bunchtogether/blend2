@@ -1,14 +1,14 @@
 {
   "name": "blend",
-  "version": "2.2.25",
+  "version": "2.2.26",
   "main": "dist/index.js",
   "bin": "dist/index.js",
   "repository": "https://github.com/bunchtogether/blend2.git",
   "author": "johnwehr@bunchtogether.com",
   "scripts": {
     "build:src": "rimraf ./dist && mkdirp ./dist && flow-remove-types ./src --out-dir ./dist && ncp ./src/sample.mp4 ./dist/sample.mp4 && ncp ./src/band.png ./dist/band.png && mkdirp ./dist/cli && ncp ./src/cli ./dist/cli",
-    "build:src-www": "cd src-www && cross-env BLEND_VERSION=2.2.25 yarn build && cd ..",
-    "build:startup-www": "cd startup-www && cross-env BLEND_VERSION=2.2.25 yarn build && cd ..",
+    "build:src-www": "cd src-www && cross-env BLEND_VERSION=2.2.26 yarn build && cd ..",
+    "build:startup-www": "cd startup-www && cross-env BLEND_VERSION=2.2.26 yarn build && cd ..",
     "build": "yarn build:src-www && yarn build:startup-www && yarn build:src",
     "flow-typed": "./node_modules/.bin/flow-typed install -o",
     "test": "yarn lint && yarn test:js",
@@ -27,12 +27,11 @@
     "start:flow": "flow-node src/index.js",
     "chaos": "./tests/stream/simulate.sh"
   },
-  "pre-commit": [
-    "lint",
-    "start-pre-commit",
-    "build",
-    "end-pre-commit"
-  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn lint && yarn build && git add dist dist-www"
+    }
+  },
   "jest": {
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
@@ -97,6 +96,7 @@
     "flow-bin": "^0.105.0",
     "flow-remove-types": "^1.2.3",
     "flow-typed": "^2.5.2",
+    "husky": "^4.2.5",
     "jest": "^24.8.0",
     "jest-flow-transform": "^1.0.1",
     "ncp": "^2.0.0",
