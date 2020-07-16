@@ -218,12 +218,12 @@ class SamsungAdapter extends AbstractAdapter {
     });
   }
 
-                 
-               
-                  
-               
-                 
+                         
+                       
                           
+                       
+                         
+                                  
 }
 
 module.exports = SamsungAdapter;

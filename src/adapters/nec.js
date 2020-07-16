@@ -206,12 +206,12 @@ class NecAdapter extends AbstractAdapter {
     });
   }
 
-  ready: boolean;
-  path: string;
-  levelDb: Object;
-  port: Object;
-  parser: Object;
-  openPromise: Promise<*>;
+  declare ready: boolean;
+  declare path: string;
+  declare levelDb: Object;
+  declare port: Object;
+  declare parser: Object;
+  declare openPromise: Promise<*>;
 }
 
 module.exports = NecAdapter;

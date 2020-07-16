@@ -206,12 +206,12 @@ class NecAdapter extends AbstractAdapter {
     });
   }
 
-                 
-               
-                  
-               
-                 
+                         
+                       
                           
+                       
+                         
+                                  
 }
 
 module.exports = NecAdapter;

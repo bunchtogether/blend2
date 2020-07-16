@@ -141,13 +141,13 @@ class VizioAdapter extends AbstractAdapter {
     await Promise.resolve();
   }
 
-  ip: string;
-  name: string;
-  manufacturer: string;
-  model: string;
-  ready: boolean;
-  vizio: Object;
-  levelDb: Object;
+  declare ip: string;
+  declare name: string;
+  declare manufacturer: string;
+  declare model: string;
+  declare ready: boolean;
+  declare vizio: Object;
+  declare levelDb: Object;
 }
 
 module.exports = VizioAdapter;

@@ -17,23 +17,23 @@ function randomInteger() {
 }
 
 class Receiver extends EventEmitter {
-  readyPromise: Promise<void>;
-  bindAddress: string;
-  multicastAddress: string;
-  port: number;
-  controlPort: number;
-  socket: Object;
-  controlSocket: Object;
-  ssrcQueue: Map<number, Map<number, RtpPacket>>;
-  ssrcMetadata: Map<number, {packetCount: number, octetCount: number, ntpTimestamp: number}>;
-  ssrcTimeouts: Map<number, number>;
-  peers: Map<number, number>;
-  sortedPeers: Array<number>;
-  flushInterval: IntervalID;
-  announceInterval: IntervalID;
-  id: number;
-  started: Date;
-  loopback: boolean;
+  declare readyPromise: Promise<void>;
+  declare bindAddress: string;
+  declare multicastAddress: string;
+  declare port: number;
+  declare controlPort: number;
+  declare socket: Object;
+  declare controlSocket: Object;
+  declare ssrcQueue: Map<number, Map<number, RtpPacket>>;
+  declare ssrcMetadata: Map<number, {packetCount: number, octetCount: number, ntpTimestamp: number}>;
+  declare ssrcTimeouts: Map<number, number>;
+  declare peers: Map<number, number>;
+  declare sortedPeers: Array<number>;
+  declare flushInterval: IntervalID;
+  declare announceInterval: IntervalID;
+  declare id: number;
+  declare started: Date;
+  declare loopback: boolean;
 
   constructor(bindAddress:string, multicastAddress:string, port: number, controlPort: number, loopback: boolean) {
     super();

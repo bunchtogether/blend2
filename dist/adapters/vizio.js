@@ -141,13 +141,13 @@ class VizioAdapter extends AbstractAdapter {
     await Promise.resolve();
   }
 
-             
-               
+                     
                        
-                
-                 
-                
-                  
+                               
+                        
+                         
+                        
+                          
 }
 
 module.exports = VizioAdapter;
