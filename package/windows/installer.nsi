@@ -1,6 +1,6 @@
 !include x64.nsh
 !include LogicLib.nsh
-!define Version "v2.2.27"
+!define Version "v2.2.28"
 !define ENV_HKLM 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
 
 Name "Blend Installer"
@@ -67,6 +67,7 @@ Section "install"
   File /r files\dist-startup-www
   File /r files\static
   File /r files\scripts
+  File /r files\prebuilds
 
   ${If} ${RunningX64}
     # Copy 64bit files

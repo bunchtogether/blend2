@@ -3,6 +3,9 @@ Remove-Item -Recurse -ErrorAction Ignore .\package\windows\files
 New-Item -Path .\package\windows\files -Name "files" -ItemType "directory"
 New-Item -Path .\package\windows\files\x64 -Name "x64" -ItemType "directory"
 New-Item -Path .\package\windows\files\x86 -Name "x86" -ItemType "directory"
+New-Item -Path .\package\windows\files -Name "prebuilds" -ItemType "directory"
+New-Item -Path .\package\windows\files\prebuilds -Name "win32-x64" -ItemType "directory"
+New-Item -Path .\package\windows\files\prebuilds -Name "win32-x86" -ItemType "directory"
 
 $path = "./installers"
 If(!(test-path $path)) { New-Item -ItemType Directory -Force -Path $path }
@@ -25,11 +28,13 @@ cp -r .\static .\package\windows\files\static
 cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x64\ffmpeg.exe .\package\windows\files\x64\ffmpeg.exe
 cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x64\ffprobe.exe .\package\windows\files\x64\ffprobe.exe
 cp .\package\windows\x64\* .\package\windows\files\x64
+cp .\package\windows\x64\node.napi.node  .\package\windows\files\prebuilds\win32-x64\node.napi.node
 
 # 32 bit
 cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x32\ffmpeg.exe .\package\windows\files\x86\ffmpeg.exe
 cp .\node_modules\@bunchtogether\ffmpeg-static\bin\win32\x32\ffprobe.exe .\package\windows\files\x86\ffprobe.exe
 cp .\package\windows\x86\* .\package\windows\files\x86
+cp .\package\windows\x86\node.napi.node  .\package\windows\files\prebuilds\win32-x86\node.napi.node
 
 # Copy sample.mp4 and band.png
 cp .\src\sample.mp4 .\package\windows\files\sample.mp4
