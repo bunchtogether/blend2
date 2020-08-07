@@ -9,6 +9,7 @@ const { getLogsRouter } = require('./logs');
 const { getSetupRouter } = require('./setup');
 const { getSystemRouter } = require('./system');
 const { getCapabilitiesRouter } = require('./capabilities');
+const { getApplicationRouter } = require('./application');
 const adapterMiddleware = require('../middleware/adapter');
 
 function getApiRouters(levelDb       ) {
@@ -23,6 +24,7 @@ function getApiRouters(levelDb       ) {
   routers.use('/logs', getLogsRouter());
   routers.use('/setup', getSetupRouter());
   routers.use('/system', getSystemRouter());
+  routers.use('/application', getApplicationRouter());
 
   return [routers, async () => {
     await shutdownZoomRoomsRouter();
