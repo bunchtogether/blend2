@@ -15,14 +15,33 @@ const startLaunchScript = async (appID: string) => {
       }
     });
 
-  child.stderr.on('data', (data) => {
-    logger.error('Powershell script error');
+  child.stderr.on('data', (data: string) => {
+    logger.error('Powershell launch script error');
     logger.errorStack(data);
   });
 
-  child.on('close', (code) => {
+  child.on('close', (code: number) => {
     if (code !== 0) {
-      logger.error('Powershell exit code');
+      logger.error('Powershell launch exit code');
+      logger.errorStack(code);
+    }
+  });
+  child.stdin.end();
+};
+
+const getApplicationIcons = async () => {
+  const filePath = path.join(__dirname, '../../../scripts/application/icons.ps1');
+  const child = exec(`Powershell.exe  -executionpolicy ByPass  -File ${filePath}`,
+    (err) => {
+      if (err) {
+        logger.error('Get application icon powershell script error');
+        logger.errorStack(err);
+      }
+    });
+
+  child.on('close', (code: number) => {
+    if (code !== 0) {
+      logger.error('Powershell get application icon exit code');
       logger.errorStack(code);
     }
   });
@@ -43,6 +62,17 @@ module.exports.getApplicationRouter = () => {
       logger.error('Can not launch application');
       logger.errorStack(error);
       res.status(400).send('Can not launch application');
+    }
+  });
+
+  router.get('/applicationList', async (req: express$Request, res: express$Response) => {
+    try {
+      await getApplicationIcons();
+      res.status(200).send({});
+    } catch (error) {
+      logger.error('Can not get application list');
+      logger.errorStack(error);
+      res.status(400).send('Can not get application list');
     }
   });
 
