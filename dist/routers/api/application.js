@@ -3,7 +3,14 @@
 const { Router } = require('express');
 const { exec } = require('child_process');
 const path = require('path');
+const os = require('os');
+const fs = require('fs');
+const util = require('util');
+const crypto = require('crypto');
 const logger = require('../../lib/logger')('Application API');
+
+const readdir = util.promisify(fs.readdir);
+const execPromise = util.promisify(exec);
 
 const startLaunchScript = async (appID        ) => {
   const filePath = path.join(__dirname, '../../../scripts/application/launcher.ps1');
@@ -20,12 +27,6 @@ const startLaunchScript = async (appID        ) => {
     logger.errorStack(data);
   });
 
-  child.on('close', (code        ) => {
-    if (code !== 0) {
-      logger.error('Powershell launch exit code');
-      logger.errorStack(code);
-    }
-  });
   child.stdin.end();
 };
 
@@ -39,13 +40,52 @@ const getApplicationIcons = async () => {
       }
     });
 
-  child.on('close', (code        ) => {
-    if (code !== 0) {
-      logger.error('Powershell get application icon exit code');
-      logger.errorStack(code);
-    }
-  });
   child.stdin.end();
+};
+
+const getApplicationList = async () => {
+  const applicationInformation = {};
+  const applicationIconPath = path.join(os.tmpdir(), 'blend-application-icons');
+  const filePath = path.join(__dirname, '../../../scripts/application/appId.ps1');
+  let files;
+  let appId;
+
+  try {
+    files = await readdir(applicationIconPath);
+  } catch (err) {
+    logger.error('Read icon folder error');
+    logger.errorStack(err);
+  }
+
+  await Promise.all(files.map(async (file        ) => {
+    const md5Hash = crypto.createHash('md5').update(file).digest('hex');
+    const iconName = file.slice(0, -4);
+    try {
+      const { stdout, stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -name "${iconName}"`);
+      if (stderr) {
+        logger.error('Get application id powershell error');
+        logger.errorStack(stderr);
+      }
+      const applicationObj = JSON.parse(stdout);
+      if (Array.isArray(applicationObj)) {
+        applicationObj.forEach((app        ) => {
+          if (app.Name === iconName) {
+            appId = app.AppId;
+          }
+        });
+      } else {
+        appId = applicationObj.AppId;
+      }
+      applicationInformation[appId] = {
+        name: iconName,
+        icon: md5Hash,
+      };
+    } catch (err) {
+      logger.error('Exec application id powershell error');
+      logger.errorStack(err);
+    }
+  }));
+  return applicationInformation;
 };
 
 module.exports.getApplicationRouter = () => {
@@ -68,7 +108,8 @@ module.exports.getApplicationRouter = () => {
   router.get('/applicationList', async (req                 , res                  ) => {
     try {
       await getApplicationIcons();
-      res.status(200).send({});
+      const response = await getApplicationList();
+      res.status(200).send(response);
     } catch (error) {
       logger.error('Can not get application list');
       logger.errorStack(error);
