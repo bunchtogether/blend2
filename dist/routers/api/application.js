@@ -47,7 +47,7 @@ const getApplicationList = async () => {
   const applicationInformation = {};
   const applicationIconPath = path.join(os.tmpdir(), 'blend-application-icons');
   const filePath = path.join(__dirname, '../../../scripts/application/appId.ps1');
-  let files;
+  let files = [];
   let appId;
 
   try {
@@ -63,28 +63,81 @@ const getApplicationList = async () => {
     try {
       const { stdout, stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -name "${iconName}"`);
       if (stderr) {
-        logger.error('Get application id powershell error');
+        logger.error('Get application id powershell error in list');
         logger.errorStack(stderr);
       }
       const applicationObj = JSON.parse(stdout);
       if (Array.isArray(applicationObj)) {
         applicationObj.forEach((app        ) => {
           if (app.Name === iconName) {
-            appId = app.AppId;
+            appId = app.AppID;
           }
         });
       } else {
-        appId = applicationObj.AppId;
+        appId = applicationObj.AppID;
       }
       applicationInformation[appId] = {
         name: iconName,
         icon: md5Hash,
       };
     } catch (err) {
-      logger.error('Exec application id powershell error');
+      logger.error('Exec application id powershell error in list');
       logger.errorStack(err);
     }
   }));
+  return applicationInformation;
+};
+
+const getApplication = async (applicationName        ) => {
+  const applicationInformation = {};
+  const applicationIconPath = path.join(os.tmpdir(), 'blend-application-icons');
+  const filePath = path.join(__dirname, '../../../scripts/application/appId.ps1');
+  let files = [];
+
+  try {
+    files = await readdir(applicationIconPath);
+  } catch (err) {
+    logger.error('Read icon folder error');
+    logger.errorStack(err);
+  }
+
+  const application = files.filter((file        ) => {
+    const iconName = file.slice(0, -4);
+    return applicationName === iconName;
+  });
+
+  if (!application.length) {
+    return {};
+  }
+
+  const md5Hash = crypto.createHash('md5').update(application[0]).digest('hex');
+
+  try {
+    const { stdout, stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -name "${applicationName}"`);
+    if (stderr) {
+      logger.error('Get application id powershell error');
+      logger.errorStack(stderr);
+    }
+    const applicationObj = JSON.parse(stdout);
+    if (Array.isArray(applicationObj)) {
+      applicationObj.forEach((app        ) => {
+        if (app.Name === applicationName) {
+          applicationInformation[app.AppID] = {
+            name: applicationName,
+            icon: md5Hash,
+          };
+        }
+      });
+    } else {
+      applicationInformation[applicationObj.AppID] = {
+        name: applicationName,
+        icon: md5Hash,
+      };
+    }
+  } catch (err) {
+    logger.error('Exec application id powershell error');
+    logger.errorStack(err);
+  }
   return applicationInformation;
 };
 
@@ -111,9 +164,22 @@ module.exports.getApplicationRouter = () => {
       const response = await getApplicationList();
       res.status(200).send(response);
     } catch (error) {
-      logger.error('Can not get application list');
+      logger.error('Can not get application information list');
       logger.errorStack(error);
-      res.status(400).send('Can not get application list');
+      res.status(400).send('Can not get application information list');
+    }
+  });
+
+  router.get('/:applicationName', async (req                 , res                  ) => {
+    const { applicationName } = req.params;
+    try {
+      await getApplicationIcons();
+      const response = await getApplication(applicationName);
+      res.status(200).send(response);
+    } catch (error) {
+      logger.error('Can not get application information');
+      logger.errorStack(error);
+      res.status(400).send('Can not get application information');
     }
   });
 

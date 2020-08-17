@@ -26,5 +26,5 @@ function Get-StartMenuIcons{
 
 Add-Type -AssemblyName System.Drawing
 Create-TempDirectory 
-Get-StartMenuIcons 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs'
+Get-StartMenuIcons "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
 Get-StartMenuIcons "C:\Users\$env:username\AppData\Roaming\Microsoft\Windows\Start Menu\Programs"
