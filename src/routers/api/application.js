@@ -6,10 +6,10 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 const util = require('util');
-const crypto = require('crypto');
 const logger = require('../../lib/logger')('Application API');
 
 const readdir = util.promisify(fs.readdir);
+const readFile = util.promisify(fs.readFile);
 const execPromise = util.promisify(exec);
 
 const startLaunchScript = async (appID: string) => {
@@ -58,7 +58,7 @@ const getApplicationList = async () => {
   }
 
   await Promise.all(files.map(async (file: string) => {
-    const md5Hash = crypto.createHash('md5').update(file).digest('hex');
+    const iconFile = await readFile(`${applicationIconPath}/${file}`);
     const iconName = file.slice(0, -4);
     try {
       const { stdout, stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -name "${iconName}"`);
@@ -78,7 +78,8 @@ const getApplicationList = async () => {
       }
       applicationInformation[appId] = {
         name: iconName,
-        icon: md5Hash,
+        icon: iconFile,
+        updated: Date.now(),
       };
     } catch (err) {
       logger.error('Exec application id powershell error in list');
@@ -110,7 +111,7 @@ const getApplication = async (applicationName: string) => {
     return {};
   }
 
-  const md5Hash = crypto.createHash('md5').update(application[0]).digest('hex');
+  const iconFile = await readFile(`${applicationIconPath}/${application[0]}`);
 
   try {
     const { stdout, stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -name "${applicationName}"`);
@@ -124,14 +125,16 @@ const getApplication = async (applicationName: string) => {
         if (app.Name === applicationName) {
           applicationInformation[app.AppID] = {
             name: applicationName,
-            icon: md5Hash,
+            icon: iconFile,
+            updated: Date.now(),
           };
         }
       });
     } else {
       applicationInformation[applicationObj.AppID] = {
         name: applicationName,
-        icon: md5Hash,
+        icon: iconFile,
+        updated: Date.now(),
       };
     }
   } catch (err) {
