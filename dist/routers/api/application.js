@@ -7,6 +7,7 @@ const os = require('os');
 const fs = require('fs');
 const util = require('util');
 const logger = require('../../lib/logger')('Application API');
+const crypto = require('crypto');
 
 const readdir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
@@ -59,6 +60,7 @@ const getApplicationList = async () => {
 
   await Promise.all(files.map(async (file        ) => {
     const iconFile = await readFile(`${applicationIconPath}/${file}`);
+    const md5Hash = crypto.createHash('md5').update(iconFile).digest('hex');
     const iconName = file.slice(0, -4);
     try {
       const { stdout, stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -name "${iconName}"`);
@@ -78,7 +80,7 @@ const getApplicationList = async () => {
       }
       applicationInformation[appId] = {
         name: iconName,
-        icon: iconFile,
+        icon: md5Hash,
         updated: Date.now(),
       };
     } catch (err) {
@@ -89,59 +91,32 @@ const getApplicationList = async () => {
   return applicationInformation;
 };
 
-const getApplication = async (applicationName        ) => {
-  const applicationInformation = {};
+const getIconImageList = async (iconRequests        ) => {
+  const iconImageList = {};
   const applicationIconPath = path.join(os.tmpdir(), 'blend-application-icons');
-  const filePath = path.join(__dirname, '../../../scripts/application/appId.ps1');
   let files = [];
 
   try {
     files = await readdir(applicationIconPath);
   } catch (err) {
-    logger.error('Read icon folder error');
+    logger.error('Read icon folder when getting icon image list error');
     logger.errorStack(err);
   }
-
-  const application = files.filter((file        ) => {
-    const iconName = file.slice(0, -4);
-    return applicationName === iconName;
-  });
-
-  if (!application.length) {
-    return {};
-  }
-
-  const iconFile = await readFile(`${applicationIconPath}/${application[0]}`);
 
   try {
-    const { stdout, stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -name "${applicationName}"`);
-    if (stderr) {
-      logger.error('Get application id powershell error');
-      logger.errorStack(stderr);
-    }
-    const applicationObj = JSON.parse(stdout);
-    if (Array.isArray(applicationObj)) {
-      applicationObj.forEach((app        ) => {
-        if (app.Name === applicationName) {
-          applicationInformation[app.AppID] = {
-            name: applicationName,
-            icon: iconFile,
-            updated: Date.now(),
-          };
-        }
-      });
-    } else {
-      applicationInformation[applicationObj.AppID] = {
-        name: applicationName,
-        icon: iconFile,
-        updated: Date.now(),
-      };
-    }
+    await Promise.all(files.map(async (file        ) => {
+      const iconName = file.slice(0, -4);
+      if (iconRequests[iconName]) {
+        const iconFile = await readFile(`${applicationIconPath}/${file}`);
+        iconImageList[iconName] = iconFile;
+      }
+    }));
   } catch (err) {
-    logger.error('Exec application id powershell error');
+    logger.error('Read icon file error');
     logger.errorStack(err);
   }
-  return applicationInformation;
+
+  return iconImageList;
 };
 
 module.exports.getApplicationRouter = () => {
@@ -173,11 +148,11 @@ module.exports.getApplicationRouter = () => {
     }
   });
 
-  router.get('/:applicationName', async (req                 , res                  ) => {
-    const { applicationName } = req.params;
+  router.post('/iconImageList', async (req                 , res                  ) => {
+    const iconRequests = req.body;
     try {
       await getApplicationIcons();
-      const response = await getApplication(applicationName);
+      const response = await getIconImageList(iconRequests);
       res.status(200).send(response);
     } catch (error) {
       logger.error('Can not get application information');
