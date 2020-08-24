@@ -534,6 +534,11 @@ module.exports.getStreamRouter = () => {
       return;
     }
 
+    if (!ws) {
+      logger.error('WebSocket object does not exist');
+      return;
+    }
+
     const url = req.params.url;
 
     const socketId = randomInteger();
@@ -541,6 +546,7 @@ module.exports.getStreamRouter = () => {
     logger.info(`Opened socket ID ${socketId} for stream ${req.url}`);
 
     let heartbeatTimeout;
+
     ws.on('message', (event) => {
       const blendBoxIndex = event.indexOf(BLEND_BOX_DELIMETER);
       if (blendBoxIndex === 4) {
@@ -574,21 +580,27 @@ module.exports.getStreamRouter = () => {
     });
 
     for (let i = 0; i < 100; i += 1) {
-      if (!activeStreamUrls.has(url) || !sockets.has(socketId)) {
+      if (!sockets.has(socketId)) {
         break;
+      }
+      if (!activeStreamUrls.has(url)) {
+        break;
+      } else {
+        logger.warn(`Waiting for active stream ${url} to close, socket ID ${socketId} in state ${ws.readyState}`);
       }
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     if (!sockets.has(socketId)) {
-      logger.error(`Not starting stream for ${url}, socket closed`);
+      logger.error(`Not starting stream for ${url}, socket ID ${socketId} in state ${ws.readyState} does not exist in sockets map`);
+      ws.terminate();
       return;
     }
 
     const activeStreamPid = activeStreamUrls.get(url);
     if (activeStreamPid) {
-      logger.error(`Unable to start stream for ${url}, stream ${activeStreamPid} is active`);
-      ws.close(1000, `Unable to start stream for ${url}, stream ${activeStreamPid} is active`);
+      logger.error(`Unable to start stream for ${url}, socket ID ${socketId} in state ${ws.readyState}, stream ${activeStreamPid} is active`);
+      ws.terminate();
       return;
     }
     startStream(socketId, url);
