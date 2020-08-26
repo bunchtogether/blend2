@@ -11,7 +11,7 @@ cyan=`tput setaf 6`
 reset=`tput sgr0`
 
 BLEND_VERSION=$(cat ../../package.json | jq '.version' -r)
-BUILDER_IP_ADDRESS=10.0.0.104
+BUILDER_IP_ADDRESS=172.16.1.25
 BUILDER_PORT=22
 BUILDER_KEY=./credentials/ubuntu_vm_id_rsa
 BUILD_DIR="/home/ubuntu/blend_build"
