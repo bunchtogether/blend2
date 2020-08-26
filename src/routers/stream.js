@@ -83,6 +83,11 @@ const broadcastBlendBox = (blendBox:Buffer) => {
 //   Value: Socket object
 const sockets = new Map();
 
+// Requested stream URLs
+//   Key: Stream URL
+//   Value: Socket ID
+const requestedStreamUrls = new Map();
+
 // Socket / FFmpeg PID mapping
 //   Key: Socket ID
 //   Value: Stream PID
@@ -295,6 +300,7 @@ const startStream = async (socketId:number, url:string) => {
     }
   });
   const syncPeers = {};
+  let lastPeerAddressString = '';
   const syncPeerReportingInterval = setInterval(() => {
     const cutoff = Date.now() - 20000;
     for (const peerAddress of Object.keys(syncPeers)) {
@@ -304,7 +310,11 @@ const startStream = async (socketId:number, url:string) => {
     }
     const peerAddresses = Object.keys(syncPeers);
     if (peerAddresses.length > 0) {
-      logger.info(`Syncing with ${peerAddresses.join(', ')}`);
+      const peerAddressString = peerAddresses.join(', ');
+      if (lastPeerAddressString !== peerAddressString) {
+        logger.info(`Syncing with ${peerAddressString}`);
+        lastPeerAddressString = peerAddressString;
+      }
     }
   }, 10000);
   const handleBroadcastMessage = (message, rinfo) => {
@@ -530,7 +540,7 @@ module.exports.getStreamRouter = () => {
 
   router.ws('/api/1.0/stream/:url/', async (ws:Object, req: express$Request) => {
     if (!active) {
-      ws.close(1000, 'Shutting down');
+      ws.close(1001, 'Shutting down');
       return;
     }
 
@@ -541,8 +551,15 @@ module.exports.getStreamRouter = () => {
 
     const url = req.params.url;
 
+    if (requestedStreamUrls.has(url)) {
+      logger.error(`Duplicate request for ${url}`);
+      ws.close(1013, `Duplicate request for ${url}`);
+      return;
+    }
+
     const socketId = randomInteger();
     sockets.set(socketId, ws);
+    requestedStreamUrls.set(url, socketId);
     logger.info(`Opened socket ID ${socketId} for stream ${req.url}`);
 
     let heartbeatTimeout;
@@ -564,6 +581,7 @@ module.exports.getStreamRouter = () => {
       try {
         logger.info(`Closed socket ${socketId}`);
         sockets.delete(socketId);
+        requestedStreamUrls.delete(url);
         const closedSocketPid = socketPidMap.get(socketId);
         if (closedSocketPid) {
           killProcess(closedSocketPid, 'FFmpeg');
@@ -593,14 +611,18 @@ module.exports.getStreamRouter = () => {
 
     if (!sockets.has(socketId)) {
       logger.error(`Not starting stream for ${url}, socket ID ${socketId} in state ${ws.readyState} does not exist in sockets map`);
-      ws.terminate();
+      if (ws.readyState === 0 || ws.readyState === 1) {
+        ws.terminate();
+      }
       return;
     }
 
     const activeStreamPid = activeStreamUrls.get(url);
     if (activeStreamPid) {
       logger.error(`Unable to start stream for ${url}, socket ID ${socketId} in state ${ws.readyState}, stream ${activeStreamPid} is active`);
-      ws.terminate();
+      if (ws.readyState === 0 || ws.readyState === 1) {
+        ws.close(1013, `Unable to start stream for ${url}, stream ${activeStreamPid} is active`);
+      }
       return;
     }
     startStream(socketId, url);
