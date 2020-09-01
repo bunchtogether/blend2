@@ -13,9 +13,9 @@ const readdir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
 const execPromise = util.promisify(exec);
 
-const startLaunchScript = async (appID: string) => {
+const startLaunchScript = async (filePath: string) => {
   const filePath = path.join(__dirname, '../../../scripts/application/launcher.ps1');
-  const child = exec(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -appID ${appID}`,
+  const child = exec(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -filePath ${filePath}`,
     (err) => {
       if (err) {
         logger.error('Launch powershell script error');
@@ -30,6 +30,15 @@ const startLaunchScript = async (appID: string) => {
 
   child.stdin.end();
 };
+
+const startStopProcessScript = async (processName: string) => {
+  const filePath = path.join(__dirname, '../../../scripts/application/stop-process.ps1');
+  const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -processName ${processName}`);
+  if (stderr) {
+    logger.error('Powershell stop process script error');
+    logger.errorStack(stderr);
+  }
+}
 
 const getApplicationIcons = async () => {
   const filePath = path.join(__dirname, '../../../scripts/application/icons.ps1');
@@ -125,9 +134,9 @@ module.exports.getApplicationRouter = () => {
   const router = Router({ mergeParams: true });
 
   router.post('/launch', async (req: express$Request, res: express$Response) => {
-    const { body: { appID } } = req;
+    const { body: { filePath } } = req;
     try {
-      await startLaunchScript(appID);
+      await startLaunchScript(filePath);
       res.sendStatus(200);
     } catch (error) {
       logger.error('Can not launch application');
@@ -136,7 +145,7 @@ module.exports.getApplicationRouter = () => {
     }
   });
 
-  router.get('/applicationList', async (req: express$Request, res: express$Response) => {
+  router.get('/application-list', async (req: express$Request, res: express$Response) => {
     try {
       await getApplicationIcons();
       const response = await getApplicationList();
@@ -148,7 +157,7 @@ module.exports.getApplicationRouter = () => {
     }
   });
 
-  router.post('/iconImageList', async (req: express$Request, res: express$Response) => {
+  router.post('/icon-image-list', async (req: express$Request, res: express$Response) => {
     const iconRequests = req.body;
     try {
       await getApplicationIcons();
@@ -160,6 +169,18 @@ module.exports.getApplicationRouter = () => {
       res.status(400).send('Can not get application information');
     }
   });
+
+  router.post('/stop', async (req: express$Request, res: express$Response) => {
+    const { body: { processName } } = req;
+    try {
+      await startStopProcessScript(processName);
+      res.sendStatus(200);
+    } catch (error) {
+      logger.error('Can not stop application');
+      logger.errorStack(error);
+      res.status(400).send('Can not stop application');
+    }
+  })
 
   return router;
 };
