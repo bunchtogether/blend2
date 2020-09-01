@@ -58,6 +58,6 @@ script:
 EOF
 
 cp $BUILD_DIR/blend.png $APPIMAGE_DIR/blend.png
-ARCH=x86_64 bash -ex ./pkg2appimage AppImage.yml
+bash -ex ./pkg2appimage AppImage.yml
 
 mv $APPIMAGE_DIR/out/Blend*.AppImage $BUILD_DIR/blend-$BLEND_VERSION.AppImage
