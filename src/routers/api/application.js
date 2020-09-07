@@ -13,9 +13,9 @@ const readdir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
 const execPromise = util.promisify(exec);
 
-const startLaunchScript = async (filePath: string) => {
+const startLaunchScript = async (targetPath: string) => {
   const filePath = path.join(__dirname, '../../../scripts/application/launcher.ps1');
-  const child = exec(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -filePath ${filePath}`,
+  const child = exec(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -filePath ${targetPath}`,
     (err) => {
       if (err) {
         logger.error('Launch powershell script error');
@@ -38,7 +38,7 @@ const startStopProcessScript = async (processName: string) => {
     logger.error('Powershell stop process script error');
     logger.errorStack(stderr);
   }
-}
+};
 
 const getApplicationIcons = async () => {
   const filePath = path.join(__dirname, '../../../scripts/application/icons.ps1');
@@ -134,9 +134,9 @@ module.exports.getApplicationRouter = () => {
   const router = Router({ mergeParams: true });
 
   router.post('/launch', async (req: express$Request, res: express$Response) => {
-    const { body: { filePath } } = req;
+    const { body: { targetPath } } = req;
     try {
-      await startLaunchScript(filePath);
+      await startLaunchScript(targetPath);
       res.sendStatus(200);
     } catch (error) {
       logger.error('Can not launch application');
@@ -180,7 +180,52 @@ module.exports.getApplicationRouter = () => {
       logger.errorStack(error);
       res.status(400).send('Can not stop application');
     }
-  })
+  });
+
+  function randomInteger() {
+    return crypto.randomBytes(4).readUInt32BE(0, true);
+  }
+
+  // Active sockets
+  //   Key: Socket ID
+  //   Value: Socket object
+  const sockets = new Map();
+
+  router.ws('/mouse', async (ws:Object, req: express$Request) => {
+    if (!ws) {
+      logger.error('WebSocket object does not exist');
+      return;
+    }
+
+    const socketId = randomInteger();
+    sockets.set(socketId, ws);
+    logger.info(`Opened socket ID ${socketId}`);
+
+    let heartbeatTimeout;
+
+    ws.on('message', (event) => {
+      clearTimeout(heartbeatTimeout);
+      heartbeatTimeout = setTimeout(() => {
+        logger.warn(`Terminating socket ID ${socketId} for mouse after heartbeat timeout`);
+        ws.terminate();
+      }, 6000);
+    });
+
+    ws.on('close', () => {
+      clearTimeout(heartbeatTimeout);
+      try {
+        logger.info(`Closed socket ${socketId}`);
+        sockets.delete(socketId);
+      } catch (error) {
+        if (error.stack) {
+          logger.error('Error closing websocket:');
+          error.stack.split('\n').forEach((line) => logger.error(`\t${line}`));
+        } else {
+          logger.error(`Error closing websocket: ${error.message}`);
+        }
+      }
+    });
+  });
 
   return router;
 };
