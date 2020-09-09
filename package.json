@@ -147,6 +147,7 @@
     "network": "^0.4.1",
     "node-int64": "^0.4.0",
     "ps-node": "^0.1.6",
+    "robotjs": "^0.6.0",
     "serialport": "^7.1.5",
     "sqlite3": "^4.0.9",
     "superagent": "^4.1.0",

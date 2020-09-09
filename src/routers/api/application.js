@@ -8,6 +8,7 @@ const fs = require('fs');
 const util = require('util');
 const logger = require('../../lib/logger')('Application API');
 const crypto = require('crypto');
+const robot = require('robotjs');
 
 const readdir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
@@ -41,16 +42,12 @@ const startStopProcessScript = async (processName: string) => {
 };
 
 const getApplicationIcons = async () => {
-  const filePath = path.join(__dirname, '../../../scripts/application/icons.ps1');
-  const child = exec(`Powershell.exe  -executionpolicy ByPass  -File ${filePath}`,
-    (err) => {
-      if (err) {
-        logger.error('Get application icon powershell script error');
-        logger.errorStack(err);
-      }
-    });
-
-  child.stdin.end();
+  const exePath = path.join(__dirname, '../../../scripts/application/ExtractLargeIconFromFile.exe');
+  const { stderr } = await execPromise(exePath);
+  if (stderr) {
+    logger.error('ExtractLargeIconFromFile exe error');
+    logger.errorStack(stderr);
+  }
 };
 
 const getApplicationList = async () => {
@@ -204,11 +201,10 @@ module.exports.getApplicationRouter = () => {
     let heartbeatTimeout;
 
     ws.on('message', (event) => {
-      clearTimeout(heartbeatTimeout);
-      heartbeatTimeout = setTimeout(() => {
-        logger.warn(`Terminating socket ID ${socketId} for mouse after heartbeat timeout`);
-        ws.terminate();
-      }, 6000);
+      robot.setMouseDelay(0);
+      const coordinates = JSON.parse(event);
+      const { x: X, y: Y } = robot.getMousePos();
+      robot.moveMouse(X + coordinates[0], Y + coordinates[1]);
     });
 
     ws.on('close', () => {
