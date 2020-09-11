@@ -188,7 +188,7 @@ module.exports.getApplicationRouter = () => {
   //   Value: Socket object
   const sockets = new Map();
 
-  router.ws('/mouse', async (ws       , req                 ) => {
+  router.ws('/mouse', async (ws       ) => {
     if (!ws) {
       logger.error('WebSocket object does not exist');
       return;
@@ -201,10 +201,33 @@ module.exports.getApplicationRouter = () => {
     let heartbeatTimeout;
 
     ws.on('message', (event) => {
-      robot.setMouseDelay(0);
-      const coordinates = JSON.parse(event);
-      const { x: X, y: Y } = robot.getMousePos();
-      robot.moveMouse(X + coordinates[0], Y + coordinates[1]);
+      const parsedEvent = JSON.parse(event);
+      try {
+        if (Array.isArray(parsedEvent)) {
+          robot.setMouseDelay(0);
+          const coordinates = JSON.parse(event);
+          const { x: X, y: Y } = robot.getMousePos();
+          robot.moveMouse(X + coordinates[0], Y + coordinates[1]);
+        }
+
+        if (parsedEvent.mouseRightClick) {
+          robot.mouseClick('right');
+        }
+
+        if (parsedEvent.mouseLeftClick) {
+          robot.mouseClick('left');
+        }
+
+        if (parsedEvent.keyboard && parsedEvent.keyboard.length === 1) {
+          robot.typeString(parsedEvent.keyboard);
+        }
+
+        if (parsedEvent.keyboard && parsedEvent.keyboard.length > 1) {
+          robot.keyTap(parsedEvent.keyboard);
+        }
+      } catch (error) {
+        logger.error('RobotJs event error');
+      }
     });
 
     ws.on('close', () => {
