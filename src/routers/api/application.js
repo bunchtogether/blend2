@@ -53,12 +53,15 @@ const getApplicationIcons = async () => {
 const getApplicationList = async () => {
   const applicationInformation = {};
   const applicationIconPath = path.join(os.tmpdir(), 'blend-application-icons');
-  const filePath = path.join(__dirname, '../../../scripts/application/appId.ps1');
+  const filePath = path.join(__dirname, '../../../scripts/application/appProperties.ps1');
   let files = [];
-  let appId;
+  let pathElements;
+  let appProperties;
 
   try {
     files = await readdir(applicationIconPath);
+    const { stdout } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath}`);
+    appProperties = JSON.parse(stdout);
   } catch (err) {
     logger.error('Read icon folder error');
     logger.errorStack(err);
@@ -69,26 +72,19 @@ const getApplicationList = async () => {
     const md5Hash = crypto.createHash('md5').update(iconFile).digest('hex');
     const iconName = file.slice(0, -4);
     try {
-      const { stdout, stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -name "${iconName}"`);
-      if (stderr) {
-        logger.error('Get application id powershell error in list');
-        logger.errorStack(stderr);
+      if (appProperties[iconName]) {
+        pathElements = path.parse(appProperties[iconName]);
+
+        if (pathElements.ext === '.exe') {
+          applicationInformation[iconName] = {
+            name: iconName,
+            icon: md5Hash,
+            processName: pathElements.name,
+            targetPath: appProperties[iconName],
+            updated: Date.now(),
+          };
+        }
       }
-      const applicationObj = JSON.parse(stdout);
-      if (Array.isArray(applicationObj)) {
-        applicationObj.forEach((app: Object) => {
-          if (app.Name === iconName) {
-            appId = app.AppID;
-          }
-        });
-      } else {
-        appId = applicationObj.AppID;
-      }
-      applicationInformation[appId] = {
-        name: iconName,
-        icon: md5Hash,
-        updated: Date.now(),
-      };
     } catch (err) {
       logger.error('Exec application id powershell error in list');
       logger.errorStack(err);
