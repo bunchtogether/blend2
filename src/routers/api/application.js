@@ -16,20 +16,11 @@ const execPromise = util.promisify(exec);
 
 const startLaunchScript = async (targetPath: string) => {
   const filePath = path.join(__dirname, '../../../scripts/application/launcher.ps1');
-  const child = exec(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -filePath ${targetPath}`,
-    (err) => {
-      if (err) {
-        logger.error('Launch powershell script error');
-        logger.errorStack(err);
-      }
-    });
-
-  child.stderr.on('data', (data: string) => {
-    logger.error('Powershell launch script error');
-    logger.errorStack(data);
-  });
-
-  child.stdin.end();
+  const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -filePath ${targetPath}`);
+  if (stderr) {
+    logger.error('Launch powershell script error');
+    logger.errorStack(stderr);
+  }
 };
 
 const startStopProcessScript = async (processName: string) => {
@@ -80,7 +71,6 @@ const getApplicationList = async () => {
             name: iconName,
             icon: md5Hash,
             processName: pathElements.name,
-            targetPath: appProperties[iconName],
             updated: Date.now(),
           };
         }
@@ -127,9 +117,13 @@ module.exports.getApplicationRouter = () => {
   const router = Router({ mergeParams: true });
 
   router.post('/launch', async (req: express$Request, res: express$Response) => {
-    const { body: { targetPath } } = req;
+    const filePath = path.join(__dirname, '../../../scripts/application/appProperties.ps1');
+    const { body: { applicationName } } = req;
+    let appProperties;
     try {
-      await startLaunchScript(targetPath);
+      const { stdout } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath}`);
+      appProperties = JSON.parse(stdout);
+      await startLaunchScript(appProperties[applicationName]);
       res.sendStatus(200);
     } catch (error) {
       logger.error('Can not launch application');
