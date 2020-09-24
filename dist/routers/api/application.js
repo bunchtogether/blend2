@@ -10,13 +10,14 @@ const logger = require('../../lib/logger')('Application API');
 const crypto = require('crypto');
 const robot = require('robotjs');
 
+const applicationScriptsDir = path.resolve('scripts/application');
 const readdir = util.promisify(fs.readdir);
 const readFile = util.promisify(fs.readFile);
 const execPromise = util.promisify(exec);
 
 const startLaunchScript = async (targetPath        ) => {
-  const filePath = path.join(__dirname, '../../../scripts/application/launcher.ps1');
-  const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -filePath "${targetPath}"`);
+  const filePath = path.resolve(applicationScriptsDir, 'launcher.ps1');
+  const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File "${filePath}" -filePath "${targetPath}"`);
   if (stderr) {
     logger.error('Launch powershell script error');
     logger.errorStack(stderr);
@@ -24,8 +25,8 @@ const startLaunchScript = async (targetPath        ) => {
 };
 
 const startStopProcessScript = async (processName        ) => {
-  const filePath = path.join(__dirname, '../../../scripts/application/stop-process.ps1');
-  const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -processName ${processName}`);
+  const filePath = path.resolve(applicationScriptsDir, 'stop-process.ps1');
+  const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File "${filePath}" -processName "${processName}"`);
   if (stderr) {
     logger.error('Powershell stop process script error');
     logger.errorStack(stderr);
@@ -33,8 +34,8 @@ const startStopProcessScript = async (processName        ) => {
 };
 
 const getApplicationIcons = async () => {
-  const exePath = path.join(__dirname, '../../../scripts/application/ExtractLargeIconFromFile.exe');
-  const { stderr } = await execPromise(exePath);
+  const exePath = path.resolve(applicationScriptsDir, 'ExtractLargeIconFromFile.exe');
+  const { stderr } = await execPromise(`"${exePath}"`);
   if (stderr) {
     logger.error('ExtractLargeIconFromFile exe error');
     logger.errorStack(stderr);
@@ -44,14 +45,14 @@ const getApplicationIcons = async () => {
 const getApplicationList = async () => {
   const applicationInformation = {};
   const applicationIconPath = path.join(os.tmpdir(), 'blend-application-icons');
-  const filePath = path.join(__dirname, '../../../scripts/application/appProperties.ps1');
+  const filePath = path.resolve(applicationScriptsDir, 'appProperties.ps1');
   let files = [];
   let pathElements;
   let appProperties;
 
   try {
     files = await readdir(applicationIconPath);
-    const { stdout } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath}`);
+    const { stdout } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File "${filePath}"`);
     appProperties = JSON.parse(stdout);
   } catch (err) {
     logger.error('Read icon folder error');
@@ -117,11 +118,11 @@ module.exports.getApplicationRouter = () => {
   const router = Router({ mergeParams: true });
 
   router.post('/launch', async (req                 , res                  ) => {
-    const filePath = path.join(__dirname, '../../../scripts/application/appProperties.ps1');
+    const filePath = path.resolve(applicationScriptsDir, 'appProperties.ps1');
     const { body: { applicationName } } = req;
     let appProperties;
     try {
-      const { stdout } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath}`);
+      const { stdout } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File "${filePath}"`);
       appProperties = JSON.parse(stdout);
       await startLaunchScript(appProperties[applicationName]);
       res.sendStatus(200);
