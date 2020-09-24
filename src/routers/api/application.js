@@ -16,7 +16,7 @@ const execPromise = util.promisify(exec);
 
 const startLaunchScript = async (targetPath: string) => {
   const filePath = path.join(__dirname, '../../../scripts/application/launcher.ps1');
-  const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -filePath ${targetPath}`);
+  const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File ${filePath} -filePath "${targetPath}"`);
   if (stderr) {
     logger.error('Launch powershell script error');
     logger.errorStack(stderr);
