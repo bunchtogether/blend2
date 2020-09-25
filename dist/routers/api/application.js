@@ -9,6 +9,7 @@ const util = require('util');
 const logger = require('../../lib/logger')('Application API');
 const crypto = require('crypto');
 const robot = require('robotjs');
+const { switchToBand, switchToApp } = require('../../lib/window-control');
 
 const applicationScriptsDir = path.resolve('scripts/application');
 const readdir = util.promisify(fs.readdir);
@@ -18,6 +19,10 @@ const execPromise = util.promisify(exec);
 const startLaunchScript = async (targetPath        ) => {
   const filePath = path.resolve(applicationScriptsDir, 'launcher.ps1');
   const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File "${filePath}" -filePath "${targetPath}"`);
+  switchToApp('').catch((error) => {
+    logger.error('Switch to launched application - failed');
+    logger.errorStack(error);
+  });
   if (stderr) {
     logger.error('Launch powershell script error');
     logger.errorStack(stderr);
@@ -27,6 +32,10 @@ const startLaunchScript = async (targetPath        ) => {
 const startStopProcessScript = async (processName        ) => {
   const filePath = path.resolve(applicationScriptsDir, 'stop-process.ps1');
   const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File "${filePath}" -processName "${processName}"`);
+  switchToBand().catch((error) => {
+    logger.error('Switch to Band failed');
+    logger.errorStack(error);
+  });
   if (stderr) {
     logger.error('Powershell stop process script error');
     logger.errorStack(stderr);
