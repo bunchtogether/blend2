@@ -76,6 +76,20 @@ const switchToBand = async () => {
   }
 };
 
+const hideBand = async () => {
+  if (closeBandButton) {
+    closeBandButton();
+    closeBandButton = null;
+  }
+  logger.info('Hiding Band');
+  try {
+    await keepOnTop('chrome', false);
+    await hideWindow('chrome');
+  } catch (error) {
+    logger.error(`Failed to hide Band: ${error.message}`);
+  }
+};
+
 const switchToApp = async (pathname: string, buttonX?:number, buttonY?:number, className?:string) => {
   if (closeBandButton) {
     closeBandButton();
@@ -109,4 +123,5 @@ module.exports = {
   waitForChromeToSwitchToBand,
   switchToBand,
   switchToApp,
+  hideBand,
 };

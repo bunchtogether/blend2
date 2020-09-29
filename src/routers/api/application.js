@@ -9,7 +9,7 @@ const util = require('util');
 const logger = require('../../lib/logger')('Application API');
 const crypto = require('crypto');
 const robot = require('robotjs');
-const { switchToBand, switchToApp } = require('../../lib/window-control');
+const { switchToBand, hideBand } = require('../../lib/window-control');
 
 const applicationScriptsDir = path.resolve('scripts/application');
 const readdir = util.promisify(fs.readdir);
@@ -19,7 +19,7 @@ const execPromise = util.promisify(exec);
 const startLaunchScript = async (targetPath: string) => {
   const filePath = path.resolve(applicationScriptsDir, 'launcher.ps1');
   const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File "${filePath}" -filePath "${targetPath}"`);
-  switchToApp('').catch((error) => {
+  hideBand().catch((error) => {
     logger.error('Switch to launched application - failed');
     logger.errorStack(error);
   });
@@ -205,9 +205,10 @@ module.exports.getApplicationRouter = () => {
       try {
         if (Array.isArray(parsedEvent)) {
           robot.setMouseDelay(0);
+          robot.setKeyboardDelay(0);
           const coordinates = JSON.parse(event);
           const { x: X, y: Y } = robot.getMousePos();
-          robot.moveMouse(X + coordinates[0], Y + coordinates[1]);
+          robot.moveMouse(X + (2 * coordinates[0]), Y + (2 * coordinates[1]));
         }
 
         if (parsedEvent.mouseRightClick) {
