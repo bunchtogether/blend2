@@ -12,6 +12,9 @@ function Get-StartMenuApplicationProperties{
         $ShortcutName = $Shortcut.Name;
         $IconName = $ShortcutName.Substring(0,$ShortcutName.Length-4)
         $Path = $Shell.CreateShortcut($Shortcut).targetpath
+        If ($IconName  -eq 'Google Chrome')  {
+            continue
+        }
         $properties | Add-Member -Name $IconName -Type NoteProperty -Value $Path
     }
 }

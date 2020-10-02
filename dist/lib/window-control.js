@@ -76,7 +76,7 @@ const switchToBand = async () => {
   }
 };
 
-const hideBand = async () => {
+const hideBand = async (buttonX        , buttonY        ) => {
   if (closeBandButton) {
     closeBandButton();
     closeBandButton = null;
@@ -87,6 +87,10 @@ const hideBand = async () => {
     await hideWindow('chrome');
   } catch (error) {
     logger.error(`Failed to hide Band: ${error.message}`);
+  }
+  if (typeof buttonX === 'number' && typeof buttonY === 'number') {
+    const buttonImageSrc = await buttonImageSrcPromise;
+    closeBandButton = await openDesktopWindowButton(buttonImageSrc, buttonX, buttonY, switchToBand, 'top right');
   }
 };
 
