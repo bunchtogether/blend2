@@ -17,12 +17,21 @@ const readFile = util.promisify(fs.readFile);
 const execPromise = util.promisify(exec);
 
 const startLaunchScript = async (targetPath: string) => {
-  const filePath = path.resolve(applicationScriptsDir, 'launcher.ps1');
-  const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File "${filePath}" -filePath "${targetPath}"`);
+  const fileLaunchPath = path.resolve(applicationScriptsDir, 'launcher.ps1');
+  const fileCheckRunningPath = path.resolve(applicationScriptsDir, 'check-running.ps1');
+  const processName = path.parse(targetPath).name;
+  const { stderr } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -File "${fileLaunchPath}" -filePath "${targetPath}"`);
   hideBand(30, 100).catch((error) => {
     logger.error('Switch to launched application - failed');
     logger.errorStack(error);
   });
+  const { stdout } = exec(`Powershell.exe  -executionpolicy ByPass  -File "${fileCheckRunningPath}" -processName "${processName}"`);
+  if (stdout) {
+    switchToBand().catch((error) => {
+      logger.error('Switch to Band failed');
+      logger.errorStack(error);
+    });
+  }
   if (stderr) {
     logger.error('Launch powershell script error');
     logger.errorStack(stderr);
