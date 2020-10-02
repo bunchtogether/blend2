@@ -25,7 +25,7 @@ const startLaunchScript = async (targetPath        ) => {
     logger.error('Switch to launched application - failed');
     logger.errorStack(error);
   });
-  const { stdout } = exec(`Powershell.exe  -executionpolicy ByPass  -File "${fileCheckRunningPath}" -processName "${processName}"`);
+  const { stdout } = await execPromise(`Powershell.exe  -executionpolicy ByPass  -windowstyle hidden -File "${fileCheckRunningPath}" -processName "${processName}"`);
   if (stdout) {
     switchToBand().catch((error) => {
       logger.error('Switch to Band failed');
