@@ -135,6 +135,10 @@ module.exports.getApplicationRouter = () => {
 
   const router = Router({ mergeParams: true });
 
+  router.get('/check', async (req: express$Request, res: express$Response) => {
+    res.send(true);
+  })
+
   router.post('/launch', async (req: express$Request, res: express$Response) => {
     const filePath = path.resolve(applicationScriptsDir, 'appProperties.ps1');
     const { body: { applicationName } } = req;
