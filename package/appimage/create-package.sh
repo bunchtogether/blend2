@@ -8,7 +8,7 @@ DEBIAN_DIR=/home/ubuntu/blend_build/package
 
 sudo apt-get update -y
 
-sudo apt-get install -y curl
+sudo apt-get install -y curl imagemagick desktop-file-utils
 
 # Node.js
 sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo bash -

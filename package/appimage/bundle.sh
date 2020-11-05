@@ -24,9 +24,10 @@ binpatch: true
 lowerapp: blend
 
 ingredients:
-  dist: xenial
+  dist: focal
   sources:
-    - deb http://archive.ubuntu.com/ubuntu/ xenial main universe
+    - deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse
+    - deb-src http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse
   debs:
     - $BUILD_DIR/blend.$BLEND_VERSION.deb
   package: blend
