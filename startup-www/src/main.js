@@ -51,7 +51,8 @@ const updateBandServer = async function (capabilities) {
     return false;
   }
   const randomNumber = Math.floor(Math.random() * 100000);
-  const imageUrl = redirectUrl + boostImageEndpoint + "?randomCode=" + randomNumber;
+  const rawImageUrl = redirectUrl + boostImageEndpoint + "?randomCode=" + randomNumber;
+  const imageUrl = rawImageUrl.replace(/([^:]\/)\/+/g, "$1");
   return new Promise((resolve) => {
     const imageNode = document.createElement('img');
     const timeout = setTimeout(() => {
