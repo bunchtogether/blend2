@@ -1,45 +1,10 @@
 // @flow
 
 const { Router } = require('express');
-const path = require('path');
-const fs = require('fs-extra');
 const logger = require('../../lib/logger')('Setup API');
 const { triggerUpdate } = require('../../lib/update');
-const { CONFIG_FILE } = require('../../constants');
-
-const getConfigPath = function (): string {
-  return path.resolve(CONFIG_FILE); // returns config.json located in exec dir
-};
-
-const readConfig = async (): Promise<Object> => {
-  const configFile = getConfigPath();
-  try {
-    const fileExists = await fs.pathExists(configFile);
-    if (!fileExists) {
-      logger.error(`${CONFIG_FILE} does not exist at ${configFile}, creating new file`);
-      await fs.ensureFile(configFile);
-      await fs.outputJSON(configFile, { ip: '', multicast: null });
-    }
-    return fs.readJSON(configFile);
-  } catch (error) {
-    logger.error(`Failed to read ${configFile}, error: ${error.message}`);
-    logger.errorStack(error);
-    throw error;
-  }
-};
-
-const updateConfig = async (updatedConfig: Object): Promise<void> => {
-  const configFile = getConfigPath();
-  try {
-    const configContent = await readConfig();
-    const updatedConfigContent = Object.assign({}, configContent, updatedConfig);
-    await fs.outputJSON(configFile, updatedConfigContent);
-  } catch (error) {
-    logger.error(`Failed to update ${configFile}, Error: ${error.message}`);
-    logger.errorStack(error);
-    throw error;
-  }
-};
+const { readConfig, updateConfig } = require('../../lib/config');
+const { initSentry } = require('../../lib/logger');
 
 module.exports.getSetupRouter = () => {
   logger.info('Attaching setup router');
@@ -60,6 +25,20 @@ module.exports.getSetupRouter = () => {
     }
   });
 
+  router.get('/sentry', async (req: express$Request, res: express$Response) => {
+    try {
+      const configContent = await readConfig();
+      if (Object.keys(configContent).includes('sentry')) {
+        return res.send({ dsn: configContent.sentry });
+      }
+      return res.status(400).send({ dsn: '', message: 'Sentry setup does not exist' });
+    } catch (error) {
+      logger.error(`Unable to get Sentry dsn, Error: ${error.message}`);
+      logger.errorStack(error);
+      return res.status(400).send({ error: 'Unable to get Sentry dsn' });
+    }
+  });
+
   router.put('/ip', async (req: express$Request, res: express$Response) => {
     const ip = req.body.ip;
     if (!ip) {
@@ -72,6 +51,22 @@ module.exports.getSetupRouter = () => {
       logger.warn(`Unable to save device IP address, Error: ${error.message}`);
       logger.errorStack(error);
       return res.status(400).send({ error: 'Unable to save device IP address' });
+    }
+  });
+
+  router.put('/sentry', async (req: express$Request, res: express$Response) => {
+    const sentryDsn = req.body.dsn;
+    if (!sentryDsn) {
+      return res.status(400).send({ error: 'Missing required parameter: dsn' });
+    }
+    try {
+      await updateConfig({ sentry: sentryDsn });
+      await initSentry(); // Re-initialize sentry config
+      return res.sendStatus(200);
+    } catch (error) {
+      logger.warn(`Unable to save Sentry dsn, Error: ${error.message}`);
+      logger.errorStack(error);
+      return res.status(400).send({ error: 'Unable to save Sentry dsn' });
     }
   });
 

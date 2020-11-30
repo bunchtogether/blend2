@@ -58,6 +58,7 @@ const { initAdapter, closeAdapter } = require('./adapters');
 const { API_PORT, KIOSK_MODE, ENABLE_TRAY_ICON } = require('./constants');
 const { addShutdownHandler, addPostShutdownHandler, runShutdownHandlers } = require('@bunchtogether/exit-handler');
 const logger = require('./lib/logger')('CLI');
+const { initSentry } = require('./lib/logger');
 const { bandIcon } = require('./icon');
 
 let switchToBandFn = null;
@@ -123,6 +124,7 @@ const start = async (): Promise<void> => {
 
   const [levelDb, closeLevelDb] = await getLevelDb(levelDbPath);
   await initAdapter(levelDb);
+  await initSentry();
 
   const app = getExpressApp();
   const stopHttpServer = await startHttpServer(app, API_PORT);
