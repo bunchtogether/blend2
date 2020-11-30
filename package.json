@@ -117,6 +117,8 @@
     "@bunchtogether/picture-in-picture": "^1.0.13",
     "@bunchtogether/ps-tree": "1.2.1",
     "@bunchtogether/zoom-rooms-control-system": "file:./vendor/zoom-rooms-control-system",
+    "@sentry/node": "^5.27.4",
+    "@sentry/tracing": "^5.27.4",
     "@serialport/parser-byte-length": "^2.0.2",
     "@serialport/parser-delimiter": "^2.0.2",
     "appdata-path": "^1.0.0",

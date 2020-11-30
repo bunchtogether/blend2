@@ -9,6 +9,33 @@ const timestamp = require('logform/timestamp');
 const printf = require('logform/printf');
 const { createLogger, transports } = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
+const Sentry = require('@sentry/node');
+const Tracing = require('@sentry/tracing'); // eslint-disable-line no-unused-vars
+
+const { readSentry } = require('../lib/config');
+
+let isSentryEnabled = false;
+const initSentry = async function (): Promise<boolean> {
+  try {
+    const sentryDsn = await readSentry();
+    if (typeof (sentryDsn) !== 'string' || (typeof (sentryDsn) === 'string' && sentryDsn === '')) {
+      console.warn('Sentry is not configured');
+      isSentryEnabled = false;
+      return false;
+    }
+    Sentry.init({
+      dsn: sentryDsn, // "https://c123bac0b58d4355b7f2e0bfb9c922fd@o343937.ingest.sentry.io/5526027",
+      tracesSampleRate: 1.0,
+    });
+    isSentryEnabled = true;
+    return true;
+  } catch (error) {
+    console.error(`Error initializing sentry config, ${error.message}`);
+    isSentryEnabled = false;
+    return false;
+  }
+};
+
 const { BLEND_LOGS_DIR } = require('../constants');
 
 const loggers = {};
@@ -80,6 +107,15 @@ module.exports = (name: string) => {
     }
   };
 
+  childLogger.errorSentry = (error: Error) => {
+    console.log('Is Sentry enabled', isSentryEnabled);
+    if (isSentryEnabled) {
+      Sentry.captureException(error);
+    }
+  };
+
   loggers[name] = childLogger;
   return childLogger;
 };
+
+module.exports.initSentry = initSentry;

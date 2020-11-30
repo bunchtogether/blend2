@@ -49,3 +49,5 @@ update-vm.sh
 blend-installer.exe
 startup-www/dist*
 .cache
+
+**config.json**
