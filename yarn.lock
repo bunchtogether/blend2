@@ -922,7 +922,7 @@
     event-stream "=3.3.4"
 
 "@bunchtogether/zoom-rooms-control-system@file:./vendor/zoom-rooms-control-system":
-  version "1.0.6"
+  version "1.0.5"
   dependencies:
     colors "^1.4.0"
     logform "^2.2.0"
@@ -2272,17 +2272,12 @@ binary@~0.3.0:
     buffers "~0.1.1"
     chainsaw "~0.1.0"
 
-bindings@1, bindings@^1.3.0, bindings@^1.5.0:
+bindings@1, bindings@^1.3.0, bindings@^1.5.0, bindings@~1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.5.0.tgz#10353c9e945334bc0511a6d90b38fbc7c9c504df"
   integrity sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==
   dependencies:
     file-uri-to-path "1.0.0"
-
-bindings@~1.2.0:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.2.1.tgz#14ad6113812d2d37d72e67b4cacb4bb726505f11"
-  integrity sha1-FK1hE4EtLTfXLme0ystLtyZQXxE=
 
 bl@^3.0.0:
   version "3.0.0"
@@ -4141,16 +4136,16 @@ fecha@^4.2.0:
   resolved "https://registry.yarnpkg.com/fecha/-/fecha-4.2.0.tgz#3ffb6395453e3f3efff850404f0a59b6747f5f41"
   integrity sha512-aN3pcx/DSmtyoovUudctc8+6Hl4T+hI9GBBHLjA76jdZl7+b1sgh5g4k+u/GL3dTy1/pnYzKp69FpJ0OicE3Wg==
 
-ffi@^2.0.0, ffi@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/ffi/-/ffi-2.3.0.tgz#fa1a7b3d85c0fa8c83d96947a64b5192bc47f858"
-  integrity sha512-vkPA9Hf9CVuQ5HeMZykYvrZF2QNJ/iKGLkyDkisBnoOOFeFXZQhUPxBARPBIZMJVulvBI2R+jgofW03gyPpJcQ==
+ffi@^2.0.0, ffi@^2.3.0, "ffi@npm:@saleae/ffi@3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@saleae/ffi/-/ffi-3.0.2.tgz#335d7b607cb7b1052df4e677b5d93f28b734c0d3"
+  integrity sha512-IiQ2lJYllC9dTUmbDC6Y+I6VBp1qHFFLmt1ZJwvGbAYGybWUuJ/ulMtYsOpbzNEQTNLclCDmwAzYBF5Wy9Qy/A==
   dependencies:
-    bindings "~1.2.0"
-    debug "2"
-    nan "2"
-    ref "1"
-    ref-struct "1"
+    bindings "~1.5.0"
+    debug "4"
+    nan "^2.13.2"
+    ref "npm:@saleae/ref@^2.0.1"
+    ref-struct "npm:@saleae/ref-struct@^2.0.1"
 
 figgy-pudding@^3.5.1:
   version "3.5.2"
@@ -7900,13 +7895,21 @@ ref-array@^1.1.2:
     debug "2"
     ref "1"
 
-ref-struct@1, ref-struct@^1.0.2, ref-struct@^1.1.0:
+ref-struct@^1.0.2, ref-struct@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ref-struct/-/ref-struct-1.1.0.tgz#5d5ee65ad41cefc3a5c5feb40587261e479edc13"
   integrity sha1-XV7mWtQc78Olxf60BYcmHkee3BM=
   dependencies:
     debug "2"
     ref "1"
+
+"ref-struct@npm:@saleae/ref-struct@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@saleae/ref-struct/-/ref-struct-2.0.1.tgz#218cf016157d61b1f22a385d2961b82eaa90e789"
+  integrity sha512-RkTZprAOaaVfEf6yTlbxcm1EIcY8rwjAEGXMFfjaU08etsAgZoAicpcGY8/zrYkwDFNdA9ESIpfIjh/CS+UfPA==
+  dependencies:
+    debug "4"
+    ref "npm:@saleae/ref"
 
 ref-union@^1.0.1:
   version "1.0.1"
@@ -7916,13 +7919,13 @@ ref-union@^1.0.1:
     debug "2"
     ref "1"
 
-ref@1, ref@^1.3.2, ref@^1.3.5:
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/ref/-/ref-1.3.5.tgz#0e33f080cdb94a3d95312b2b3b1fd0f82044ca0f"
-  integrity sha512-2cBCniTtxcGUjDpvFfVpw323a83/0RLSGJJY5l5lcomZWhYpU2cuLdsvYqMixvsdLJ9+sTdzEkju8J8ZHDM2nA==
+ref@1, ref@^1.3.2, ref@^1.3.5, "ref@npm:@saleae/ref", "ref@npm:@saleae/ref@2.0.1", "ref@npm:@saleae/ref@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@saleae/ref/-/ref-2.0.1.tgz#885117cb73ea411ddd4bfa16e6bc71b86d9a5747"
+  integrity sha512-r9fbR4myauUGAelBCeWRpsJc0d30J3z5J6psnEpwU1t3qSWT6AIqHAHnQ9ImkBuDAoRyn7mctuD4oW5FBgJrPg==
   dependencies:
     bindings "1"
-    debug "2"
+    debug "4"
     nan "2"
 
 regenerate-unicode-properties@^8.2.0:
